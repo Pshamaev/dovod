@@ -175,7 +175,7 @@ jobs:
         run: |
           set -euo pipefail
           git init "$QWEN_CODE_ROOT"
-          git -C "$QWEN_CODE_ROOT" remote add origin "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          git -C "$QWEN_CODE_ROOT" remote add origin "https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY.git"
           git -C "$QWEN_CODE_ROOT" fetch --depth=1 origin "$QWEN_CODE_COMMIT"
           git -C "$QWEN_CODE_ROOT" checkout --detach "$QWEN_CODE_COMMIT"
 
