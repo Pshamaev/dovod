@@ -1,8 +1,9 @@
+# Modified for DOVOD: package name kept for the build pipeline; product identity lives in tauri.conf.json.
 [package]
 name = "qwen-code-desktop"
 version = "0.0.1"
-description = "Thin desktop shell for Qwen Code Web Shell"
-authors = ["Qwen Team"]
+description = "Dovod desktop shell (based on the Qwen Code Web Shell)"
+authors = ["DOVOD", "Qwen Team"]
 license = "Apache-2.0"
 edition = "2021"
 rust-version = "1.77.2"

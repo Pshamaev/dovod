@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en">
+<!-- Modified for DOVOD -->
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,11 +8,11 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src ipc: http://ipc.localhost; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
     />
-    <title>Qwen Code</title>
+    <title>Довод</title>
     <style>
       :root {
         color-scheme: dark;
-        font-family: 'Avenir Next', 'Segoe UI', sans-serif;
+        font-family: 'Segoe UI', 'Avenir Next', sans-serif;
         background: #070b12;
         color: #f4f7fb;
       }
@@ -26,12 +27,12 @@
         background:
           radial-gradient(
             circle at 18% 20%,
-            rgba(104, 82, 255, 0.28),
+            rgba(31, 58, 95, 0.55),
             transparent 34rem
           ),
           radial-gradient(
             circle at 86% 76%,
-            rgba(24, 197, 164, 0.14),
+            rgba(232, 176, 75, 0.12),
             transparent 28rem
           ),
           linear-gradient(135deg, #080c14 0%, #0c111c 56%, #090d14 100%);
@@ -83,7 +84,7 @@
         width: 58px;
         height: 58px;
         object-fit: contain;
-        filter: drop-shadow(0 14px 24px rgba(88, 63, 226, 0.38));
+        filter: drop-shadow(0 14px 24px rgba(15, 35, 64, 0.5));
       }
       body[data-state='starting'] {
         background: #070b12;
@@ -180,8 +181,8 @@
         height: 12px;
         margin-top: 5px;
         border-radius: 50%;
-        background: #8f7cff;
-        box-shadow: 0 0 0 0 rgba(143, 124, 255, 0.65);
+        background: #e8b04b;
+        box-shadow: 0 0 0 0 rgba(232, 176, 75, 0.65);
         animation: pulse 1.7s infinite;
       }
       .pulse.error {
@@ -195,10 +196,10 @@
       }
       @keyframes pulse {
         70% {
-          box-shadow: 0 0 0 12px rgba(143, 124, 255, 0);
+          box-shadow: 0 0 0 12px rgba(232, 176, 75, 0);
         }
         100% {
-          box-shadow: 0 0 0 0 rgba(143, 124, 255, 0);
+          box-shadow: 0 0 0 0 rgba(232, 176, 75, 0);
         }
       }
       h2 {
@@ -256,8 +257,8 @@
       }
       button.primary {
         border-color: transparent;
-        background: #705cff;
-        box-shadow: 0 9px 24px rgba(80, 58, 220, 0.28);
+        background: #1f3a5f;
+        box-shadow: 0 9px 24px rgba(15, 35, 64, 0.45);
       }
       button:disabled {
         cursor: wait;
@@ -298,34 +299,32 @@
     <main>
       <section class="shell" aria-live="polite">
         <div class="brand">
-          <img class="mark" src="qwen-code-logo.svg" alt="Qwen Code" />
+          <img class="mark" src="dovod-logo.svg" alt="Довод" />
           <div class="brand-copy">
-            <h1>Qwen Code</h1>
-            <p class="eyebrow">Desktop workspace</p>
+            <h1>Довод</h1>
+            <p class="eyebrow">Рабочее место юриста</p>
           </div>
         </div>
         <div class="status">
           <div id="pulse" class="pulse"></div>
           <div>
-            <h2 id="title">Starting Qwen Code</h2>
-            <p id="detail">
-              Preparing the local workspace and bundled runtime…
-            </p>
+            <h2 id="title">Запуск Довода</h2>
+            <p id="detail">Подготовка рабочей папки и встроенной среды…</p>
             <div id="workspace" class="workspace" hidden></div>
             <pre id="error"></pre>
           </div>
         </div>
         <div class="actions">
           <button id="choose" class="primary" hidden>
-            Choose another workspace
+            Выбрать другую папку
           </button>
-          <button id="retry" hidden>Retry</button>
-          <button id="logs">Open logs</button>
-          <button id="update" hidden>Install update</button>
+          <button id="retry" hidden>Повторить</button>
+          <button id="logs">Открыть журнал</button>
+          <button id="update" hidden>Установить обновление</button>
         </div>
         <footer>
-          <span id="version">Desktop</span
-          ><span>Local daemon · authenticated loopback</span>
+          <span id="version">Довод</span
+          ><span>Локальная служба · защищённое соединение</span>
         </footer>
       </section>
     </main>

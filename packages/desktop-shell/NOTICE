@@ -1,4 +1,13 @@
+Dovod Desktop (Довод)
+Copyright 2026 DOVOD
+
+This product includes software developed by the Qwen Code project (Apache 2.0).
+
 Qwen Code Desktop Shell
 Copyright 2026 Qwen Team
 
 This distribution includes Qwen Code and the Node.js runtime. Qwen Code is licensed under the Apache License 2.0. Node.js license notices are included with the bundled runtime.
+
+Modified for DOVOD: the desktop shell, bootstrap page, icons, Web Shell
+branding/Russian locale and the first-launch seeding of DOVOD commands and
+settings were changed by DOVOD. See LICENSE for the Apache License 2.0 text.

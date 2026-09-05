@@ -1,3 +1,6 @@
+// Modified for DOVOD: the daemon is started through lib/dovod-entry.js, which
+// seeds the DOVOD commands/settings on first launch and then loads the
+// unmodified cli-entry.js.
 use command_group::{CommandGroup, GroupChild};
 use rand::RngCore;
 use std::ffi::OsString;
@@ -63,7 +66,7 @@ impl DesktopRuntime {
             .env("QWEN_SERVER_TOKEN", &token);
 
         let mut child = spawn_runtime_group(&mut command)
-            .map_err(|error| format!("Failed to start bundled Qwen Code runtime: {error}"))?;
+            .map_err(|error| format!("Failed to start the bundled Dovod runtime: {error}"))?;
         let Some(stdout) = child.inner().stdout.take() else {
             stop_runtime_child(&mut child);
             return Err("Bundled runtime stdout was not captured.".to_string());
@@ -176,7 +179,7 @@ impl RuntimeLayout {
         };
         let (node, entry) = layout_from_root(root);
         require_file(&node, "Node.js runtime")?;
-        require_file(&entry, "Qwen Code runtime entry")?;
+        require_file(&entry, "Dovod runtime entry")?;
         Ok(Self { node, entry })
     }
 }
@@ -187,7 +190,7 @@ fn layout_from_root(root: PathBuf) -> (PathBuf, PathBuf) {
     } else {
         root.join("node").join("bin").join("node")
     };
-    let entry = root.join("lib").join("cli-entry.js");
+    let entry = root.join("lib").join("dovod-entry.js");
     // Tauri's resource_dir() returns `\\?\` verbatim paths on Windows, and
     // Node's entry-script resolution cannot handle that prefix (#8929).
     (
@@ -647,7 +650,7 @@ mod tests {
     #[cfg(windows)]
     #[test]
     fn runtime_layout_strips_windows_verbatim_prefix() {
-        let root = PathBuf::from(r"\\?\C:\Users\user\AppData\Local\Qwen Code Desktop")
+        let root = PathBuf::from(r"\\?\C:\Users\user\AppData\Local\Довод")
             .join("runtime")
             .join("qwen-code");
         let (node, entry) = layout_from_root(root);

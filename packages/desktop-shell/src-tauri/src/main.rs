@@ -1,3 +1,6 @@
+// Modified for DOVOD: product name, window title, dialogs and the default
+// workspace folder are rebranded; the updater is left pointing at the
+// placeholder endpoint from tauri.conf.json.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod desktop_state;
@@ -34,7 +37,7 @@ static FULLSCREEN_HIDE_GENERATION: AtomicU64 = AtomicU64::new(0);
 // getDefaultConversationWorkspacePath() in
 // packages/desktop/packages/shared/src/config/storage.ts: ~/Documents/Qwen,
 // relocatable through QWEN_DEFAULT_WORKSPACE_DIR (see default_workspace).
-const DEFAULT_WORKSPACE_DIRECTORY: &str = "Qwen";
+const DEFAULT_WORKSPACE_DIRECTORY: &str = "Довод";
 const UPDATE_CHECK_TIMEOUT: Duration = Duration::from_secs(3);
 
 #[derive(Clone, Serialize)]
@@ -103,7 +106,7 @@ fn main() {
     let app = match builder.build(tauri::generate_context!()) {
         Ok(app) => app,
         Err(error) => {
-            eprintln!("Failed to initialize Qwen Code desktop: {error}");
+            eprintln!("Failed to initialize the Dovod desktop shell: {error}");
             return;
         }
     };
@@ -199,7 +202,7 @@ fn setup_app(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         }
         stop_runtime(&runtime_exit_handle);
         *lock(&state.origin) = None;
-        let message = format!("Qwen Code stopped: {}", stopped.status);
+        let message = format!("Довод остановлен: {}", stopped.status);
         *lock(&state.last_error) = Some(message.clone());
         let _ = navigate_to_bootstrap(&runtime_exit_handle);
         let _ = runtime_exit_handle.emit("runtime-failed", message);
@@ -207,7 +210,7 @@ fn setup_app(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let (width, height) = default_window_size();
 
     let window = WebviewWindowBuilder::new(&handle, "main", WebviewUrl::App("index.html".into()))
-        .title("Qwen Code")
+        .title("Довод")
         .inner_size(width, height)
         .min_inner_size(900.0, 600.0)
         .on_navigation(move |url| is_allowed_navigation(url, &navigation_origin))
@@ -307,7 +310,7 @@ async fn choose_workspace(
         move || {
             app.dialog()
                 .file()
-                .set_title("Choose a Qwen Code workspace")
+                .set_title("Выберите рабочую папку Довода")
                 .blocking_pick_folder()
         }
     })
@@ -365,13 +368,13 @@ async fn install_update(webview: WebviewWindow, app: AppHandle) -> Result<(), St
         move || {
             app.dialog()
                 .message(format!(
-                    "Install Qwen Code Desktop {version} and restart now?"
+                    "Установить Довод {version} и перезапустить сейчас?"
                 ))
-                .title("Qwen Code update")
+                .title("Обновление Довода")
                 .kind(MessageDialogKind::Info)
                 .buttons(MessageDialogButtons::OkCancelCustom(
-                    "Install and restart".to_string(),
-                    "Cancel".to_string(),
+                    "Установить и перезапустить".to_string(),
+                    "Отмена".to_string(),
                 ))
                 .blocking_show()
         }
@@ -716,13 +719,13 @@ fn check_updates_silently(app: AppHandle) {
             move || {
                 app.dialog()
                     .message(format!(
-                        "Qwen Code Desktop {version} is available. Install and restart now?"
+                        "Доступна версия Довода {version}. Установить и перезапустить сейчас?"
                     ))
-                    .title("Qwen Code update")
+                    .title("Обновление Довода")
                     .kind(MessageDialogKind::Info)
                     .buttons(MessageDialogButtons::OkCancelCustom(
-                        "Install and restart".to_string(),
-                        "Later".to_string(),
+                        "Установить и перезапустить".to_string(),
+                        "Позже".to_string(),
                     ))
                     .blocking_show()
             }
@@ -738,9 +741,9 @@ fn check_updates_silently(app: AppHandle) {
                 move || {
                     app.dialog()
                         .message(format!(
-                            "Qwen Code Desktop {version} could not be installed.\n\n{error}\n\nSave your work before quitting. Reinstall Qwen Code if it does not reopen."
+                            "Не удалось установить Довод {version}.\n\n{error}\n\nСохраните работу перед выходом. Если приложение не откроется, переустановите Довод."
                         ))
-                        .title("Qwen Code update failed")
+                        .title("Ошибка обновления Довода")
                         .kind(MessageDialogKind::Error)
                         .blocking_show()
                 }
@@ -876,7 +879,7 @@ mod tests {
         let _ = fs::remove_dir_all(&home);
 
         let workspace = default_workspace_path(&home, None);
-        assert_eq!(workspace, home.join("Documents/Qwen"));
+        assert_eq!(workspace, home.join("Documents/Довод"));
         ensure_workspace_dir(&workspace).expect("create workspace");
         ensure_workspace_dir(&workspace).expect("reuse workspace");
 

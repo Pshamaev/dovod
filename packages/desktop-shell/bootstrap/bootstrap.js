@@ -1,3 +1,4 @@
+// Modified for DOVOD: user-facing copy translated to Russian.
 const tauri = window.__TAURI__;
 const invoke = tauri?.core?.invoke;
 const listen = tauri?.event?.listen;
@@ -40,19 +41,18 @@ async function chooseWorkspace() {
   snapshotOverrideStatus = 'starting';
   setStatus(
     'starting',
-    'Opening workspace',
-    'Starting the bundled Qwen Code runtime…',
+    'Открытие рабочей папки',
+    'Запуск встроенной среды Довода…',
   );
   try {
     const path = await invoke('choose_workspace');
     if (path) currentWorkspace = path;
-    else
-      setStatus('idle', 'Choose another workspace', 'No folder was selected.');
+    else setStatus('idle', 'Выберите другую папку', 'Папка не выбрана.');
   } catch (failure) {
     setStatus(
       'error',
-      'Workspace could not start',
-      'Review the details or open the desktop log.',
+      'Не удалось открыть рабочую папку',
+      'Посмотрите подробности или откройте журнал.',
       String(failure),
     );
   }
@@ -63,16 +63,16 @@ async function retryRuntime() {
   snapshotOverrideStatus = 'starting';
   setStatus(
     'starting',
-    'Restarting Qwen Code',
-    'Checking the bundled runtime and workspace…',
+    'Перезапуск Довода',
+    'Проверка встроенной среды и рабочей папки…',
   );
   try {
     await invoke('restart_runtime');
   } catch (failure) {
     setStatus(
       'error',
-      'Qwen Code could not restart',
-      'Review the details or choose another workspace.',
+      'Не удалось перезапустить Довод',
+      'Посмотрите подробности или выберите другую папку.',
       String(failure),
     );
   }
@@ -81,19 +81,19 @@ async function retryRuntime() {
 async function installUpdate() {
   if (!invoke) return;
   update.disabled = true;
-  update.textContent = `Installing ${updateVersion || 'update'}…`;
+  update.textContent = `Установка ${updateVersion || 'обновления'}…`;
   try {
     await invoke('install_update');
   } catch (failure) {
     setStatus(
       'error',
-      'Update failed',
-      'Qwen Code remains usable. Try again or update manually.',
+      'Обновление не удалось',
+      'Довод продолжает работать. Повторите попытку или обновите вручную.',
       String(failure),
     );
   } finally {
     update.disabled = false;
-    update.textContent = 'Install update';
+    update.textContent = 'Установить обновление';
   }
 }
 
@@ -104,8 +104,8 @@ async function openLogs() {
   } catch (failure) {
     setStatus(
       'error',
-      'Logs could not open',
-      'Review the details or try again.',
+      'Не удалось открыть журнал',
+      'Посмотрите подробности или повторите попытку.',
       String(failure),
     );
   }
@@ -120,9 +120,9 @@ async function initialize() {
   if (!invoke || !listen) {
     setStatus(
       'error',
-      'Desktop bridge unavailable',
-      'The packaged desktop bridge did not initialize.',
-      'Restart Qwen Code.',
+      'Мост приложения недоступен',
+      'Встроенный мост приложения не инициализировался.',
+      'Перезапустите Довод.',
     );
     return;
   }
@@ -133,28 +133,28 @@ async function initialize() {
       currentWorkspace = String(payload || '');
       setStatus(
         'starting',
-        'Starting Qwen Code',
-        'Launching the bundled runtime and checking its health…',
+        'Запуск Довода',
+        'Запуск встроенной среды и проверка её состояния…',
       );
     }),
     listen('runtime-failed', ({ payload }) => {
       snapshotOverrideStatus = 'failed';
       setStatus(
         'error',
-        'Qwen Code could not start',
-        'Review the details, open the log, or choose another workspace.',
+        'Не удалось запустить Довод',
+        'Посмотрите подробности, откройте журнал или выберите другую папку.',
         String(payload),
       );
     }),
     listen('update-available', ({ payload }) => {
       updateVersion = String(payload);
       update.hidden = false;
-      update.textContent = `Install ${updateVersion}`;
+      update.textContent = `Установить ${updateVersion}`;
     }),
   ]);
 
   const state = await invoke('bootstrap_state');
-  version.textContent = `Desktop ${state.desktopVersion}`;
+  version.textContent = `Довод ${state.desktopVersion}`;
   currentWorkspace ||= String(state.workspace || '');
   if (snapshotOverrideStatus) {
     if (snapshotOverrideStatus === 'failed') setWorkspace(currentWorkspace);
@@ -163,27 +163,27 @@ async function initialize() {
   if (state.status === 'starting') {
     setStatus(
       'starting',
-      'Starting Qwen Code',
-      'Launching the bundled runtime and checking its health…',
+      'Запуск Довода',
+      'Запуск встроенной среды и проверка её состояния…',
     );
   } else if (state.status === 'ready') {
     setStatus(
       'starting',
-      'Loading Qwen Code',
-      'Connecting to the local Web Shell…',
+      'Загрузка Довода',
+      'Подключение к локальному интерфейсу…',
     );
   } else if (state.error) {
     setStatus(
       'error',
-      'Qwen Code could not start',
-      'Review the details, open the log, or choose another workspace.',
+      'Не удалось запустить Довод',
+      'Посмотрите подробности, откройте журнал или выберите другую папку.',
       state.error,
     );
   } else {
     setStatus(
       'idle',
-      'Choose another workspace',
-      'The automatic workspace did not start.',
+      'Выберите другую папку',
+      'Рабочая папка по умолчанию не запустилась.',
     );
   }
 }
@@ -191,8 +191,8 @@ async function initialize() {
 initialize().catch((failure) => {
   setStatus(
     'error',
-    'Desktop initialization failed',
-    'Restart Qwen Code or inspect the desktop log.',
+    'Ошибка инициализации приложения',
+    'Перезапустите Довод или посмотрите журнал.',
     String(failure),
   );
 });

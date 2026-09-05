@@ -1,6 +1,21 @@
-# Qwen Code desktop shell
+# Довод (Dovod) desktop shell
 
-This package is an isolated Tauri 2 shell around the existing Web Shell. It does not contain a second UI.
+<!-- Modified for DOVOD -->
+
+This package is the Tauri 2 shell of **Довод**, a rebranded fork of the Qwen
+Code desktop app for Russian lawyers. It is an isolated shell around the
+existing Web Shell and does not contain a second UI.
+
+DOVOD-specific pieces:
+
+- `dovod/` — bundled command templates, settings/env/MCP templates and the
+  `dovod-entry.js` first-launch seeding wrapper (see `dovod/README.md`).
+- `src-tauri/tauri.conf.json` — product name `Довод`, identifier
+  `law.dovod.desktop`, binary `dovod`, Russian NSIS installer, updater pointed
+  at a placeholder endpoint with a placeholder key (no update is ever
+  installed until a real key and feed exist).
+- `bootstrap/` — Russian startup/recovery page with the DOVOD logo.
+- Icons in `src-tauri/icons/` generated from the DOVOD icon.
 
 ## Runtime layout
 
@@ -28,19 +43,19 @@ The first two steps are one-time setup. After that, `npm run dev` is all you nee
 
 `build:runtime` bundles the current platform's Node.js, the `qwen` CLI, and the built Web Shell into `runtime/qwen-code/`. Re-run it only when you change the CLI or Web Shell source.
 
-Use `QWEN_DESKTOP_WORKSPACE=/absolute/path` to override the initial workspace. The app otherwise restores its saved primary workspace or creates `~/Documents/Qwen` on first launch. `QWEN_DEFAULT_WORKSPACE_DIR=/absolute/path` relocates that first-launch default, matching the Electron shell. Add and switch project workspaces from the Web Shell after startup.
+Use `QWEN_DESKTOP_WORKSPACE=/absolute/path` to override the initial workspace. The app otherwise restores its saved primary workspace or creates `~/Documents/Довод` on first launch. `QWEN_DEFAULT_WORKSPACE_DIR=/absolute/path` relocates that first-launch default, matching the Electron shell. Add and switch project workspaces from the Web Shell after startup.
 
 ## Debugging
 
 ### Runtime log
 
-The daemon log is written to `~/Library/Logs/com.alibaba.qwen-code/desktop-runtime.log` on macOS. Tail it to see `qwen serve` output:
+The daemon log is written to `~/Library/Logs/law.dovod.desktop/desktop-runtime.log` on macOS and `%LOCALAPPDATA%\law.dovod.desktop\logs\desktop-runtime.log` on Windows. Tail it to see `qwen serve` output:
 
 ```bash
-tail -f ~/Library/Logs/com.alibaba.qwen-code/desktop-runtime.log
+tail -f ~/Library/Logs/law.dovod.desktop/desktop-runtime.log
 ```
 
-The desktop state (saved workspace, window position) is stored in `~/Library/Application Support/com.alibaba.qwen-code/desktop-state.json`.
+The desktop state (saved workspace, window position) is stored in `~/Library/Application Support/law.dovod.desktop/desktop-state.json`.
 
 ### WebView DevTools
 
@@ -54,6 +69,7 @@ Open the Web Shell's DevTools from the running window with `Cmd+Option+I` (macOS
 | `QWEN_DEFAULT_WORKSPACE_DIR` | Relocate the first-launch default workspace directory               |
 | `QWEN_DESKTOP_SKIP_BUILD`    | Set to `1` to skip the CLI/Web Shell rebuild during `build:runtime` |
 | `QWEN_CODE_ROOT`             | Point to a local qwen-code checkout for the runtime bundle          |
+| `DOVOD_SKIP_SEED`            | Set to `1` to skip the first-launch seeding of `~/.qwen`            |
 
 ### Rust tests
 
