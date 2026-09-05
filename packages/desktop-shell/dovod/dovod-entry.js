@@ -11,7 +11,8 @@
 //   <QWEN_HOME>/settings.json               <- dovod/settings.template.json when absent;
 //                                              otherwise only absent keys are merged:
 //                                              security.auth.selectedType, model.name,
-//                                              modelProviders, mcpServers.dovod
+//                                              modelProviders, mcpServers.dovod;
+//                                              permissions.allow rules are appended
 // The token __DOVOD_TOOLS__ inside the command files and the MCP template is
 // replaced with DOVOD_TOOLS (environment or <QWEN_HOME>/.env), the path to
 // garant-bot/dovod-tools on this machine. While DOVOD_TOOLS is unset the
@@ -164,6 +165,25 @@ export function mergeDovodSettings(settings, template, mcpServer) {
   ) {
     settings.modelProviders = template.modelProviders;
     changed = true;
+  }
+  // permissions.allow: the /dovod:* commands run the dovod_prompts.py entry
+  // script through a shell injection; the daemon cannot ask for confirmation,
+  // so the narrow rules from the template (that script only) are appended to
+  // whatever the user already allows (never replaced, never duplicated).
+  const templateAllow = Array.isArray(template?.permissions?.allow)
+    ? template.permissions.allow.filter((rule) => typeof rule === 'string')
+    : [];
+  if (templateAllow.length > 0) {
+    if (!isPlainObject(settings.permissions)) settings.permissions = {};
+    if (!Array.isArray(settings.permissions.allow)) {
+      settings.permissions.allow = [];
+    }
+    for (const rule of templateAllow) {
+      if (!settings.permissions.allow.includes(rule)) {
+        settings.permissions.allow.push(rule);
+        changed = true;
+      }
+    }
   }
   if (mcpServer) {
     settings.mcpServers = isPlainObject(settings.mcpServers)
