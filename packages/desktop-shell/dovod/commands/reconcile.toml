@@ -1,0 +1,4 @@
+# Modified for DOVOD — placeholder, replaced at packaging time from
+# garant-bot/dovod-tools/qwen/commands/reconcile.toml
+description = "Сверка: сопоставить проект с материалами дела и позицией."
+prompt = "PLACEHOLDER: replaced at packaging time"

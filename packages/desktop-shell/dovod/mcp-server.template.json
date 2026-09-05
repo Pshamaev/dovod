@@ -1,0 +1,6 @@
+{
+  "command": "PLACEHOLDER",
+  "args": [],
+  "env": {},
+  "description": "MCP-сервер Довода. Заполняется при сборке пакета из garant-bot/dovod-tools (см. install_dovod.ps1)."
+}

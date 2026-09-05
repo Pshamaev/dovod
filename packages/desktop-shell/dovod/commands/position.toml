@@ -1,0 +1,4 @@
+# Modified for DOVOD — placeholder, replaced at packaging time from
+# garant-bot/dovod-tools/qwen/commands/position.toml
+description = "Правовая позиция: формулировка позиции по делу с опорой на источники."
+prompt = "PLACEHOLDER: replaced at packaging time"

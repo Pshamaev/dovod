@@ -1,0 +1,4 @@
+# Modified for DOVOD — placeholder, replaced at packaging time from
+# garant-bot/dovod-tools/qwen/commands/draft.toml
+description = "Проект документа: подготовить черновик процессуального документа."
+prompt = "PLACEHOLDER: replaced at packaging time"

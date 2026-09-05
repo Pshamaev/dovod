@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Modified for DOVOD: bundles the dovod/ resource folder and the dovod-entry.js
+// runtime wrapper next to the upstream CLI.
 
 import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
@@ -40,6 +42,8 @@ const desktopVersion = JSON.parse(
   fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8'),
 ).version;
 const binDir = path.join(packageRoot, 'bin');
+const dovodSourceDir = path.join(packageDir, 'dovod');
+const dovodDir = path.join(packageRoot, 'dovod');
 
 const target = desktopTarget();
 const skipBuild = process.env.QWEN_DESKTOP_SKIP_BUILD === '1';
@@ -80,6 +84,7 @@ try {
   fs.writeFileSync(path.join(packageRoot, '.gitkeep'), '');
   fs.mkdirSync(binDir, { recursive: true });
   copyDirectory(distDir, libDir);
+  bundleDovodResources();
   await installNodeRuntime(nodeDir, target);
   writeLaunchers(target);
   copyRequiredFile(
@@ -99,6 +104,7 @@ try {
     `${JSON.stringify(
       {
         name: '@qwen-code/qwen-code',
+        product: 'dovod',
         desktopVersion,
         qwenCodeVersion,
         qwenCodeCommit: process.env.QWEN_CODE_COMMIT || gitCommit(sourceRoot),
@@ -274,6 +280,34 @@ function writeLaunchers(desktopTarget) {
   const launcherPath = path.join(binDir, 'qwen');
   fs.writeFileSync(launcherPath, launcher);
   fs.chmodSync(launcherPath, 0o755);
+}
+
+// Copies the DOVOD resource folder (command templates, settings/env/MCP
+// templates) into the runtime and installs the dovod-entry.js wrapper that
+// the desktop shell launches instead of cli-entry.js.
+function bundleDovodResources() {
+  const entrySource = path.join(dovodSourceDir, 'dovod-entry.js');
+  for (const required of [
+    entrySource,
+    path.join(dovodSourceDir, 'settings.template.json'),
+    path.join(dovodSourceDir, 'env.template'),
+    path.join(dovodSourceDir, 'mcp-server.template.json'),
+    path.join(dovodSourceDir, 'commands'),
+  ]) {
+    if (!fs.existsSync(required)) {
+      throw new Error(`Missing DOVOD resource: ${required}`);
+    }
+  }
+  fs.mkdirSync(dovodDir, { recursive: true });
+  fs.cpSync(dovodSourceDir, dovodDir, {
+    recursive: true,
+    dereference: true,
+    filter: (entry) => {
+      const name = path.basename(entry);
+      return name !== '.DS_Store' && name !== 'dovod-entry.js';
+    },
+  });
+  copyRequiredFile(entrySource, path.join(libDir, 'dovod-entry.js'));
 }
 
 function copyRequiredFile(source, destination) {

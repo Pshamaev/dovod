@@ -1,0 +1,4 @@
+# Modified for DOVOD — placeholder, replaced at packaging time from
+# garant-bot/dovod-tools/qwen/commands/prepare.toml
+description = "Подготовка дела: собрать материалы и задать рамку работы."
+prompt = "PLACEHOLDER: replaced at packaging time"

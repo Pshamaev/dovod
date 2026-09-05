@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Modified for DOVOD: also verifies the bundled DOVOD entry and resources.
 
 import { spawn } from 'node:child_process';
 import crypto from 'node:crypto';
@@ -127,7 +128,12 @@ function verifyRuntimeIntegrity() {
     'NOTICE',
     'node/LICENSE',
     'lib/cli-entry.js',
+    'lib/dovod-entry.js',
     'lib/web-shell/index.html',
+    'dovod/settings.template.json',
+    'dovod/env.template',
+    'dovod/mcp-server.template.json',
+    'dovod/commands/prepare.toml',
   ];
   for (const relative of required) {
     const file = path.join(runtimeRoot, relative);

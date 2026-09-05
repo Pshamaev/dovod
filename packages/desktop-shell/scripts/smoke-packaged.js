@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Modified for DOVOD: the packaged smoke never seeds the runner's ~/.qwen.
 
 import { execFileSync, spawn } from 'node:child_process';
 import fs from 'node:fs';
@@ -55,6 +56,7 @@ const child = spawn(executable, [], {
     ...process.env,
     QWEN_DESKTOP_WORKSPACE: workspace,
     QWEN_CODE_SUPPRESS_YOLO_WARNING: '1',
+    DOVOD_SKIP_SEED: '1',
     HOME: isolatedHome,
     XDG_STATE_HOME: isolatedState,
     XDG_DATA_HOME: isolatedState,

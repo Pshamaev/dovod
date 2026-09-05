@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Modified for DOVOD: identity, bootstrap copy, updater and runtime
+// assertions follow the DOVOD rebrand; adds the dovod-entry.js seed tests.
 
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -9,6 +11,11 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolveLogRoot, sliceNewLog } from './resolve-log-root.js';
+import {
+  mergeDovodSettings,
+  resolveQwenHome,
+  seedDovod,
+} from '../dovod/dovod-entry.js';
 
 const packageDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -41,7 +48,7 @@ const root = fs.mkdtempSync(
 try {
   testBootstrapBridgeConfiguration();
   await testBootstrapWorkspaceVisibility();
-  testLegacyApplicationIdentity();
+  testDovodApplicationIdentity();
   testElectronBridgeWorkflow();
   testDesktopReleaseSigningWorkflow();
   testDesktopReleaseHardening();
@@ -52,6 +59,7 @@ try {
   testElectronBridgeManifest(path.join(root, 'electron-bridge'));
   testVersionSynchronization(path.join(root, 'version'));
   testRuntimePreparation(path.join(root, 'runtime'));
+  testDovodSeeding(path.join(root, 'dovod-seed'));
   console.log('Desktop release helper checks passed.');
 } finally {
   fs.rmSync(root, { recursive: true, force: true });
@@ -62,12 +70,17 @@ async function testBootstrapWorkspaceVisibility() {
     path.join(packageDir, 'bootstrap', 'index.html'),
     'utf8',
   );
-  assert.match(bootstrapHtml, /class="mark" src="qwen-code-logo\.svg"/);
+  assert.match(bootstrapHtml, /class="mark" src="dovod-logo\.svg"/);
   assert.ok(
-    fs.existsSync(path.join(packageDir, 'bootstrap', 'qwen-code-logo.svg')),
+    fs.existsSync(path.join(packageDir, 'bootstrap', 'dovod-logo.svg')),
     'The bootstrap splash mark must ship with the frontendDist directory.',
   );
   assert.doesNotMatch(bootstrapHtml, /class="mark">Q</);
+  assert.doesNotMatch(
+    bootstrapHtml,
+    /Qwen/,
+    'The bootstrap page must not show the upstream product name.',
+  );
   const reducedMotionBlock = bootstrapHtml.match(
     /@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)(?:@media|<\/style>)/,
   );
@@ -124,7 +137,7 @@ async function testBootstrapWorkspaceVisibility() {
     workspace: '/Users/example/Documents',
   });
   await new Promise((resolve) => setImmediate(resolve));
-  assert.equal(element('#title').textContent, 'Restarting Qwen Code');
+  assert.equal(element('#title').textContent, 'Перезапуск Довода');
   assert.equal(
     element('#workspace').hidden,
     true,
@@ -215,38 +228,52 @@ async function createBootstrapHarness() {
   };
 }
 
-function testLegacyApplicationIdentity() {
+function testDovodApplicationIdentity() {
   const config = JSON.parse(
     fs.readFileSync(
       path.join(packageDir, 'src-tauri', 'tauri.conf.json'),
       'utf8',
     ),
   );
-  assert.equal(config.productName, 'Qwen Code Desktop');
-  assert.equal(config.identifier, 'com.alibaba.qwen-code');
+  assert.equal(config.productName, 'Довод');
+  assert.equal(config.mainBinaryName, 'dovod');
+  assert.equal(config.identifier, 'law.dovod.desktop');
   assert.equal(
     config.bundle.windows.nsis.installerHooks,
-    'windows/electron-migration.nsh',
+    undefined,
+    'DOVOD has no legacy Electron installation to migrate.',
   );
-  const migrationHook = fs.readFileSync(
-    path.join(packageDir, 'src-tauri', 'windows', 'electron-migration.nsh'),
+  assert.deepEqual(config.bundle.windows.nsis.languages, [
+    'Russian',
+    'English',
+  ]);
+  assert.equal(config.bundle.createUpdaterArtifacts, false);
+  for (const icon of config.bundle.icon) {
+    assert.ok(
+      fs.existsSync(path.join(packageDir, 'src-tauri', icon)),
+      `Bundle icon must exist: ${icon}`,
+    );
+  }
+  const main = fs.readFileSync(
+    path.join(packageDir, 'src-tauri', 'src', 'main.rs'),
     'utf8',
   );
-  assert.match(migrationHook, /Software\\821b18a9-7c63-5bb4-9e20-51ba63d5ecc3/);
-  assert.match(migrationHook, /!macro NSIS_HOOK_PREINSTALL/);
-  assert.match(
-    migrationHook,
-    /StrCpy \$R1 \$R1 17\s*\n\s*\$\{If\} \$R0 != ""\s*\n\s*\$\{AndIf\} \$R1 == "Qwen Code Desktop"/,
+  assert.match(main, /\.title\("Довод"\)/);
+  assert.match(main, /const DEFAULT_WORKSPACE_DIRECTORY: &str = "Довод";/);
+  const runtime = fs.readFileSync(
+    path.join(packageDir, 'src-tauri', 'src', 'runtime.rs'),
+    'utf8',
   );
   assert.match(
-    migrationHook,
-    /\$\{AndIf\} \$\{FileExists\} "\$R0\\Uninstall Qwen Code Desktop\.exe"/,
+    runtime,
+    /root\.join\("lib"\)\.join\("dovod-entry\.js"\)/,
+    'The desktop shell must launch the DOVOD seeding entry.',
   );
+  const notice = fs.readFileSync(path.join(packageDir, 'NOTICE'), 'utf8');
   assert.match(
-    migrationHook,
-    /ExecWait '"\$R0\\Uninstall Qwen Code Desktop\.exe" \/currentuser \/S --updated _\?=\$R0'/,
+    notice,
+    /This product includes software developed by the Qwen Code project \(Apache 2\.0\)/,
   );
-  assert.match(migrationHook, /\$\{If\} \$R2 != 0\s*\n\s*Abort/);
 }
 
 function testElectronBridgeWorkflow() {
@@ -412,9 +439,17 @@ function testDesktopReleaseHardening() {
   );
   assert.match(
     workflow,
-    /\*-setup\.exe\|\*-setup\.exe\.sig/,
-    'Windows release collection must allow only installer executables',
+    /\*-setup\.exe\) name="DOVOD-Setup-\$RELEASE_VERSION-x64\.exe" ;;\s*\n\s*\*-setup\.exe\.sig\) name="DOVOD-Setup-\$RELEASE_VERSION-x64\.exe\.sig" ;;/,
+    'Windows release collection must allow only installer executables and publish them as DOVOD-Setup',
   );
+  assert.doesNotMatch(
+    workflow,
+    /github\.repository == 'QwenLM\/qwen-code'/,
+    'the DOVOD fork must upload and publish from its own repository',
+  );
+  assert.match(workflow, /^ {6}windows_only:$/m);
+  assert.match(workflow, /fromJSON\(needs\.prepare\.outputs\.matrix\)/);
+  assert.doesNotMatch(workflow, /sync-desktop-to-oss/);
   assert.doesNotMatch(
     workflow.slice(
       workflow.indexOf('elif [ "$RUNNER_OS" = \'Windows\' ]'),
@@ -492,6 +527,13 @@ function testRuntimePreparation(directory) {
     path.join(packageDir, 'scripts', 'prepare-runtime.js'),
     testScript,
   );
+  fs.cpSync(
+    path.join(packageDir, 'dovod'),
+    path.join(testPackageDir, 'dovod'),
+    {
+      recursive: true,
+    },
+  );
   fs.writeFileSync(
     path.join(directory, '.nvmrc'),
     `${process.versions.node.split('.')[0]}\n`,
@@ -567,6 +609,36 @@ globalThis.fetch = async (url) => {
   assert.ok(
     fs.existsSync(path.join(runtimeDir, 'qwen-code', 'checksums.json')),
   );
+  for (const bundled of [
+    path.join('lib', 'dovod-entry.js'),
+    path.join('lib', 'cli-entry.js'),
+    path.join('dovod', 'settings.template.json'),
+    path.join('dovod', 'env.template'),
+    path.join('dovod', 'mcp-server.template.json'),
+    path.join('dovod', 'commands', 'prepare.toml'),
+    path.join('dovod', 'commands', 'restore.toml'),
+  ]) {
+    assert.ok(
+      fs.existsSync(path.join(runtimeDir, 'qwen-code', bundled)),
+      `DOVOD runtime must bundle ${bundled}`,
+    );
+  }
+  assert.equal(
+    fs.existsSync(
+      path.join(runtimeDir, 'qwen-code', 'dovod', 'dovod-entry.js'),
+    ),
+    false,
+    'dovod-entry.js is installed under lib/, not duplicated in dovod/',
+  );
+  assert.equal(
+    JSON.parse(
+      fs.readFileSync(
+        path.join(runtimeDir, 'qwen-code', 'manifest.json'),
+        'utf8',
+      ),
+    ).product,
+    'dovod',
+  );
 
   const second = spawnSync(process.execPath, [testScript], {
     encoding: 'utf8',
@@ -620,10 +692,25 @@ globalThis.fetch = async (url) => {
 }
 
 function testUpdaterMirrorConfiguration() {
-  assert.deepEqual(tauriConfig.plugins?.updater?.endpoints, [
-    'https://qwen-code-assets.oss-cn-hangzhou.aliyuncs.com/desktop/latest/desktop-latest.json',
-    'https://github.com/QwenLM/qwen-code/releases/download/desktop-latest/desktop-latest.json',
-  ]);
+  const endpoints = tauriConfig.plugins?.updater?.endpoints ?? [];
+  assert.ok(endpoints.length > 0, 'the updater plugin needs an endpoint list');
+  for (const endpoint of endpoints) {
+    assert.doesNotMatch(
+      endpoint,
+      /aliyuncs\.com|QwenLM/,
+      'DOVOD must never poll the upstream Qwen update feeds',
+    );
+    assert.match(endpoint, /^https:\/\/updates\.dovod\.law\//);
+  }
+  const pubkeyText = Buffer.from(
+    tauriConfig.plugins.updater.pubkey,
+    'base64',
+  ).toString('utf8');
+  assert.match(
+    pubkeyText,
+    /DOVOD PLACEHOLDER/,
+    'the placeholder updater key must be replaced deliberately, not inherited',
+  );
   const main = fs.readFileSync(
     path.join(packageDir, 'src-tauri', 'src', 'main.rs'),
     'utf8',
@@ -1085,5 +1172,167 @@ function testVersionSynchronization(directory) {
   assert.match(
     fs.readFileSync(path.join(directory, 'src-tauri', 'Cargo.toml'), 'utf8'),
     /^version = "1\.2\.3"$/m,
+  );
+}
+
+function testDovodSeeding(directory) {
+  const resourceDir = path.join(packageDir, 'dovod');
+  const commandNames = [
+    'prepare',
+    'inventory',
+    'position',
+    'stage',
+    'draft',
+    'reconcile',
+    'restore',
+  ];
+  assert.deepEqual(
+    fs
+      .readdirSync(path.join(resourceDir, 'commands'))
+      .filter((name) => name.endsWith('.toml'))
+      .map((name) => name.replace(/\.toml$/, ''))
+      .sort(),
+    [...commandNames].sort(),
+    'the seven DOVOD commands must ship as TOML templates',
+  );
+  for (const name of commandNames) {
+    const toml = fs.readFileSync(
+      path.join(resourceDir, 'commands', `${name}.toml`),
+      'utf8',
+    );
+    assert.match(toml, /^description = ".*[\u0400-\u04FF].*"$/m);
+    assert.match(toml, /^prompt = "/m);
+  }
+  const template = JSON.parse(
+    fs.readFileSync(path.join(resourceDir, 'settings.template.json'), 'utf8'),
+  );
+  assert.equal(template.$version, 4);
+  assert.equal(template.security.auth.selectedType, 'openai');
+  assert.equal(template.model.name, '${DOVOD_MODEL}');
+  const [route] = template.modelProviders.openai;
+  assert.equal(route.id, '${DOVOD_MODEL}');
+  assert.equal(route.envKey, 'DOVOD_API_KEY');
+  assert.equal(route.baseUrl, '${DOVOD_API_BASE}');
+  assert.equal(
+    JSON.stringify(template).includes('sk-'),
+    false,
+    'no credential may be baked into the settings template',
+  );
+  const envTemplate = fs.readFileSync(
+    path.join(resourceDir, 'env.template'),
+    'utf8',
+  );
+  for (const key of ['DOVOD_API_BASE', 'DOVOD_API_KEY', 'DOVOD_MODEL']) {
+    assert.match(envTemplate, new RegExp(`^${key}=$`, 'm'));
+  }
+
+  assert.equal(
+    resolveQwenHome({}, path.join('/', 'home', 'user')),
+    path.join('/', 'home', 'user', '.qwen'),
+  );
+  assert.equal(
+    resolveQwenHome({ QWEN_HOME: '~/custom' }, path.join('/', 'home', 'user')),
+    path.join('/', 'home', 'user', 'custom'),
+  );
+
+  // First launch: everything is created.
+  const qwenHome = path.join(directory, 'home', '.qwen');
+  const first = seedDovod({ resourceDir, qwenHome });
+  assert.equal(first.commands, commandNames.length);
+  assert.equal(first.env, true);
+  assert.equal(first.settings, 'created');
+  const created = JSON.parse(
+    fs.readFileSync(path.join(qwenHome, 'settings.json'), 'utf8'),
+  );
+  assert.equal(created.security.auth.selectedType, 'openai');
+  assert.equal(
+    created.mcpServers.dovod,
+    undefined,
+    'the PLACEHOLDER MCP server must not be registered',
+  );
+  assert.ok(fs.existsSync(path.join(qwenHome, '.env')));
+
+  // Second launch: nothing changes, user edits survive.
+  const editedCommand = path.join(qwenHome, 'commands', 'dovod', 'draft.toml');
+  fs.writeFileSync(editedCommand, 'prompt = "user edit"\n');
+  fs.writeFileSync(path.join(qwenHome, '.env'), 'DOVOD_API_KEY=user\n');
+  const second = seedDovod({ resourceDir, qwenHome });
+  assert.deepEqual(second, { commands: 0, env: false, settings: 'unchanged' });
+  assert.equal(
+    fs.readFileSync(editedCommand, 'utf8'),
+    'prompt = "user edit"\n',
+  );
+  assert.equal(
+    fs.readFileSync(path.join(qwenHome, '.env'), 'utf8'),
+    'DOVOD_API_KEY=user\n',
+  );
+
+  // Existing settings: only absent keys are merged.
+  fs.writeFileSync(
+    path.join(qwenHome, 'settings.json'),
+    JSON.stringify({
+      $version: 4,
+      security: { auth: { selectedType: 'anthropic' } },
+      mcpServers: { other: { command: 'x' } },
+      ui: { theme: 'dark' },
+    }),
+  );
+  const merged = seedDovod({ resourceDir, qwenHome });
+  assert.equal(merged.settings, 'merged');
+  const mergedSettings = JSON.parse(
+    fs.readFileSync(path.join(qwenHome, 'settings.json'), 'utf8'),
+  );
+  assert.equal(mergedSettings.security.auth.selectedType, 'anthropic');
+  assert.equal(mergedSettings.ui.theme, 'dark');
+  assert.equal(mergedSettings.mcpServers.other.command, 'x');
+  assert.equal(mergedSettings.model.name, '${DOVOD_MODEL}');
+  assert.equal(mergedSettings.modelProviders.openai[0].envKey, 'DOVOD_API_KEY');
+
+  // A real MCP template is added exactly once and never overwritten.
+  const realResources = path.join(directory, 'resources');
+  fs.cpSync(resourceDir, realResources, { recursive: true });
+  fs.writeFileSync(
+    path.join(realResources, 'mcp-server.template.json'),
+    JSON.stringify({ command: 'dovod-mcp', args: ['--stdio'] }),
+  );
+  assert.equal(
+    seedDovod({ resourceDir: realResources, qwenHome }).settings,
+    'merged',
+  );
+  const withMcp = JSON.parse(
+    fs.readFileSync(path.join(qwenHome, 'settings.json'), 'utf8'),
+  );
+  assert.deepEqual(withMcp.mcpServers.dovod, {
+    command: 'dovod-mcp',
+    args: ['--stdio'],
+  });
+  withMcp.mcpServers.dovod.args = ['--user-edited'];
+  fs.writeFileSync(
+    path.join(qwenHome, 'settings.json'),
+    JSON.stringify(withMcp),
+  );
+  assert.equal(
+    seedDovod({ resourceDir: realResources, qwenHome }).settings,
+    'unchanged',
+  );
+  assert.equal(
+    mergeDovodSettings(
+      { modelProviders: { openai: [{ id: 'mine' }] } },
+      template,
+      undefined,
+    ),
+    true,
+    'selectedType/model.name are still filled when only modelProviders exist',
+  );
+
+  // Settings with comments are left alone rather than clobbered.
+  fs.writeFileSync(
+    path.join(qwenHome, 'settings.json'),
+    '{\n  // user comment\n  "ui": {}\n}\n',
+  );
+  assert.equal(seedDovod({ resourceDir, qwenHome }).settings, 'unparseable');
+  assert.match(
+    fs.readFileSync(path.join(qwenHome, 'settings.json'), 'utf8'),
+    /user comment/,
   );
 }
