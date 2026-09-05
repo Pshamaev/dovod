@@ -15,24 +15,26 @@ loads the unmodified `cli-entry.js`.
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `commands/*.toml`          | User slash commands `/dovod:<name>`. Copied to `~/.qwen/commands/dovod/` when the file is missing there (user edits are never touched). |
 | `settings.template.json`   | Seed for `~/.qwen/settings.json` (created when absent; otherwise only absent keys are merged).                                          |
-| `env.template`             | Seed for `~/.qwen/.env` (created only when absent): `DOVOD_API_BASE`, `DOVOD_API_KEY`, `DOVOD_MODEL`.                                   |
-| `mcp-server.template.json` | The `mcpServers.dovod` entry. Added only when `command` (or `url`) is not the `PLACEHOLDER`.                                            |
+| `env.template`             | Seed for `~/.qwen/.env` (created only when absent): `DOVOD_API_BASE`, `DOVOD_API_KEY`, `DOVOD_MODEL`, `DOVOD_TOOLS`.                    |
+| `mcp-server.template.json` | The `mcpServers.dovod` entry. Added only once `__DOVOD_TOOLS__` resolves (and `command`/`url` is not `PLACEHOLDER`).                  |
 | `dovod-entry.js`           | The seeding wrapper. Also exported as functions for `scripts/test-release.js`.                                                          |
 
 ## Where the real content comes from
 
 The seven command files (`prepare`, `inventory`, `position`, `stage`, `draft`,
-`reconcile`, `restore`) and the MCP server definition are maintained in the
-`garant-bot` repository:
+`reconcile`, `restore`) are copies of `garant-bot/dovod-tools/qwen/commands/dovod/*.toml`
+(keep them byte-identical; that folder is the source of truth). They call
+`dovod_prompts.py` through the token `__DOVOD_TOOLS__`, exactly like
+`install_dovod.ps1` does, and `mcp-server.template.json` describes the
+citation-check server (`garant-bot/dist/mcp/citationServer.js`) through the
+same token.
 
-- `garant-bot/dovod-tools/qwen/commands/*.toml` → replace the placeholder
-  TOML files here before running the desktop release (the placeholders carry
-  the Russian description and the prompt `PLACEHOLDER: replaced at packaging time`).
-- `garant-bot/dovod-tools/install_dovod.ps1` → the MCP server command/args it
-  registers go into `mcp-server.template.json`.
-
-A build made with the placeholders still works: the commands exist but only
-return the placeholder text, and no MCP server is registered.
+On first launch `dovod-entry.js` resolves the token from `DOVOD_TOOLS` (the
+environment, or `~/.qwen/.env`): the path to `dovod-tools` inside a checkout
+of `garant-bot` on this machine. While `DOVOD_TOOLS` is unset the commands are
+still seeded (with the token left in place, to be filled by the user or by
+`install_dovod.ps1`) and the MCP server is not registered, so a bare install
+never spawns a broken server.
 
 ## Model provider
 
