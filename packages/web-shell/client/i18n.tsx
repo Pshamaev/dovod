@@ -7525,6 +7525,2943 @@ const RU: Messages = {
   'welcome.tipLabel': 'Подсказки:',
   'workflow.title': 'Сценарий',
   'workflowRuns.title': 'Сценарии',
+  'git.currentBranch': (v) => `Текущая ветка Git: ${v?.branch ?? ''}`,
+  'git.detached': 'Отсоединённый HEAD',
+  'git.clean': 'Рабочее дерево чистое',
+  'git.operation.merge': 'Слияние',
+  'git.operation.rebase': 'Перебазирование',
+  'git.operation.cherry-pick': 'Перенос коммита',
+  'git.operation.revert': 'Откат коммита',
+  'git.operation.bisect': 'Бисект',
+  'git.conflicted': (v) => `${v?.count ?? 0} конфликтов`,
+  'git.staged': (v) => `${v?.count ?? 0} в индексе`,
+  'git.unstaged': (v) => `${v?.count ?? 0} изменено`,
+  'git.untracked': (v) => `${v?.count ?? 0} неотслеживаемых`,
+  'git.ahead': (v) => `${v?.count ?? 0} впереди`,
+  'git.behind': (v) => `${v?.count ?? 0} позади`,
+  'git.stash': (v) => `${v?.count ?? 0} в стеше`,
+  'branchPicker.label': 'Git',
+  'branchPicker.search': 'Поиск веток и действий',
+  'branchPicker.loading': 'Загрузка веток…',
+  'branchPicker.noBranches': 'Нет веток',
+  'branchPicker.noTags': 'Нет тегов',
+  'branchPicker.action.pull': 'Обновить проект',
+  'branchPicker.action.push': 'Отправить',
+  'branchPicker.action.commit': 'Закоммитить',
+  'branchPicker.action.newBranch': 'Новая ветка…',
+  'branchPicker.action.checkoutRef': 'Переключиться на тег или ревизию…',
+  'branchPicker.action.viewChanges': 'Просмотреть изменения',
+  'branchPicker.newBranchPlaceholder': 'Имя ветки',
+  'branchPicker.invalidBranchName':
+    'Недопустимое имя ветки: без пробелов, ~, ^, :, ? * и дефиса в начале',
+  'branchPicker.checkoutRefPlaceholder': 'Имя тега или SHA коммита',
+  'branchPicker.section.recent': 'Недавние',
+  'branchPicker.section.local': 'Локальные',
+  'branchPicker.section.remote': 'Удалённые',
+  'branchPicker.section.tags': 'Теги',
+  'branchPicker.checkedOut': (v) => `Переключено на ${v?.branch ?? ''}`,
+  'branchPicker.createdBranch': (v) => `Создана ветка ${v?.branch ?? ''}`,
+  'branchPicker.pushSuccess': 'Успешно отправлено',
+  'branchPicker.pullSuccess': 'Успешно обновлено',
+  'branchPicker.pullBlocked':
+    'Обновление заблокировано незафиксированными изменениями',
+  'branchPicker.pullStash': 'Отложить изменения и обновить',
+  'branchPicker.pullDiscard': 'Отменить изменения и обновить…',
+  'branchPicker.pullDiscardConfirm':
+    'Отменить ВСЕ незафиксированные изменения (включая неотслеживаемые файлы)? Это действие нельзя отменить.',
+  'branchPicker.pullDiscardGo': 'Отменить и обновить',
+  'branchPicker.pullStashConflict': (v) =>
+    `Обновлено, но не удалось восстановить отложенные изменения. Они сохранены в записи стеша ${String(v?.sha ?? '').slice(0, 12) || '(see git stash list)'}: устраните конфликты маркеров, затем восстановите вручную.`,
+  'branchPicker.cancel': 'Отмена',
+  'branchPicker.hint.upToDate': 'Актуально',
+  'branchPicker.hint.noUpstream': 'Нет вышестоящей ветки',
+  'branchPicker.hint.upstreamGone': 'Вышестоящая ветка удалена',
+  'branchPicker.hint.behindDirty': (v) =>
+    `↓${v?.count ?? 0} · незафиксированные изменения`,
+  'branchPicker.hint.setsUpstream': 'Установит вышестоящую ветку при отправке',
+  'branchPicker.hint.createsPushBranch': (v) => `Создаст ${v?.target ?? ''}`,
+  'branchPicker.hint.aheadBehind': (v) =>
+    `↑${v?.ahead ?? 0} ↓${v?.behind ?? 0} · расхождение`,
+  'branchPicker.hint.nothingToPush': 'Нечего отправлять',
+  'branchPicker.hint.noChanges': 'Нет изменений',
+  'branchPicker.hint.changes': (v) =>
+    `${v?.count ?? 0} ${v?.count === 1 ? 'change' : 'changes'}`,
+  'branchPicker.hint.changesUntracked': (v) =>
+    `${v?.count ?? 0} ${v?.count === 1 ? 'change' : 'changes'} (${v?.untracked ?? 0} неотслеживаемых)`,
+  'gitCommit.title': 'Коммит',
+  'gitCommit.messagePlaceholder':
+    'Сообщение коммита (⌘/Ctrl+Enter: закоммитить)',
+  'gitCommit.generating': 'Генерация сообщения коммита…',
+  'gitCommit.genFailed': 'Автогенерация не удалась: введите сообщение вручную',
+  'gitCommit.prLogUnavailable':
+    'Не удалось загрузить коммиты для выбранной базовой ветки.',
+  'gitCommit.prPushFirst':
+    'Перед созданием pull request отправьте ветку на удалённый репозиторий.',
+  'gitCommit.commit': 'Закоммитить',
+  'gitCommit.commitAndPush': 'Закоммитить и отправить',
+  'gitCommit.createPr': 'Создать pull request',
+  'gitCommit.prTitlePlaceholder': 'Заголовок pull request',
+  'gitCommit.prBodyPlaceholder': 'Описание (необязательно)',
+  'gitCommit.prEdit': 'Изменить',
+  'gitCommit.prPreview': 'Предпросмотр',
+  'gitCommit.prSubmit': 'Создать',
+  'gitCommit.prCreated': (v) => `Pull request #${v?.number ?? ''} создан`,
+  'gitCommit.commitSuccess': (v) => `Закоммичено ${v?.sha ?? ''}`,
+  'gitCommit.commitPushSuccess': (v) =>
+    `Закоммичено и отправлено ${v?.sha ?? ''}`,
+  'gitCommit.commitSuccessPushFailed': (v) =>
+    `Закоммичено ${v?.sha ?? ''}, но отправка не удалась: ${v?.error ?? 'unknown'}`,
+  'branchSelect.baseBranch': 'Базовая ветка',
+  'branchSelect.search': 'Поиск веток…',
+  'branchSelect.loading': 'Загрузка…',
+  'branchSelect.noMatches': 'Совпадений нет',
+  'branchSelect.error': 'Не удалось загрузить ветки',
+  'branchSelect.retry': 'Повторить',
+  'branchSelect.local': 'локальная',
+  'gitDiff.summary': (v) =>
+    `${v?.count ?? 0} файлов · +${v?.added ?? 0} −${v?.removed ?? 0}`,
+  'gitDiff.loading': 'Загрузка изменений…',
+  'gitDiff.empty': 'Нет изменений в рабочем дереве',
+  'gitDiff.unavailable': 'Git недоступен для этой рабочей папки',
+  'gitDiff.error': 'Не удалось загрузить изменения',
+  'gitDiff.binary': 'Бинарный файл',
+  'gitDiff.untracked': 'Неотслеживаемый',
+  'gitDiff.deleted': 'Удалён',
+  'gitDiff.noDiff': 'Нет изменений для отображения',
+  'gitDiff.fileError': 'Не удалось загрузить это изменение',
+  'gitDiff.truncated':
+    'Изменения обрезаны: файл слишком велик для полного отображения',
+  'gitDiff.hidden': (v) => `${v?.count ?? 0} файл(ов) не показано`,
+  'gitDiff.expand': (v) => `Показать изменения для ${v?.path ?? 'file'}`,
+  'gitDiff.collapse': (v) => `Скрыть изменения для ${v?.path ?? 'file'}`,
+  'gitMode.title': 'Режим Git',
+  'gitMode.current': 'Текущая ветка',
+  'gitMode.currentDesc': (v) => `Разработка напрямую в ${v?.branch ?? 'main'}`,
+  'gitMode.branch': 'Новая ветка',
+  'gitMode.branchDesc': (v) => `Создать новую ветку от ${v?.branch ?? 'main'}`,
+  'gitMode.branchPlaceholder': 'feat/my-feature',
+  'gitMode.branchLabel': 'Имя ветки',
+  'gitMode.branchConflictWarning':
+    'В рабочей папке может быть только одна ветка-сессия одновременно',
+  'gitMode.branchHint': 'Переключает рабочую папку на новую ветку',
+  'gitMode.branchInvalidName': 'Недопустимое имя ветки',
+  'gitMode.worktree': 'Рабочая копия',
+  'gitMode.worktreeDesc': 'Изолированная копия · можно выполнять параллельно',
+  'gitMode.confirmBranch': 'Создать ветку',
+  'gitMode.confirmWorktree': 'Создать рабочую копию',
+  'gitMode.resetToCurrent': 'Вернуться к текущей ветке',
+  'gitLog.subtitle': (v) => `${v?.count ?? 0} коммитов`,
+  'gitLog.loading': 'Загрузка истории…',
+  'gitLog.empty': 'Пока нет коммитов',
+  'gitLog.unavailable': 'Git недоступен для этой рабочей папки',
+  'gitLog.error': 'Не удалось загрузить историю',
+  'gitLog.loadMore': 'Загрузить ещё',
+  'gitLog.loadingMore': 'Загрузка…',
+  'gitLog.files': (v) =>
+    `${v?.count ?? 0} файлов · +${v?.added ?? 0} −${v?.removed ?? 0}`,
+  'gitLog.detailError': 'Не удалось загрузить сведения о коммите',
+  'gitLog.hidden': (v) => `${v?.count ?? 0} файл(ов) не показано`,
+  'gitLog.copySha': (v) => `Скопировать коммит ${v?.sha ?? ''}`,
+  'githubPrs.title': 'Pull requests',
+  'githubPrs.subtitle': (v) => `${v?.count ?? 0} открыто`,
+  'githubPrs.loading': 'Загрузка pull request…',
+  'githubPrs.empty': 'Нет открытых pull request',
+  'githubPrs.unavailable': 'Эта рабочая папка не является git-репозиторием',
+  'githubPrs.error': 'Не удалось загрузить pull request',
+  'githubPrs.cliUnavailable':
+    'GitHub CLI (gh) не установлен на хосте демона.\nУстановите её и выполните `gh auth login`, затем повторите попытку.',
+  'githubPrs.reviewApproved': 'Одобрено',
+  'githubPrs.reviewChanges': 'Запрошены изменения',
+  'githubPrs.reviewRequired': 'Требуется проверка',
+  'githubPrs.checksPassing': 'Проверки пройдены',
+  'githubPrs.checksFailing': 'Проверки не пройдены',
+  'githubPrs.checksPending': 'Проверки выполняются',
+  'githubPrs.open': (v) => `Открыть pull request #${v?.number ?? ''} на GitHub`,
+  'workspace.paneLabel': (v) => `Рабочая папка: ${v?.name ?? ''}`,
+  'agent.back': 'Назад',
+  'agent.builtInBadge': '(встроенный)',
+  'agent.action.delete': 'Удалить агента',
+  'agent.action.edit': 'Изменить агента',
+  'agent.action.view': 'Просмотреть агента',
+  'agent.chooseAction': (v) => `Выберите действие для ${v?.name ?? ''}`,
+  'agent.chooseActionTitle': 'Выбор действия',
+  'agent.colorLabel': 'Цвет: ',
+  'agent.colorUpdated': (v) => `Цвет обновлён для ${v?.name ?? ''}`,
+  'agent.create': 'Создать нового подагента',
+  'agent.create.button': 'Создать',
+  'agent.create.confirm': 'Подтвердить и сохранить',
+  'agent.create.desc': 'Создать нового подагента',
+  'agent.create.descPlaceholder': 'Что делает этот агент?',
+  'agent.create.describeAgent': 'Опишите требования',
+  'agent.create.description': 'Описание',
+  'agent.create.editAgain': 'Изменить',
+  'agent.create.enterDescription': 'Введите описание',
+  'agent.create.enterName': 'Введите имя подагента',
+  'agent.create.enterPrompt': 'Введите системный запрос',
+  'agent.create.generateFailed': (v) =>
+    `Не удалось сгенерировать подагента: ${v?.error ?? 'Unknown error'}`,
+  'agent.create.generate': 'Сгенерировать',
+  'agent.create.generatedDescription': 'Описание',
+  'agent.create.generatedSystemPrompt': 'Системный запрос',
+  'agent.create.generatingConfig': 'Генерация конфигурации подагента...',
+  'agent.create.generatingPrompt': 'Генерация...',
+  'agent.create.loading': 'Создание...',
+  'agent.create.location': 'Выбор расположения',
+  'agent.create.method': 'Выбор способа генерации',
+  'agent.create.method.manual': 'Создание вручную',
+  'agent.create.method.qwen': 'Сгенерировать с помощью Довод',
+  'agent.create.method.qwen.recommended':
+    'Сгенерировать с помощью Довод (рекомендуется)',
+  'agent.create.method.qwen.desc': 'LLM генерирует описание и системный запрос',
+  'agent.create.name': 'Имя',
+  'agent.create.namePlaceholder': 'my-agent',
+  'agent.create.nameHelp':
+    'Введите понятное уникальное имя для этого подагента.',
+  'agent.create.project': 'Проект',
+  'agent.create.project.cli': 'Рабочая папка',
+  'agent.create.project.desc': 'Создать подагента уровня проекта',
+  'agent.create.prompt': 'Системный запрос',
+  'agent.create.promptPlaceholder': 'Ты специализированный агент, который...',
+  'agent.create.promptPlaceholder.cli':
+    'например, ты эксперт по проверке кода...',
+  'agent.create.promptHelp':
+    'Напишите системный запрос, который определяет поведение этого подагента. Для лучшего результата описывайте его подробно.',
+  'agent.create.preview': 'Предпросмотр',
+  'agent.create.qwenHint':
+    'Опишите обязанности, сценарии использования и важные ограничения, затем сгенерируйте каждое поле отдельно.',
+  'agent.create.qwenPlaceholder':
+    '> например, эксперт по проверке кода, который проверяет код на соответствие лучшим практикам...',
+  'agent.create.regenerate': 'Пересоздать черновик',
+  'agent.create.required': 'Имя, описание и системный запрос обязательны.',
+  'agent.create.tools': 'Разрешённые инструменты',
+  'agent.create.toolsHelp':
+    'Введите канонические имена инструментов через запятую или с новой строки. Для MCP-инструментов используется формат mcp__server__tool; оставьте поле пустым, чтобы унаследовать все инструменты.',
+  'agent.create.disallowedTools': 'Запрещённые инструменты',
+  'agent.create.model': 'Модель',
+  'agent.create.approvalMode': 'Режим подтверждения',
+  'agent.create.maxTurns': 'Максимум ходов выполнения',
+  'agent.create.maxTurnsHelp':
+    'Ограничивает число раундов рассуждения модели для одной задачи. При достижении предела выполнение останавливается; оставьте поле пустым, чтобы не задавать отдельный лимит для агента.',
+  'agent.create.maxTurnsInvalid':
+    'Максимум ходов выполнения должен быть положительным целым числом.',
+  'agent.create.mcpServers': 'MCP-серверы',
+  'agent.create.mcpServers.empty': 'Нет доступных MCP-серверов.',
+  'agent.create.mcpServers.select': 'Выберите MCP-сервер',
+  'agent.create.mcpServers.noneSelected': 'MCP-серверы не выбраны.',
+  'agent.create.modelGenerate': 'Сгенерировать с помощью модели',
+  'agent.create.modelGenerate.description':
+    'Опишите, что вам нужно, затем сгенерируйте и проверьте описание и системный запрос отдельно.',
+  'agent.create.color': 'Цвет',
+  'agent.create.jsonObjectHelp':
+    'Введите объект JSON или оставьте поле пустым.',
+  'agent.create.save': 'Сохранить агента',
+  'agent.create.scope': 'Категория',
+  'agent.create.manualDescHelp':
+    'Опишите, когда и как следует использовать этого подагента.',
+  'agent.create.manualDescPlaceholder':
+    'например, проверяет код на соответствие лучшим практикам и наличие возможных ошибок.',
+  'agent.create.tools.builtin': 'Встроенные инструменты',
+  'agent.create.tools.empty': 'Нет доступных инструментов.',
+  'agent.create.tools.mcp': 'MCP-инструменты',
+  'agent.create.tools.type': 'Тип инструмента',
+  'agent.create.tools.selectServer': 'Выберите MCP-сервер',
+  'agent.create.tools.selectTool': 'Выберите инструмент',
+  'agent.create.tools.noneSelected': 'Инструменты не выбраны.',
+  'agent.create.tools.initializing': 'Инициализация каталогов инструментов...',
+  'agent.create.tools.preheatFailed': 'Прогрев ACP не завершён.',
+  'agent.create.tools.loadFailed':
+    'Не удалось загрузить встроенные инструменты.',
+  'agent.create.removeSelection': (v) => `Удалить ${v?.name ?? ''}`,
+  'agent.create.toolsSelectHelp':
+    'Выберите инструменты, которые может использовать этот подагент. Оставьте все флажки снятыми, чтобы унаследовать все инструменты.',
+  'agent.create.toolsSelection': 'Выбор инструментов',
+  'agent.create.tools.all': 'Все инструменты',
+  'agent.create.tools.allDefault': 'Все инструменты (по умолчанию)',
+  'agent.create.tools.allInfo':
+    'Выбраны все инструменты, включая MCP-инструменты',
+  'agent.create.tools.allInfoFallback':
+    'Выбраны все инструменты, включая MCP-инструменты',
+  'agent.create.tools.editLabel': '• Инструменты редактирования:',
+  'agent.create.tools.executionLabel': '• Инструменты выполнения:',
+  'agent.create.tools.none': '(нет)',
+  'agent.create.tools.readEdit': 'Инструменты чтения и редактирования',
+  'agent.create.tools.readEditExecute':
+    'Инструменты чтения, редактирования и выполнения',
+  'agent.create.tools.readOnlyLabel': '• Инструменты только для чтения:',
+  'agent.create.tools.readOnly': 'Инструменты только для чтения',
+  'agent.create.tools.selected': 'Выбранные инструменты:',
+  'agent.create.user': 'Пользователь',
+  'agent.create.user.cli': 'Глобально',
+  'agent.create.user.desc': 'Создать подагента уровня пользователя',
+  'agent.create.useGenerated': 'Использовать этот черновик',
+  'agent.approval.inherit': 'По умолчанию',
+  'agent.approval.default': 'Подтверждение по умолчанию',
+  'agent.approval.plan': 'Только план',
+  'agent.approval.auto-edit': 'Автоматически подтверждать изменения',
+  'agent.approval.yolo': 'Автоматически подтверждать все действия',
+  'agent.approval.bubble': 'Передавать подтверждение выше',
+  'agent.approval.desc.inherit':
+    'Использовать правила подтверждения подагента по умолчанию.',
+  'agent.approval.desc.bubble':
+    'Передавать запросы на подтверждение инструментов в родительскую сессию.',
+  'agent.createFirstHint':
+    "Чтобы создать первого подагента, используйте '/agents create'.",
+  'agent.created': (v) => `Создан ${v?.name ?? ''}`,
+  'agent.edit.save': 'Сохранить изменения',
+  'agent.updated': (v) => `Обновлён ${v?.name ?? ''}`,
+  'agent.turnsBadge': (v) => `${v?.count ?? 0} ходов`,
+  'agent.delete': 'Удалить',
+  'agent.delete.confirm': (v) =>
+    `Вы уверены, что хотите удалить "${v?.name ?? ''}"?`,
+  'agent.delete.loading': 'Удаление...',
+  'agent.delete.no': 'Нет',
+  'agent.delete.title': (v) => `Удалить ${v?.name ?? ''}`,
+  'agent.delete.yes': 'Да, удалить',
+  'agent.deleted': (v) => `Удалён ${v?.name ?? ''}`,
+  'agent.edit': 'Изменить',
+  'agent.edit.color': 'Изменить цвет',
+  'agent.edit.tools': 'Изменить инструменты',
+  'agent.editColorTitle': (v) => `Изменить цвет: ${v?.name ?? ''}`,
+  'agent.editTitle': (v) => `Изменить ${v?.name ?? ''}`,
+  'agent.empty': 'Подагенты не найдены.',
+  'agent.noMatches': 'Подходящих подагентов не найдено.',
+  'agent.footer.back': 'Esc: назад',
+  'agent.footer.cliBack': 'Enter: выбрать, ↑↓: навигация, Esc: назад',
+  'agent.footer.cliSelect': 'Enter: выбрать, ↑↓: навигация, Esc: закрыть',
+  'agent.footer.close': 'Esc: закрыть',
+  'agent.footer.deleteConfirm': 'Enter: подтвердить, Esc: отмена',
+  'agent.footer.enterNext': 'Enter: продолжить, Esc: назад',
+  'agent.footer.generating': 'Esc: отмена',
+  'agent.footer.createLocation':
+    'Enter: продолжить, ↑↓: навигация, Esc: отмена',
+  'agent.footer.createContinue': 'Enter: продолжить, ↑↓: навигация, Esc: назад',
+  'agent.footer.final': 'Enter: сохранить, e: сохранить и изменить, Esc: назад',
+  'agent.footer.nav': '↑↓ навигация · Enter выбрать · Esc назад',
+  'agent.footer.navBack': '↑↓ навигация · Enter выбрать · Esc назад',
+  'agent.footer.navSelect': '↑↓ навигация · Enter выбрать · Esc закрыть',
+  'agent.footer.viewerBack': 'Esc: назад',
+  'agent.filePathLabel': 'Путь к файлу: ',
+  'agent.label': 'Агент',
+  'agent.location': 'Расположение',
+  'agent.level.builtin': 'Встроенный',
+  'agent.level.extension': 'Расширение',
+  'agent.level.project': 'Проект',
+  'agent.level.user': 'Пользователь',
+  'agent.level.filter': 'Фильтр по уровню агента',
+  'agent.manage': 'Управление',
+  'agent.manage.desc': 'Управление существующими подагентами',
+  'agent.modelLabel': 'Модель: ',
+  'agent.overriddenBadge': '(переопределено агентом уровня проекта)',
+  'agent.readonly': 'Этот агент доступен только для чтения.',
+  'agent.select': 'Выберите агента.',
+  'agent.selectAction': 'Выберите действие',
+  'agent.descriptionLabel': 'Описание:',
+  'agent.systemPromptLabel': 'Системный запрос:',
+  'agent.level.label': 'Уровень',
+  'agent.step': (v) => `Шаг ${v?.n ?? ''}`,
+  'agent.tools': 'Инструменты',
+  'agent.toolsLabel': 'Инструменты: ',
+  'agent.detail.overview': 'Основные сведения',
+  'agent.detail.tools': 'Инструменты',
+  'agent.detail.mcp': 'MCP',
+  'agent.detail.hooks': 'Хуки',
+  'agent.detail.systemPrompt': 'Системный запрос',
+  'agent.toolsUpdated': (v) => `Обновлены инструменты для ${v?.name ?? ''}`,
+  'agent.usingCount': (v) => `Использовано: ${v?.count ?? 0} агентов`,
+  'agent.view': 'Просмотр',
+  'agents.closed': 'Панель агентов закрыта.',
+  'subagent.result': 'Результат',
+  'subagent.tools': (v) => `Инструменты (${v?.count ?? 0})`,
+  'subagent.toolsCount': (v) => `${v?.count ?? 0} инструментов`,
+  'subagent.toggleStream': 'Показать или скрыть подробности потока агента',
+  'subagent.pending': 'в очереди',
+  'subagent.running': 'выполняется',
+  'subagent.background': 'фоновая задача',
+  'subagent.completed': 'завершено',
+  'subagent.failed': 'ошибка',
+  'subagent.cancelled': 'отменено',
+  'subagent.paused': 'приостановлено',
+  'subagent.detailsLoading': 'Загрузка сведений об агенте…',
+  'subagent.detailsLoadFailed': 'Не удалось загрузить сведения об агенте.',
+  'timeline.parallelAgents': 'Параллельные агенты',
+  'timeline.thinking': 'Размышление',
+  'timeline.assistantUpdate': 'Обновление от ассистента',
+  'timeline.toolCalls': (v) =>
+    `${v?.count ?? 0} вызов инструмента${v?.count === 1 ? '' : 's'}`,
+  'timeline.planUpdate': 'Обновление плана',
+  'timeline.statusUpdate': 'Обновление статуса',
+  'timeline.userTurn': 'Ход пользователя',
+  'timeline.planDetail': 'обновление плана',
+  'timeline.parallelAgentsDetail': (v) =>
+    `${v?.count ?? 0} параллельный агент${v?.count === 1 ? '' : 's'}`,
+  'timeline.noActivity': 'Нет активности',
+  'timeline.sessionTimeline': 'Хронология сессии',
+  'timeline.turnPrefix': (v) => `Ход ${v?.index ?? 0}`,
+  'timeline.currentTurn': 'Текущий ход',
+  'timeline.kind.thought': 'размышление',
+  'timeline.kind.commentary': 'обновление ассистента',
+  'timeline.kind.tool': 'вызовы инструментов',
+  'timeline.kind.agents': 'параллельные агенты',
+  'timeline.kind.plan': 'обновление плана',
+  'timeline.kind.status': 'обновление статуса',
+  'timeline.kind.none': 'ход',
+  'artifact.openLink': 'Открыть ссылку',
+  'auth.apiKeyPlaceholder': 'sk-...',
+  'auth.modelsPlaceholder': 'model-id-1, model-id-2',
+  'mermaid.label': 'mermaid',
+  'mermaid.errorLabel': 'mermaid (ошибка)',
+  'user.uploadedImage': (v) => `Изображение пользователя ${v?.index ?? 1}`,
+  'live.title': 'Live Voice',
+  'live.open': 'Открыть Live Voice',
+  'live.manage': 'Управление активным сеансом Live Voice',
+  'live.readyDescription':
+    'Довод Live Host и все необходимые разрешения готовы.',
+  'live.setupDescription':
+    'Установите Довод Live Host и предоставьте все разрешения, чтобы Live Voice заработал.',
+  'live.noFallback':
+    'Live Voice никогда не использует микрофон браузера и не переходит в урезанный режим без Appshot.',
+  'live.shortcutHint': (v) =>
+    `Глобальное сочетание клавиш: ${v?.shortcut ?? ''}`,
+  'settings.liveShortcut.capture': 'Нажмите сочетание клавиш',
+  'settings.liveShortcut.clear': 'Очистить',
+  'settings.liveShortcut.off': 'Выкл',
+  'settings.liveSetup.title': 'Довод Live',
+  'settings.liveSetup.experimental': 'Экспериментальная функция',
+  'settings.liveSetup.description':
+    'Разговаривайте с Доводом откуда угодно на этом Mac с помощью голосового Realtime-режима, Appshot и передачи задач.',
+  'settings.liveSetup.enable': 'Включить Довод Live',
+  'settings.liveSetup.apiKey': 'Ключ DashScope Realtime API',
+  'settings.liveSetup.apiKeyPlaceholder': 'Введите ключ DashScope API',
+  'settings.liveSetup.apiKeyReplace':
+    'Введите новый ключ, чтобы заменить текущий',
+  'settings.liveSetup.configured': 'Настроено',
+  'settings.liveSetup.notConfigured': 'Требуется',
+  'settings.liveSetup.save': 'Сохранить',
+  'settings.liveSetup.removeKey': 'Удалить ключ',
+  'settings.liveSetup.shortcut': 'Глобальное сочетание клавиш',
+  'settings.liveSetup.host': 'Довод Live Host',
+  'settings.liveSetup.openHost': 'Открыть Host',
+  'settings.liveSetup.retry': 'Повторить',
+  'settings.liveSetup.permission.microphone': 'Микрофон',
+  'settings.liveSetup.permission.accessibility': 'Специальные возможности',
+  'settings.liveSetup.permission.screenRecording': 'Запись экрана',
+  'settings.liveSetup.permissionHint':
+    'Предоставьте все запрошенные разрешения в Довод Live Host. Live останется недоступен, пока не будут готовы все разрешения.',
+  'settings.liveSetup.requirement.ready': 'Готово',
+  'settings.liveSetup.requirement.missing': 'Отсутствует',
+  'settings.liveSetup.requirement.denied': 'Запрещено',
+  'settings.liveSetup.requirement.unavailable': 'Недоступно',
+  'settings.liveSetup.requirement.checking': 'Проверка',
+  'settings.liveSetup.install.missing': 'Ожидает установки',
+  'settings.liveSetup.install.checking': 'Проверка установки…',
+  'settings.liveSetup.install.downloading': 'Загрузка подписанного Host…',
+  'settings.liveSetup.install.verifying':
+    'Проверка подписи и контрольной суммы…',
+  'settings.liveSetup.install.installing': 'Установка…',
+  'settings.liveSetup.install.launching': 'Запуск Host…',
+  'settings.liveSetup.install.installed': 'Установлено',
+  'settings.liveSetup.install.error': 'Требуется внимание при настройке',
+  'settings.liveSetup.confirmTitle': 'Включить экспериментальный Довод Live?',
+  'settings.liveSetup.confirmDescription':
+    'Довод загрузит, проверит, установит и откроет подписанное приложение Довод Live Host. Затем macOS запросит доступ к микрофону, специальным возможностям и записи экрана.',
+  'settings.liveSetup.cancel': 'Отмена',
+  'settings.liveSetup.confirm': 'Включить и установить',
+  'live.refresh': 'Обновить статус',
+  'live.startOrResume': 'Начать или продолжить',
+  'live.newConversation': 'Новая беседа',
+  'live.stop': 'Остановить Live',
+  'live.muteInput': 'Выключить микрофон',
+  'live.unmuteInput': 'Включить микрофон',
+  'live.muteOutput': 'Выключить динамик',
+  'live.unmuteOutput': 'Включить динамик',
+  'live.state.unavailable': 'Голосовой чат недоступен',
+  'live.state.idle': 'Готово к голосовому чату',
+  'live.state.starting': 'Запуск голосового чата…',
+  'live.state.listening': 'Слушаю',
+  'live.state.thinking': 'Думаю',
+  'live.state.speaking': 'Говорю',
+  'live.state.stopping': 'Остановка…',
+  'live.state.error': 'Голосовой чат остановлен',
+  'live.requirement.host': 'Довод Live Host',
+  'live.requirement.microphone': 'Микрофон',
+  'live.requirement.accessibility': 'Специальные возможности',
+  'live.requirement.screenRecording': 'Запись экрана',
+  'live.requirement.audioInput': 'Аудиовход',
+  'live.requirement.audioOutput': 'Аудиовыход',
+  'live.requirement.globalShortcut': 'Глобальное сочетание клавиш',
+  'live.requirement.appshot': 'Appshot',
+  'live.requirement.provider': 'Провайдер Realtime',
+  'live.requirementState.ready': 'Готово',
+  'live.requirementState.missing': 'Отсутствует',
+  'live.requirementState.denied': 'Запрещено',
+  'live.requirementState.unavailable': 'Недоступно',
+  'live.requirementState.checking': 'Проверка',
+  'resume.failedToLoad': 'Не удалось загрузить сессии',
+  'toast.dismiss': 'Скрыть уведомление',
+  'toast.dismissShort': 'Скрыть',
+  'insight.ready': 'Отчёт Insight успешно сформирован!',
+  'request.cancelled': 'Запрос отменён.',
+  'visionBridge.model': 'модель обработки изображений',
+  'visionBridge.skipped': (v) =>
+    `Мост Vision отменён.${v?.egressOccurred === 1 ? ` Ваше изображение и запрос/контекст были отправлены в ${v?.target ?? ''}.` : ''}`,
+  'visionBridge.failed': (v) =>
+    v?.egressOccurred === 1
+      ? `Мост Vision (${v?.modelName ?? ''}) завершился с ошибкой: запрос к модели обработки изображений не выполнен. Ваше изображение и запрос/контекст были отправлены в ${v?.target ?? ''}. Изображение не было распознано.`
+      : `Мост Vision (${v?.target ?? ''}) завершился с ошибкой: не удалось запустить мост Vision. Изображение не было распознано.`,
+  'visionBridge.ok': (v) =>
+    `Преобразовано ${v?.convertedCount ?? 0} изображение(й)${Number(v?.omittedCount ?? 0) > 0 ? ` (${v?.omittedCount ?? 0} изображение(й) пропущено)` : ''} в текст через ${v?.target ?? ''}.${v?.egressOccurred === 1 ? ' Ваше изображение и запрос/контекст были отправлены этой модели.' : ''}`,
+  'assistant.branch': 'Ветка',
+  'assistant.copy': 'Копировать',
+  'at.category.extensions': 'Расширения',
+  'at.category.extensions.description': 'Ссылка на активные расширения',
+  'at.category.files': 'Файлы',
+  'at.category.files.description': 'Ссылка на файлы рабочей папки',
+  'at.files.upload': 'Загрузить файл',
+  'at.files.upload.description': 'Загрузить файл в эту папку',
+  'at.category.mcpResources': 'Ресурсы MCP',
+  'at.category.mcpResources.description': 'Ссылка на ресурсы MCP-сервера',
+  'at.menu': 'Меню ссылок',
+  'session.capabilitiesFailed':
+    'Не удалось загрузить возможности демона. Попробуйте снова, прежде чем открывать эту беседу.',
+  'session.contextConflict':
+    'Ссылка на отдельную или Live-беседу не может указывать на рабочую папку.',
+  'session.notFoundDescription': 'Эта отдельная беседа больше не существует.',
+  'session.standaloneUnavailable': 'Отдельные беседы недоступны',
+  'session.standaloneUpgradeRequired':
+    'Обновите демон, чтобы открывать отдельные беседы.',
+  'session.stillCreating': 'Беседа ещё создаётся. Попробуйте проверить снова.',
+  'session.recoveryPending':
+    'Создание, возможно, прошло успешно, но подтвердить результат не удалось. Отправка приостановлена во избежание создания дубликата беседы.',
+  'session.recoveryChecking': 'Проверка зарезервированного ID беседы...',
+  'session.recoveryStillCreating':
+    'Беседа ещё создаётся. Проверьте снова через некоторое время.',
+  'session.recoveryAbsent':
+    'Для зарезервированного ID беседа не найдена. Вы можете явно начать новую беседу.',
+  'session.recoveryUnknown':
+    'Результат создания пока неизвестен. Проверьте снова, прежде чем начинать другую беседу.',
+  'session.recoveryArchived':
+    'Восстановленная беседа находится в архиве. Извлеките её из архива перед открытием.',
+  'session.recoveryCheckFailed': 'Не удалось проверить создание беседы',
+  'session.recoveryBlocksAction':
+    'Разрешите текущее состояние отдельной беседы, прежде чем продолжить.',
+  'session.directoryRecreated':
+    'Стенограмма восстановлена, но файлы из предыдущей личной папки оказались недоступны.',
+  'session.directoryMissing':
+    'Личная рабочая папка этой беседы отсутствует. Восстановите её, прежде чем отправлять следующий запрос.',
+  'session.directoryCompromised':
+    'Эта личная рабочая папка небезопасна, и её нельзя восстановить автоматически. Экспортируйте стенограмму, а затем удалите беседу.',
+  'session.repairFailed': 'Не удалось восстановить личную рабочую папку',
+  'session.repairSucceeded': 'Личная рабочая папка восстановлена.',
+  'session.workspaceActionUnavailable':
+    'Это действие доступно только в беседах проекта.',
+  'agent.count': (v) => `${v?.count ?? 0} агентов`,
+  'askUser.shortcuts.previous': '← назад',
+  'askUser.shortcuts.optionsSingle': '↑↓ выбор · Enter отправить',
+  'askUser.shortcuts.optionsNext': '↑↓ выбор · Enter далее',
+  'askUser.shortcuts.optionsFinal': '↑↓ выбор · Enter отправить',
+  'askUser.shortcuts.multiSingle':
+    '↑↓ перемещение · Space выбрать/снять выбор · Enter выбрать и отправить',
+  'askUser.shortcuts.multiNext':
+    '↑↓ перемещение · Space выбрать/снять выбор · Enter выбрать и далее',
+  'askUser.shortcuts.multiFinal':
+    '↑↓ перемещение · Space выбрать/снять выбор · Enter выбрать и отправить',
+  'askUser.shortcuts.customTrigger': '↑↓ выбор · Enter редактировать',
+  'askUser.shortcuts.customTriggerMulti':
+    '↑↓ перемещение · Enter редактировать',
+  'askUser.shortcuts.inputEmpty':
+    'Введите ответ · Esc остановить редактирование',
+  'askUser.shortcuts.inputSingle':
+    'Enter отправить · Esc остановить редактирование',
+  'askUser.shortcuts.inputNext': 'Enter далее · Esc остановить редактирование',
+  'askUser.shortcuts.inputFinal':
+    'Enter отправить · Esc остановить редактирование',
+  'copy.inlineLatexMissing':
+    'В последнем ответе ИИ не найдено соответствующее встроенное выражение LaTeX.',
+  'copy.latexMissing':
+    'В последнем ответе ИИ не найден соответствующий блок LaTeX.',
+  'echartsChart.noData': 'Нет данных',
+  'echartsChart.tableNotice': (v) => {
+    const omittedRows = Number(v?.omittedRows ?? 0);
+    const omittedColumns = Number(v?.omittedColumns ?? 0);
+    if (omittedRows > 0 && omittedColumns > 0) {
+      return `Показано ${v?.visibleRows ?? 0} из ${v?.totalRows ?? 0} строк и ${v?.visibleColumns ?? 0} из ${v?.totalColumns ?? 0} столбцов`;
+    }
+    if (omittedColumns > 0) {
+      return `Показано ${v?.visibleColumns ?? 0} из ${v?.totalColumns ?? 0} столбцов`;
+    }
+    return `Показано ${v?.visibleRows ?? 0} из ${v?.totalRows ?? 0} строк`;
+  },
+  'echartsChart.rendering': 'Отрисовка графика',
+  'echartsChart.renderFailed': 'Не удалось отрисовать график.',
+  'echartsChart.viewMode': 'Режим просмотра',
+  'echartsChart.showChart': 'Показать график',
+  'echartsChart.showData': 'Показать данные',
+  'echartsChart.chart': 'График',
+  'echartsChart.data': 'Данные',
+  'markdownTable.blank': '(пусто)',
+  'markdownTable.column': (v) => `Столбец ${v?.index ?? ''}`,
+  'markdownTable.rows': (v) => {
+    const count = Number(v?.count ?? 0);
+    return `${count} строка${count === 1 ? '' : 's'}`;
+  },
+  'markdownTable.rowsFiltered': (v) =>
+    `${v?.visible ?? 0}/${v?.total ?? 0} строк`,
+  'markdownTable.hint':
+    'Нажмите на заголовок для сортировки, откройте фильтры через ▾.',
+  'markdownTable.filtersActive': (v) => {
+    const count = Number(v?.count ?? 0);
+    return `${count} фильтр${count === 1 ? '' : 's'}`;
+  },
+  'markdownTable.selection.selected': 'Выбрано',
+  'markdownTable.selection.nonEmpty': 'Непустых',
+  'markdownTable.selection.numeric': 'Числовых',
+  'markdownTable.selection.sum': 'Сумма',
+  'markdownTable.selection.average': 'Среднее',
+  'markdownTable.selection.min': 'Мин',
+  'markdownTable.selection.max': 'Макс',
+  'markdownTable.copyTsv': 'Копировать TSV',
+  'markdownTable.copyTsvHint': 'Копировать в формате TSV для вставки в таблицы',
+  'markdownTable.copyVisible': 'Копировать таблицу',
+  'markdownTable.customColumns': 'Настраиваемые столбцы',
+  'markdownTable.customColumns.tableSection': 'Столбцы, показанные в таблице',
+  'markdownTable.customColumns.detailSection':
+    'Поля, показанные в развёрнутых строках',
+  'markdownTable.customColumns.toggleAllTable':
+    'Включить/выключить все столбцы таблицы',
+  'markdownTable.customColumns.toggleAllDetails':
+    'Включить/выключить все поля развёрнутых строк',
+  'markdownTable.customColumns.reset': 'Сбросить',
+  'markdownTable.customColumns.noDetails':
+    'Не выбрано ни одного поля развёрнутых строк.',
+  'markdownTable.freezeFirstColumn': 'Закрепить первый столбец',
+  'markdownTable.unfreezeFirstColumn': 'Открепить первый столбец',
+  'markdownTable.densityLabel': 'Плотность таблицы',
+  'markdownTable.densityCurrent': (v) => `${v?.density ?? ''} плотность`.trim(),
+  'markdownTable.density': (v) => `Плотность: ${v?.density ?? ''}`,
+  'markdownTable.density.standard': 'Стандартная',
+  'markdownTable.density.compact': 'Компактная',
+  'markdownTable.density.comfortable': 'Комфортная',
+  'markdownTable.expandLongText': 'Развернуть текст',
+  'markdownTable.collapseLongText': 'Свернуть текст',
+  'markdownTable.emptyValue': '(пусто)',
+  'markdownTable.hideColumn': 'Скрыть столбец',
+  'markdownTable.showHiddenColumns': (v) => {
+    const count = Number(v?.count ?? 0);
+    return `Показать ${count} скрытый столбец${count === 1 ? '' : 's'}`;
+  },
+  'markdownTable.moveColumn': (v) => `Переместить ${v?.column ?? ''}`,
+  'markdownTable.resizeColumn': (v) => `Изменить размер ${v?.column ?? ''}`,
+  'markdownTable.rowDetails': 'Подробности',
+  'markdownTable.rowDetailsAria': (v) =>
+    `Просмотреть подробности строки ${v?.index ?? ''}`,
+  'markdownTable.closeRowDetailsAria': (v) =>
+    `Скрыть подробности строки ${v?.index ?? ''}`,
+  'markdownTable.detailsHeader': 'Подробности строки',
+  'markdownTable.cellDialogTitle': 'Текущее значение поля',
+  'markdownTable.copyCell': 'Копировать',
+  'markdownTable.close': 'Закрыть',
+  'markdownTable.actions': 'Действия',
+  'markdownTable.sortByColumn': (v) => `Сортировать по ${v?.column ?? ''}`,
+  'markdownTable.sortByColumnAsc': (v) =>
+    `Сортировать по ${v?.column ?? ''} по возрастанию`,
+  'markdownTable.sortByColumnDesc': (v) =>
+    `Сортировать по ${v?.column ?? ''} по убыванию`,
+  'markdownTable.filterColumn': (v) => `Фильтр ${v?.column ?? ''}`,
+  'markdownTable.empty': 'В этой таблице нет данных.',
+  'markdownTable.emptyFiltered': 'Нет строк, соответствующих фильтрам.',
+  'markdownTable.sort.asc': 'Сортировать по возрастанию',
+  'markdownTable.sort.desc': 'Сортировать по убыванию',
+  'markdownTable.sort.clear': 'Сбросить сортировку',
+  'markdownTable.filter.searchPlaceholder': 'Поиск значений фильтра',
+  'markdownTable.filter.searchAria': (v) => `Поиск по ${v?.column ?? ''}`,
+  'markdownTable.filter.selectVisible': 'Выбрать текущие результаты',
+  'markdownTable.filter.optionLimit': (v) =>
+    `Показаны первые ${v?.count ?? 0} элементов. Используйте поиск, чтобы сузить результаты.`,
+  'markdownTable.filter.noOptions': 'Совпадений нет',
+  'markdownTable.filter.custom': 'Особый фильтр',
+  'markdownTable.filter.numberAria': (v) =>
+    `Числовой фильтр для ${v?.column ?? ''}`,
+  'markdownTable.filter.textAria': (v) =>
+    `Текстовый фильтр для ${v?.column ?? ''}`,
+  'markdownTable.filter.numberPlaceholder': 'Значение',
+  'markdownTable.filter.toPlaceholder': 'До',
+  'markdownTable.filter.textPlaceholder': 'Введите условие фильтра',
+  'markdownTable.filter.reset': 'Сбросить',
+  'markdownTable.filter.cancel': 'Отмена',
+  'markdownTable.filter.confirm': 'Подтвердить',
+  'markdownTable.filter.text.contains': 'Содержит',
+  'markdownTable.filter.text.equals': 'Равно',
+  'markdownTable.filter.text.notEquals': 'Не равно',
+  'markdownTable.filter.text.startsWith': 'Начинается с',
+  'markdownTable.filter.text.endsWith': 'Заканчивается на',
+  'markdownTable.filter.number.gt': 'Больше чем',
+  'markdownTable.filter.number.gte': 'Больше или равно',
+  'markdownTable.filter.number.lt': 'Меньше чем',
+  'markdownTable.filter.number.lte': 'Меньше или равно',
+  'markdownTable.filter.number.between': 'Между',
+  'mermaid.rendering': 'Отрисовка диаграммы...',
+  'mermaid.viewCode': '</>',
+  'mermaid.viewDiagram': '⊞',
+  'mermaid.zoomIn': '+',
+  'mermaid.zoomOut': '−',
+  'mermaid.zoomReset': '↺',
+  'contextUsage.active': 'активно',
+  'contextUsage.autocompactBuffer': 'Буфер автосжатия',
+  'contextUsage.bodyLoaded': 'тело загружено',
+  'contextUsage.detailHint':
+    'Выполните /context detail, чтобы увидеть разбивку по элементам.',
+  'contextUsage.estimatedOverhead':
+    'Оценочные накладные расходы до начала беседы',
+  'contextUsage.estimatedUntilProviderUsage':
+    'Расход токенов оценивается приблизительно, пока не получены данные от провайдера.',
+  'contextUsage.noSession':
+    'Активной сессии пока нет. Отправьте первое сообщение, прежде чем смотреть использование контекста.',
+  'contextUsage.noApiResponse':
+    'Ответа от API пока нет. Отправьте сообщение, чтобы увидеть фактическое использование.',
+  'contextUsage.overLimit':
+    'Контекст превышает лимит! Используйте /compress или /clear, чтобы уменьшить его.',
+  'daemon.details.loading': 'Загрузка диагностики...',
+  'daemon.details.failed': 'Не удалось загрузить диагностику.',
+  'daemon.refresh': 'Обновить',
+  'daemon.loadFailed': 'Не удалось загрузить статус демона',
+  'daemon.updatedAt': (v) => `Обновлено ${v?.time ?? ''}`,
+  'daemon.none': 'нет',
+  'daemon.level.ok': 'ОК',
+  'daemon.level.warning': 'Предупреждение',
+  'daemon.level.error': 'Ошибка',
+  'daemon.level.unavailable': 'Недоступно',
+  'daemon.issues.title': 'Проблемы',
+  'daemon.overview.title': 'Демон',
+  'daemon.overview.version': 'Версия',
+  'daemon.overview.pid': 'PID',
+  'daemon.overview.mode': 'Режим',
+  'daemon.overview.uptime': 'Время работы',
+  'daemon.overview.workspace': 'Рабочая папка',
+  'daemon.runtime.title': 'Среда выполнения',
+  'daemon.runtime.activeSessions': 'Активные сессии',
+  'daemon.runtime.activePrompts': 'Активные запросы',
+  'daemon.runtime.idle': 'Простаивает',
+  'daemon.runtime.noActivity': 'активности пока нет',
+  'daemon.runtime.pendingPermissions': 'Ожидающие подтверждения',
+  'daemon.runtime.permissionPolicy': 'Политика подтверждений',
+  'daemon.runtime.channel': 'Канал ACP',
+  'daemon.runtime.channelLive': 'активен',
+  'daemon.runtime.channelDown': 'недоступен',
+  'daemon.runtime.startingUp': 'Среда выполнения запускается...',
+  'daemon.runtime.startFailed': 'Не удалось запустить среду выполнения',
+  'daemon.runtime.channelWorker': 'Обработчик канала',
+  'daemon.runtime.channelWorkerRestarts': 'Перезапуски обработчика',
+  'daemon.runtime.memory': 'Память (RSS / куча)',
+  'daemon.transport.title': 'Транспорт',
+  'daemon.transport.restSse': 'Потоки REST SSE',
+  'daemon.transport.acpDisabled': 'Транспорт ACP отключён',
+  'daemon.transport.acpConnections': 'Соединения ACP',
+  'daemon.transport.acpStreams': 'Потоки ACP (сессия/SSE/WS)',
+  'daemon.transport.pendingRequests': 'Ожидающие запросы клиентов',
+  'daemon.transport.rateLimitRejected': 'Отклонено по ограничению скорости',
+  'daemon.security.title': 'Безопасность',
+  'daemon.security.token': 'Токен Bearer',
+  'daemon.security.requireAuth': 'Требовать авторизацию',
+  'daemon.security.loopback': 'Привязка к loopback',
+  'daemon.security.allowOrigin': 'Разрешённые источники',
+  'daemon.security.shell': 'Команды командной строки сессии',
+  'daemon.security.configured': 'настроено',
+  'daemon.security.notConfigured': 'не настроено',
+  'daemon.limits.title': 'Лимиты',
+  'daemon.limits.unlimited': 'без ограничений',
+  'daemon.limits.maxSessions': 'Максимум сессий',
+  'daemon.limits.maxPendingPrompts': 'Максимум ожидающих запросов на сессию',
+  'daemon.limits.maxConnections': 'Максимум подключений слушателя',
+  'daemon.limits.eventRing': 'Размер кольцевого буфера событий',
+  'daemon.limits.promptDeadline': 'Крайний срок запроса',
+  'daemon.limits.sessionIdle': 'Тайм-аут простоя сессии',
+  'daemon.capabilities.title': 'Возможности',
+  'daemon.capabilities.titleCount': (v) => `Возможности (${v?.count ?? 0})`,
+  'daemon.full.sessions.title': 'Сессии',
+  'daemon.full.sessions.empty': 'Нет активных сессий',
+  'daemon.full.session.pendingPrompts': (v) =>
+    `${v?.count ?? 0} ожидающих запросов`,
+  'daemon.full.session.pendingPermissions': (v) =>
+    `${v?.count ?? 0} ожидающих подтверждений`,
+  'daemon.full.session.prompting': 'обработка запроса',
+  'daemon.full.workspace.title': 'Диагностика рабочей папки',
+  'daemon.full.workspace.empty': 'Диагностика рабочей папки не поступала',
+  'daemon.full.auth.title': 'Авторизация',
+  'daemon.full.auth.providers': 'Провайдеры авторизации по коду устройства',
+  'daemon.full.auth.pending': 'Ожидающие авторизации по коду устройства',
+  'daemon.full.acp.title': 'Соединения ACP',
+  'daemon.tab.overview': 'Обзор',
+  'daemon.tab.usage': 'Использование',
+  'daemon.tab.metrics': 'Метрики',
+  'daemon.tab.diagnostics': 'Диагностика',
+  'daemon.charts.title': 'Метрики',
+  'daemon.charts.empty': 'Сбор метрик… графики появятся после первого замера.',
+  'daemon.charts.concurrency': 'Параллелизм',
+  'daemon.charts.activePrompts': 'Активные задачи',
+  'daemon.charts.activeSessions': 'Сессии',
+  'daemon.charts.requests': 'Запросы',
+  'daemon.charts.reqTotal': 'Всего',
+  'daemon.charts.reqErrors': 'Ошибки',
+  'daemon.charts.apiLatency': 'Задержка API',
+  'daemon.charts.promptLatency': 'Задержка запроса',
+  'daemon.charts.queueWait': 'Ожидание в очереди',
+  'daemon.charts.promptDuration': 'Длительность',
+  'daemon.charts.eventLoop': 'Задержка event loop',
+  'daemon.charts.eventLoopLag': 'Задержка p99',
+  'daemon.charts.queuedPrompts': 'В очереди',
+  'daemon.charts.reqRejected': 'Отклонено',
+  'daemon.charts.llmLatency': 'Задержка API модели',
+  'daemon.charts.apiHealth': 'Состояние API модели',
+  'daemon.charts.apiErrors': 'Ошибки API',
+  'daemon.charts.apiRetries': 'Повторы',
+  'daemon.charts.cpu': 'ЦП',
+  'daemon.charts.pipe': 'Канал IPC',
+  'daemon.charts.pipeIn': 'Входящий',
+  'daemon.charts.pipeOut': 'Исходящий',
+  'daemon.charts.connections': 'Соединения',
+  'daemon.charts.cpuDaemon': 'Демон',
+  'daemon.charts.cpuChild': 'Дочерний процесс',
+  'daemon.charts.rssDaemon': 'RSS демона',
+  'daemon.charts.rssChild': 'RSS дочернего процесса',
+  'daemon.charts.memory': 'Память',
+  'daemon.charts.heap': 'Куча',
+  'daemon.charts.tokens': 'Расход токенов',
+  'daemon.charts.tokensIn': 'Входные',
+  'daemon.charts.tokensOut': 'Выходные',
+  'daemon.charts.peak': 'пик',
+  'daemon.charts.concurrency.help':
+    'Текущая нагрузка на момент каждого замера: запросы, выполняющиеся сейчас, запросы в очереди (приняты, но ещё не запущены), и активные сессии. Если очередь растёт быстрее активных сессий, это признак перегрузки.',
+  'daemon.charts.requests.help':
+    'HTTP-трафик между клиентом и демоном за период: это НЕ обращения к модели. Всего запросов, вернувших 4xx/5xx, и отклонённых ограничителем скорости.',
+  'daemon.charts.apiLatency.help':
+    "Длительность HTTP-запроса между клиентом и демоном (p50/p95): скорость ответа демона, а не модели. Сравните с задержкой API модели, чтобы отличить 'это медленно у нас' от 'это медленно у модели'.",
+  'daemon.charts.llmLatency.help':
+    'Время полного цикла обращения к API модели (демон→модель→демон), p50/p95. Задержка на стороне модели, отдельно от задержки HTTP API выше.',
+  'daemon.charts.apiHealth.help':
+    'Сбои на стороне провайдера модели. Каждая неудачная попытка = 1 ошибка; каждая автоматическая повторная попытка = 1 повтор. Временные 429/5xx обычно компенсируются повторами (ошибки ≈ повторы); если ошибок становится больше, чем повторов, значит вызовы действительно завершаются неудачей.',
+  'daemon.charts.promptLatency.help':
+    'На каждый запрос (задачу): p95 времени ожидания в очереди сессии перед запуском и p95 полного времени выполнения. Рост ожидания в очереди - признак перегрузки.',
+  'daemon.charts.eventLoop.help':
+    'Задержка event loop демона (p99) за период: сигнал перегрузки ЦП или блокировки. Высокая задержка означает, что демону не хватает ресурсов и всё замедляется.',
+  'daemon.charts.cpu.help':
+    'Использование ЦП (% от всех ядер) на момент каждого замера: демон и дочерний процесс ACP (где выполняется работа модели и инструментов). 0% у дочернего процесса означает, что он не запущен.',
+  'daemon.charts.memory.help':
+    'Резидентная память на момент каждого замера: RSS демона, куча V8 демона и RSS дочернего процесса ACP. Устойчивый рост со временем указывает на утечку.',
+  'daemon.charts.pipe.help':
+    'Байты через канал stdio к дочернему процессу ACP и от него за период. Устойчиво высокий объём указывает на слишком частый обмен сообщениями между демоном и дочерним процессом.',
+  'daemon.charts.connections.help':
+    'Активные транспортные соединения клиентов на момент каждого замера: потоки REST/SSE, потоки ACP WebSocket и соединения ACP.',
+  'daemon.charts.tokens.help':
+    'Входные (запрос) и выходные (ответ) токены, отнесённые к обращениям к модели за период: расход на модель с течением времени.',
+  'daemon.usage.today': 'Сегодня',
+  'daemon.usage.period7d': '7Д',
+  'daemon.usage.period30d': '30Д',
+  'daemon.usage.rangeWeek': 'Последние 7 дней',
+  'daemon.usage.rangeMonth': 'Последние 30 дней',
+  'daemon.usage.rangeGroup': 'Период сводки',
+  'daemon.usage.tokensConsumed': 'токенов израсходовано',
+  'daemon.usage.sessions': 'Сессии',
+  'daemon.usage.requests': 'Запросы',
+  'daemon.usage.tools': 'Инструменты',
+  'daemon.usage.changes': 'Изменения',
+  'daemon.usage.breakdownTitle': 'Разбивка токенов',
+  'daemon.usage.inputTokens': 'Входные токены',
+  'daemon.usage.inputHint': 'запрос + чтение кэша',
+  'daemon.usage.outputTokens': 'Выходные токены',
+  'daemon.usage.outputHint': 'ответ + рассуждение',
+  'daemon.usage.cacheRead': 'Чтение кэша',
+  'daemon.usage.cacheHint': 'доля чтения кэша',
+  'daemon.usage.heatmapTitle': 'Тепловая карта токенов',
+  'daemon.usage.heatmapSub': (v) =>
+    `последние ${v?.months ?? 12} мес. · токены по дням`,
+  'daemon.usage.low': 'Мало',
+  'daemon.usage.high': 'Много',
+  'daemon.usage.dowMon': 'Пн',
+  'daemon.usage.dowWed': 'Ср',
+  'daemon.usage.dowFri': 'Пт',
+  'daemon.usage.empty':
+    'Данные об использовании токенов пока не зафиксированы.',
+  'daemon.usage.loading': 'Загрузка данных об использовании…',
+  'daemon.usage.failed': 'Не удалось загрузить данные об использовании',
+  'daemon.usage.cellTokens': (v) =>
+    `${v?.date ?? ''} · Токены: ${v?.tokens ?? '0'} · Кэш: ${v?.cache ?? 0}%`,
+  'daemon.usage.rangeWordToday': 'Сегодня',
+  'daemon.usage.rangeWordWeek': '7 дней',
+  'daemon.usage.rangeWordMonth': '30 дней',
+  'daemon.usage.modelShareTitle': 'доля модели',
+  'daemon.usage.modelShareSub':
+    'доля токенов · светло-зелёным показано чтение кэша',
+  'daemon.usage.modelMeta': (v) =>
+    `${v?.tokens ?? '0'} токенов · кэш ${v?.cache ?? 0}%`,
+  'daemon.usage.skillTitle': 'вызовы навыков',
+  'daemon.usage.skillSub': 'название навыка / количество',
+  'daemon.usage.skillName': 'Название навыка',
+  'daemon.usage.skillCount': 'Количество',
+  'daemon.usage.dailyTokensTitle': 'токены',
+  'daemon.usage.dailyTokensSub': 'суммарные токены по дням',
+  'daemon.usage.dailySessionsTitle': 'сессии',
+  'daemon.usage.dailySessionsSub': 'количество активных сессий по дням',
+  'delete.failed': (v) =>
+    `Не удалось удалить сессию.${v?.reason ? ` ${v.reason}` : ''}`,
+  'delete.footer': '↑↓ навигация · Пробел выбрать · Enter удалить · Esc отмена',
+  'delete.noMatch': (v) => `Нет сессии, соответствующей "${v?.query ?? ''}"`,
+  'delete.allFailed': (v) =>
+    `Не удалось удалить сессии (${v?.count ?? 0}): ${v?.reason ?? 'неизвестная ошибка'}`,
+  'delete.nonRemoved': 'Ни одна сессия не была удалена.',
+  'delete.partialFail': (v) =>
+    `Удалено: ${v?.removed ?? 0}, не удалось: ${v?.failed ?? 0}: ${v?.detail ?? 'неизвестная ошибка'}`,
+  'delete.matches': (v) => `Совпадений: ${v?.count ?? 0}`,
+  'delete.pressSearch':
+    'Нажмите / для поиска; Пробел для выбора; Enter для удаления',
+  'time.justNow': 'только что',
+  'time.minutesAgo': (v) => `${v?.count ?? 0} мин. назад`,
+  'time.hoursAgo': (v) => `${v?.count ?? 0} ч. назад`,
+  'time.daysAgo': (v) => `${v?.count ?? 0} дн. назад`,
+  'release.cannotCurrent': 'Нельзя освободить текущую активную сессию.',
+  'release.action': 'Освободить',
+  'release.released': 'Сессия успешно освобождена.',
+  'release.failed': (v) =>
+    `Не удалось освободить сессию.${v?.reason ? ` ${v.reason}` : ''}`,
+  'release.footer': '↑↓ навигация · Enter освободить · Esc отмена',
+  'release.inactive': 'Освободить можно только активные действующие сессии.',
+  'release.inactiveBadge': 'неактивна',
+  'release.noMatch': (v) => `Нет сессии, соответствующей "${v?.query ?? ''}"`,
+  'release.matches': (v) => `Совпадений: ${v?.count ?? 0}`,
+  'release.none': 'Нет активных сессий для освобождения',
+  'release.pressSearch':
+    'Нажмите / для поиска; Enter освобождает выбранную активную сессию',
+  'release.releasing': 'Освобождение...',
+  'release.title': 'Освободить сессию',
+  'dialog.footer.mcpServers':
+    '↑↓ навигация · Enter подробности · r обновить · Esc закрыть',
+  'dialog.footer.modelFast':
+    '↑↓ навигация · / поиск · c своя модель · Enter задать быструю модель · Esc отмена',
+  'dialog.footer.saveClose':
+    '↑↓ переключение полей · ⌘/Ctrl+Enter сохранить · Esc закрыть',
+  'dialog.footer.saveMenu':
+    '↑↓ переключение полей · ⌘/Ctrl+Enter сохранить · Esc в меню',
+  'history.loadingEarlier': 'Загрузка более ранних сообщений…',
+  'history.capacityReached':
+    'Достигнут лимит отображения истории. Более ранние сообщения остаются сохранёнными.',
+  'history.paginationError': 'Не удалось загрузить более раннюю историю.',
+  'history.retry': 'Повторить',
+  'editor.imagesTooLarge': (v) =>
+    `Файлов, превышающих лимит размера вложения: ${v?.count ?? 0}.`,
+  'editor.searchHint':
+    'ctrl+r далее · tab принять · enter отправить · esc отмена',
+  'editor.searchLabel': 'обратный поиск:',
+  'workspace.loadFailed': 'Не удалось загрузить рабочую папку',
+  'workspace.notFound': 'Рабочая папка не найдена',
+  'workspace.notFoundDescription':
+    'Возможно, эта рабочая папка была удалена или ссылка больше не действительна.',
+  'workspace.loadFailedDescription':
+    'Не удалось связаться со службой рабочих папок. Проверьте демон и повторите попытку.',
+  // Страница запланированных задач
+  'scheduledTasks.subtitle':
+    'Запускайте задачи автоматически по расписанию или вручную в любой момент.',
+  'scheduledTasks.loading': 'Загрузка…',
+  'scheduledTasks.count': (v) =>
+    `${v?.count ?? 0} задач${Number(v?.count ?? 0) === 1 ? 'а' : ''}`,
+  'scheduledTasks.refresh': 'Обновить',
+  'scheduledTasks.new': 'Новая запланированная задача',
+  'scheduledTasks.createViaChat': 'Создать через чат',
+  'scheduledTasks.chatStarter':
+    'Помоги настроить повторяющуюся запланированную задачу (на долгий срок). Я хочу: ',
+  'scheduledTasks.name': 'Название',
+  'scheduledTasks.workspace': 'Рабочая папка',
+  'scheduledTasks.session.label': 'Диалог',
+  'scheduledTasks.session.dedicated': 'Отдельный диалог для задачи',
+  'scheduledTasks.session.current': 'Текущий диалог',
+  'scheduledTasks.session.dedicatedHint':
+    'Запуски сохраняются в отдельном диалоге, созданном для этой задачи.',
+  'scheduledTasks.session.currentHint':
+    'Последующие запуски продолжатся в диалоге, который открыт сейчас.',
+  'scheduledTasks.session.currentUnsupported':
+    'Планирование в текущем диалоге недоступно на этом демоне.',
+  'scheduledTasks.session.currentUnavailable':
+    'Откройте существующий диалог, прежде чем выбирать текущий диалог.',
+  'scheduledTasks.session.currentBusy':
+    'Дождитесь завершения текущего хода или ожидающего взаимодействия.',
+  'scheduledTasks.session.currentIneligible':
+    'Диалог этого типа не может владеть запланированной задачей.',
+  'scheduledTasks.session.currentWorkspaceMismatch':
+    'Текущий диалог относится к другой рабочей папке.',
+  'scheduledTasks.session.currentAlreadyBound':
+    'Текущий диалог уже привязан к запланированной задаче.',
+  'scheduledTasks.taskId': 'ID задачи',
+  'scheduledTasks.schedule': 'Расписание',
+  'scheduledTasks.type': 'Тип',
+  'scheduledTasks.status': 'Статус',
+  'scheduledTasks.namePlaceholder':
+    'Необязательно: по умолчанию берётся из запроса',
+  'scheduledTasks.prompt': 'Запрос',
+  'scheduledTasks.promptPlaceholder': 'Что должна делать эта задача?',
+  'workflowRuns.saved': 'Сохранённые',
+  'workflowRuns.active': 'Выполняются',
+  'workflowRuns.history': 'История',
+  'workflowRuns.create': 'Новый',
+  'workflowRuns.refresh': 'Обновить',
+  'workflowRuns.loading': 'Загрузка запусков рабочих процессов…',
+  'workflowRuns.loadFailed': 'Не удалось загрузить запуски рабочих процессов.',
+  'workflowRuns.noSession':
+    'Откройте сессию в этом проекте, чтобы увидеть её запуски рабочих процессов.',
+  'workflowRuns.emptyActive':
+    'Сейчас не выполняется ни одного рабочего процесса.',
+  'workflowRuns.emptyHistory':
+    'Пока нет сохранённых запусков рабочих процессов.',
+  'workflowRuns.emptySaved':
+    'Пока нет сохранённых многоразовых рабочих процессов.',
+  'workflowRuns.emptySavedHint':
+    'Нажмите «Новый», чтобы создать его с помощью Довод, сохраните завершённый запуск из терминала или добавьте файл .js в .qwen/workflows.',
+  'workflowRuns.project': 'Проект',
+  'workflowRuns.user': 'Пользователь',
+  'workflowRuns.projectDescription': 'Доступно в этом проекте',
+  'workflowRuns.userDescription': 'Доступно во всех проектах',
+  'workflowRuns.detail.toggle': (v) =>
+    `Показать подробности для ${v?.name ?? ''}`,
+  'workflowRuns.detail.loading': 'Загрузка описания рабочего процесса…',
+  'workflowRuns.detail.unavailable':
+    'Это описание рабочего процесса больше недоступно.',
+  'workflowRuns.detail.loadFailed':
+    'Не удалось прочитать описание рабочего процесса.',
+  'workflowRuns.detail.retry': 'Повторить',
+  'workflowRuns.detail.noDescription':
+    'У этого рабочего процесса нет описания.',
+  'workflowRuns.detail.whenToUse': 'Когда использовать',
+  'workflowRuns.detail.metaError': (v) =>
+    `Не удалось разобрать блок метаданных: ${v?.error ?? ''}`,
+  'workflowRuns.detail.phases': (v) => `Этапы (${v?.count ?? 0})`,
+  'workflowRuns.detail.recentRuns': 'Недавние запуски',
+  'workflowRuns.detail.noRuns': 'В этой сессии пока нет запусков.',
+  'workflowRuns.detail.viewRuns': (v) =>
+    `Показать ${v?.count ?? 0} ${v?.count === 1 ? 'запуск' : 'запусков'} в истории`,
+  'workflowRuns.detail.showSource': 'Показать исходный код',
+  'workflowRuns.detail.hideSource': 'Скрыть исходный код',
+  'workflowRuns.run': 'Запустить',
+  'workflowRuns.starting': 'Запуск…',
+  'workflowRuns.runNamed': (v) => `Запустить ${v?.name ?? ''}`,
+  'workflowRuns.startFailed':
+    'Не удалось запустить сохранённый рабочий процесс. Обновите страницу и повторите попытку.',
+  'scheduledTasks.reference.extension': 'Расширения',
+  'scheduledTasks.reference.skill': 'Навыки',
+  'scheduledTasks.reference.mcp': 'MCP',
+  'scheduledTasks.referencePicker': 'Выбор ссылки',
+  'scheduledTasks.reference.remove': 'Удалить',
+  'scheduledTasks.reference.loading': 'Загрузка…',
+  'scheduledTasks.reference.empty': 'Нет доступных элементов.',
+  'scheduledTasks.frequency': 'Периодичность',
+  'scheduledTasks.freq.daily': 'Ежедневно',
+  'scheduledTasks.freq.weekdays': 'По будням',
+  'scheduledTasks.freq.weekly': 'Еженедельно',
+  'scheduledTasks.freq.hourly': 'Ежечасно',
+  'scheduledTasks.freq.minutes': 'Каждые N минут',
+  'scheduledTasks.freq.custom': 'Особое расписание (cron)',
+  'scheduledTasks.time': 'Время',
+  'scheduledTasks.weekday': 'День недели',
+  'scheduledTasks.interval': 'Минуты',
+  'scheduledTasks.cron': 'Cron-выражение',
+  'scheduledTasks.weekdayNames': 'Вс,Пн,Вт,Ср,Чт,Пт,Сб',
+  'scheduledTasks.human.daily': (v) => `Ежедневно в ${v?.time ?? ''}`,
+  'scheduledTasks.human.weekdays': (v) => `По будням в ${v?.time ?? ''}`,
+  'scheduledTasks.human.weekly': (v) =>
+    `Каждый ${v?.day ?? ''} в ${v?.time ?? ''}`,
+  'scheduledTasks.human.hourly': (v) => `Ежечасно в :${v?.min ?? '00'}`,
+  'scheduledTasks.human.everyMinutes': (v) => `Каждые ${v?.n ?? ''} минут`,
+  'scheduledTasks.never': 'Никогда не запускалась',
+  'scheduledTasks.repeats': 'Повторяется',
+  'scheduledTasks.runsOnce': 'Запускается один раз',
+  'scheduledTasks.lastFired': (v) => `Последний запуск: ${v?.when ?? ''}`,
+  'scheduledTasks.runNow': 'Запустить сейчас',
+  'scheduledTasks.enable': 'Включить',
+  'scheduledTasks.disable': 'Отключить',
+  'scheduledTasks.delete': 'Удалить',
+  'scheduledTasks.deleteConfirmTitle': 'Удалить запланированную задачу',
+  'scheduledTasks.deleteConfirm': (v) =>
+    `Удалить запланированную задачу "${v?.name ?? ''}"?`,
+  'scheduledTasks.deletedSnapshot':
+    'Эта запланированная задача удалена. Показан снимок на момент её создания.',
+  'scheduledTasks.sessionScopedSnapshot':
+    'Это запланированная задача в рамках сессии. Показан снимок на момент её создания.',
+  'scheduledTasks.empty':
+    'Пока нет запланированных задач. Создайте первую, чтобы начать.',
+  'scheduledTasks.create': 'Создать',
+  'scheduledTasks.creating': 'Создание…',
+  'scheduledTasks.cancel': 'Отмена',
+  'scheduledTasks.error.invalidSchedule': 'Некорректное расписание',
+  'scheduledTasks.error.emptyPrompt': 'Запрос обязателен',
+  'scheduledTasks.error.promptTooLong': (v) =>
+    `Запрос превышает лимит в ${v?.max ?? 100_000} символов`,
+  'scheduledTasks.error.goalActive':
+    'Нельзя запустить запланированную задачу, пока активна Цель.',
+  'scheduledTasks.error.toggleFailed': 'Не удалось обновить задачу',
+  'scheduledTasks.error.deleteFailed': 'Не удалось удалить задачу',
+  'scheduledTasks.edit': 'Изменить',
+  'scheduledTasks.editTitle': 'Изменить запланированную задачу',
+  'scheduledTasks.save': 'Сохранить',
+  'scheduledTasks.saving': 'Сохранение…',
+  'scheduledTasks.runHistory': (v) => `История запусков (${v?.count ?? 0})`,
+  'scheduledTasks.viewHistory': (v) => `Открыть переписку (${v?.count ?? 0})`,
+  'scheduledTasks.viewHistoryEmpty': 'Открыть переписку',
+  'scheduledTasks.viewHistoryHint':
+    'Откройте сессию задачи, чтобы увидеть её запуски',
+  'scheduledTasks.runKind.catchUp': 'с опозданием',
+  'scheduledTasks.runKind.manual': 'вручную',
+  'scheduledTasks.runKind.withheld': 'пропущено',
+  'scheduledTasks.runKind.sessionDispatchFailed':
+    'не удалось создать сессию, ничего не выполнено',
+  'scheduledTasks.runKind.sessionDispatchFallback':
+    'не удалось создать сессию, выполнено в сессии задачи',
+  'scheduledTasks.openRunSession': 'Открыть сессию этого запуска',
+  'scheduledTasks.runContext.title': 'Запуск запланированной задачи',
+  'scheduledTasks.runContext.taskId': 'ID задачи',
+  'scheduledTasks.runContext.schedule': 'Расписание',
+  'scheduledTasks.runContext.triggeredAt': 'Запущено',
+  'scheduledTasks.runContext.trigger.scheduled': 'По расписанию',
+  'scheduledTasks.runContext.trigger.manual': 'Запуск вручную',
+  'scheduledTasks.error.runFailed': 'Не удалось записать запуск',
+  'scheduledTasks.error.oneShotConsumedButFailed':
+    'Задача была удалена, но запрос не удалось доставить: она так и не выполнилась. Создайте её заново, чтобы повторить попытку.',
+  'scheduledTasks.dueNow': 'Пора выполнить',
+  'scheduledTasks.nextRunTooltip': (v) => `Следующий запуск: ${v?.when ?? ''}`,
+  'scheduledTasks.dur.d': 'д',
+  'scheduledTasks.dur.h': 'ч',
+  'scheduledTasks.dur.m': 'м',
+  'scheduledTasks.dur.s': 'с',
+  'scheduledTasks.runIn': 'Запуск через',
+  'scheduledTasks.sessionMode.perRun': 'Новая сессия при каждом запуске',
+  'scheduledTasks.sessionMode.persistent': 'Постоянная сессия задачи',
+  'scheduledTasks.sessionMode.perRun.hint':
+    'Каждый запуск получает чистый контекст и отдельную переписку.',
+  'scheduledTasks.sessionMode.persistent.hint':
+    'Все запуски продолжаются в одной и той же переписке задачи.',
+  'scheduledTasks.condition': 'Условие запуска (необязательно)',
+  'scheduledTasks.conditionPlaceholder':
+    'например: проверить, появились ли изменения в main со вчерашнего дня. Если нет, задачу выполнять не нужно.',
+  'scheduledTasks.condition.hint':
+    'Проверяется в собственной сессии задачи перед каждым запуском. Запрос выполняется в новой сессии только если проверка дала положительный результат, иначе запуск пропускается.',
+  'scheduledTasks.condition.cardPrefix': 'Если:',
+  'turnOutputs.filesEdited': (v) => `Изменено файлов: ${v?.count ?? 0}`,
+  'turnOutputs.imagePreview': 'Просмотр изображения',
+  'turnOutputs.viewChanges': 'Просмотреть изменения',
+  // Key keeps its historical `review` name; the label moved to "Changes" when
+  // the code-review result view (`codeReview.*`) took over the word.
+  'turnOutputs.review': 'Изменения',
+  'turnOutputs.reviewLatest': 'Просмотреть последние изменения файлов',
+  'codeReview.authoritativeVerdict': 'Итоговый вердикт',
+  'codeReview.targetEffort': (v) =>
+    `Цель: ${v?.target ?? ''} · Усилие: ${v?.effort ?? ''}`,
+  'codeReview.openReport': 'Открыть отчёт в Markdown',
+  'codeReview.loadingReport': 'Загрузка отчёта в Markdown...',
+  'codeReview.back': 'Назад к проверке',
+  'codeReview.reviewCounts': 'Статистика проверки',
+  'codeReview.total': 'Всего',
+  'codeReview.confidence': (v) => `Уверенность: ${v?.value ?? ''}`,
+  'codeReview.held': 'Удержано',
+  'codeReview.heldByMeasurement':
+    'Понижено с уровня «Критично» по результатам измерения',
+  'codeReview.caps': 'Ограничения',
+  'codeReview.none': 'Нет',
+  'codeReview.severity': 'Серьёзность',
+  'codeReview.confidenceLabel': 'Уверенность',
+  'codeReview.all': 'Все',
+  'codeReview.noMatches': 'Под эти фильтры не подходит ни одна находка.',
+  'codeReview.source': (v) => `Источник: ${v?.value ?? ''}`,
+  'codeReview.failureScenario': 'Сценарий сбоя',
+  'codeReview.witness': 'Свидетельство',
+  'codeReview.suggestedFix': 'Предлагаемое исправление',
+  'codeReview.outcome': 'Результат',
+  'codeReview.locations': 'Расположения',
+  'codeReview.evidence': 'Доказательства',
+  'codeReview.notLinked': 'не связано',
+  'codeReview.loadErrorTitle': 'Не удалось отобразить проверку кода',
+  'codeReview.loading': 'Загрузка проверки кода...',
+  'codeReview.artifactTruncated':
+    'Артефакт проверки кода обрезан, и его невозможно проверить.',
+  'codeReview.reportTruncated': 'Отчёт в Markdown обрезан.',
+  'codeReview.unavailable': (v) =>
+    `Эта проверка кода больше не является актуальной, так как статус её артефакта: ${v?.status ?? 'unknown'}. Сгенерируйте проверку заново, чтобы её просмотреть.`,
+  'codeReview.workspaceRequired':
+    'Артефакты проверки кода должны быть доступными для чтения файлами рабочей папки.',
+  'sideTask.title': 'Побочная задача',
+  'sideTask.description': 'Просмотр и создание побочных задач',
+  'sideTask.new': 'Новая',
+  'sideTask.create': 'Новая побочная задача',
+  'terminal.notice.exited': (v) =>
+    `Процесс завершился с кодом ${v?.exitCode ?? '?'}`,
+  'rightPanel.add': 'Добавить панель',
+  'attachment.previewUnsupported': 'Просмотр недоступен для этого типа файла.',
+  'sideTask.creating': 'Создание побочной задачи…',
+  'sideTask.createFailed': 'Не удалось создать побочную задачу',
+  'sideTask.promptFailed': 'Не удалось отправить вопрос побочной задачи',
+  'sideTask.renameFailed': 'Не удалось назвать побочную задачу',
+  'turnOutputs.preview': 'Просмотр',
+  'turnOutputs.collapseFiles': 'Свернуть файлы',
+  'turnOutputs.showMoreFiles': (v) => `Показать ещё файлов: ${v?.count ?? 0}`,
+  'turnOutputs.collapseArtifacts': 'Свернуть артефакты',
+  'turnOutputs.showMoreArtifacts': (v) =>
+    `Показать ещё артефактов: ${v?.count ?? 0}`,
+  'turnOutputs.previousTurn': 'Предыдущий ход',
+  'turnOutputs.fileCount': (v) => `Файлов: ${v?.count ?? 0}`,
+  'turnOutputs.openFileTree': 'Открыть дерево файлов',
+  'turnOutputs.closeFileTree': 'Закрыть дерево файлов',
+  'turnOutputs.artifactMissing': 'Файл не найден в рабочей папке',
+  'turnOutputs.artifactUnavailable': (v) =>
+    v?.path
+      ? `Файл не найден в рабочей папке · ${v.path}`
+      : 'Файл не найден в рабочей папке',
+  'sidebar.scratchOutcomeUnknownTitle': 'Проверьте создание рабочей папки',
+  'sidebar.scratchOutcomeUnknown':
+    'Ответ демона был прерван. Проверьте обновлённый список рабочих папок, прежде чем создавать ещё одну.',
+  'sidebar.scratchOutcomeRefresh': 'Обновить список рабочих папок',
+  'sidebar.scratchOutcomeAcknowledge': 'Я проверил список рабочих папок',
+  'sidebar.addWorkspacePersistenceError':
+    'Демон не подтвердил регистрацию постоянной рабочей папки',
+  'sidebar.addWorkspaceRefreshError':
+    'Рабочая папка добавлена, но обновить список рабочих папок не удалось',
+  'sidebar.overview.mcpDetail': (v) =>
+    `Подключено ${v?.connected ?? 0} из ${v?.configured ?? 0}` +
+    (Number(v?.failed) > 0 ? `, с ошибкой: ${v?.failed}` : '') +
+    (Number(v?.disabled) > 0 ? `, отключено: ${v?.disabled}` : ''),
+  'sidebar.overview.skillsDetail': (v) =>
+    `Включено ${v?.enabled ?? 0} из ${v?.total ?? 0}`,
+  'sidebar.overview.extensionsDetail': (v) =>
+    `Активно ${v?.active ?? 0} из ${v?.total ?? 0}`,
+  'sidebar.overview.channelsDetail': (v) =>
+    `Подключено ${v?.connected ?? 0} из ${v?.configured ?? 0}` +
+    (Number(v?.failed) > 0 ? `, с ошибкой: ${v?.failed}` : ''),
+  'sidebar.overview.contextDetail': (v) =>
+    `${v?.files ?? 0} файл${v?.files === 1 ? '' : 'ов'} контекста, ${v?.rules ?? 0} правил${v?.rules === 1 ? 'о' : ''}`,
+  'sidebar.overview.hooksDetail': (v) =>
+    `${v?.count ?? 0} хук${v?.count === 1 ? '' : 'ов'}`,
+  'sidebar.overview.hooksDisabled': (v) =>
+    `${v?.count ?? 0} хук${v?.count === 1 ? '' : 'ов'} (отключено)`,
+  'sidebar.removeWorkspaceBusy': (v) =>
+    `«${v?.name ?? ''}» всё ещё использует активные ресурсы выполнения. Принудительное удаление завершит их работу.`,
+  'sidebar.removeWorkspaceCurrentSession':
+    'Переключитесь на другую рабочую папку или закройте текущую сессию перед принудительным удалением.',
+  'sidebar.removeWorkspaceInProgress':
+    'Другой клиент уже удаляет эту рабочую папку. Обновите страницу после завершения операции.',
+  'sidebar.removeWorkspacePrompts': (v) =>
+    `Активных запросов: ${v?.count ?? 0}`,
+  'sidebar.removeWorkspaceStarts': (v) =>
+    `Ожидающих запусков сессий: ${v?.count ?? 0}`,
+  'sidebar.removeWorkspaceConnections': (v) =>
+    `Подключений ACP: ${v?.count ?? 0}`,
+  'sidebar.removeWorkspaceMemoryTasks': (v) => `Задач памяти: ${v?.count ?? 0}`,
+  'sidebar.removeWorkspaceWorkers': (v) =>
+    `Обработчиков каналов: ${v?.count ?? 0}`,
+  'sidebar.removeWorkspaceVoiceSessions': (v) =>
+    `Голосовых сессий: ${v?.count ?? 0}`,
+  'sidebar.standaloneCleanupPending':
+    'Переписка удалена. Очистка личных файлов завершится автоматически.',
+  'sidebar.sessionPr': (v) => `Pull Request #${v?.number ?? ''}`,
+  'sidebar.sessionPrMultiple': (v) =>
+    `Pull Request #${v?.number ?? ''} (всего: ${v?.count ?? 0})`,
+  'sidebar.sessionPrStateMerged': 'Слит',
+  'sidebar.sessionPrStateClosed': 'Закрыт',
+  'sidebar.sessionIssue': (v) => `Issue #${v?.number ?? ''}`,
+  'sidebar.sessionIssueStateCompleted': 'Завершён',
+  'sidebar.sessionIssueStateNotPlanned': 'Не запланирован',
+  'sidebar.groupsLoadFailed': 'Не удалось загрузить группы сессий',
+  'sidebar.groupCreateFailed': 'Не удалось создать группу',
+  'sidebar.groupAssignFailedAfterCreate':
+    'Группа создана, но перенести сессию в неё не удалось',
+  'sidebar.groupUpdateFailed': 'Не удалось обновить группу',
+  'sidebar.groupDeleteFailed': 'Не удалось удалить группу',
+  'sidebar.organizationFailed': 'Не удалось обновить организацию сессий',
+  'sidebar.groupColor.red': 'Красный',
+  'sidebar.groupColor.orange': 'Оранжевый',
+  'sidebar.groupColor.yellow': 'Жёлтый',
+  'sidebar.groupColor.green': 'Зелёный',
+  'sidebar.groupColor.blue': 'Синий',
+  'sidebar.groupColor.purple': 'Фиолетовый',
+  'sidebar.groupColor.custom': 'Другой…',
+  'sidebar.groupColor.picker': 'Выбрать свой цвет группы',
+  'sidebar.groupColor.hex': 'Цвет в формате Hex',
+  'sidebar.groupColor.invalid':
+    'Введите шестизначный цвет в формате Hex, например #416ef5.',
+  'error.unsupportedTheme':
+    'Неподдерживаемая тема. Используйте /theme light или /theme dark.',
+  'queue.delete': 'Удалить',
+  'queue.edit': 'Изменить',
+  'queue.insert': 'Вставить',
+  'queue.cleared': 'Очередь очищена.',
+  'queue.deleteTip': 'Удалить из очереди',
+  'queue.editTip': 'Удалить из очереди и изменить заново',
+  'queue.submitting': 'Отправка...',
+  'queue.midTurnQueued': 'В очереди...',
+  'queue.serverQueued': 'В очереди на сервере...',
+  'queue.editing': 'Редактирование...',
+  'queue.inserting': 'Вставка...',
+  'queue.removing': 'Обновление...',
+  'queue.submittingDisabled': 'Отправка сообщения из очереди...',
+  'queue.summaryEditDisabled':
+    'Это восстановленное резюме очереди не может вернуть исходные вложения.',
+  'queue.admissionUnknown':
+    'Доставка не подтверждена. Проверьте сессию, прежде чем пробовать снова.',
+  'queue.restoreUnknown': 'Восстановить локальную копию',
+  'queue.discardUnknown': 'Отклонить локальную копию',
+  'queue.continueEditing': 'Продолжить редактирование',
+  'queue.continueEditingConfirm':
+    'Запрос, возможно, уже выполняется. Продолжайте редактирование, только если готовы к риску отправить его дважды.',
+  'queue.commandBlocked':
+    'Слэш-команды нельзя ставить в очередь, пока выполняется ход.',
+  'queue.commandGoalBlocked':
+    'Слэш-команды недоступны, пока сессией управляет Цель или пока загружается её состояние.',
+  'queue.shellQueued':
+    'Команда командной строки поставлена в очередь: она выполнится после завершения текущего хода.',
+  'queue.shellDropped': (v) => {
+    const count = v?.count ?? 0;
+    return count === 1
+      ? '1 команда командной строки из очереди не будет выполнена.'
+      : `${count} команд командной строки из очереди не будут выполнены.`;
+  },
+  'queue.queueFailed': 'Не удалось поставить сообщение в очередь',
+  'queue.deleteFailed': 'Не удалось убрать сообщение из очереди',
+  'queue.editFailed': 'Не удалось изменить сообщение в очереди',
+  'queue.insertFailed': 'Не удалось вставить сообщение из очереди',
+  'queue.insertTip': 'Вставить в текущий ход',
+  'queue.insertCommandDisabled': 'Команды нельзя вставлять в середине хода',
+  'queue.footer':
+    'Нажмите ↑, чтобы изменить последнее сообщение в очереди · Esc, чтобы очистить очередь',
+  'queue.imageCount': (v) => `(+${v?.count ?? 0} изображений)`,
+  'queue.fileCount': (v) => `(+${v?.count ?? 0} файлов)`,
+  'queue.more': (v) => `... (+${v?.count ?? 0} ещё)`,
+  'help.commandMeta.subcommands': (v) => `Подкоманд: ${v?.count ?? 0}`,
+  'help.shortcut.altWords': 'Переход по словам',
+  'retry.hint': 'Нажмите Ctrl+Y, чтобы повторить, или нажмите здесь',
+  'retry.none': 'Нет неудачных запросов для повтора.',
+  'system.taskNotification': 'Уведомление о задаче',
+  'system.taskCompleted': 'Фоновая задача завершена',
+  'system.taskFailed': 'Фоновая задача завершилась с ошибкой',
+  'system.taskCancelled': 'Фоновая задача отменена',
+  'notification.shell.completed': (v) =>
+    `Фоновая команда «${v?.command ?? ''}» завершена.`,
+  'notification.shell.failed': (v) =>
+    `Фоновая команда «${v?.command ?? ''}» завершилась с ошибкой.`,
+  'notification.shell.cancelled': (v) =>
+    `Фоновая команда «${v?.command ?? ''}» была отменена.`,
+  'notification.monitor.completed': (v) =>
+    `Монитор «${v?.description ?? ''}» завершён. (событий: ${v?.events ?? 0}${
+      v?.droppedLines
+        ? `, пропущено строк из-за ограничения скорости: ${v.droppedLines}`
+        : ''
+    })`,
+  'notification.monitor.failed': (v) =>
+    `Монитор «${v?.description ?? ''}» завершился с ошибкой. (событий: ${v?.events ?? 0}${
+      v?.droppedLines
+        ? `, пропущено строк из-за ограничения скорости: ${v.droppedLines}`
+        : ''
+    })`,
+  'notification.monitor.cancelled': (v) =>
+    `Монитор «${v?.description ?? ''}» был отменён. (событий: ${
+      v?.events ?? 0
+    }${
+      v?.droppedLines
+        ? `, пропущено строк из-за ограничения скорости: ${v.droppedLines}`
+        : ''
+    })`,
+  'notification.agent.completed': (v) =>
+    `Фоновый агент «${v?.description ?? ''}» завершён.`,
+  'notification.agent.failed': (v) =>
+    `Фоновый агент «${v?.description ?? ''}» завершился с ошибкой.`,
+  'notification.agent.cancelled': (v) =>
+    `Фоновый агент «${v?.description ?? ''}» был отменён.`,
+  'branch.failed': 'Не удалось создать ветку сессии.',
+  'branch.stale':
+    'Этот ответ больше не находится на активном пути истории. Переписка обновлена.',
+  'branch.staleRefreshFailed':
+    'Этот ответ больше не находится на активном пути истории, и обновить переписку не удалось. Повторите попытку.',
+  'branch.staleUnsupported':
+    'Этот ответ больше не находится на активном пути истории. Текущая сессия не поддерживает ветвление из этой точки.',
+  'branch.success': (v) =>
+    `Сессия скопирована. Имя новой сессии: «${v?.name ?? ''}». Выполнен переход на новую сессию.`,
+  'fork.empty': 'Укажите директиву. Использование: /fork <directive>',
+  'fork.failed': (v) => `Не удалось запустить fork: ${v?.reason ?? ''}`,
+  'fork.notStarted': 'Фоновый агент не был запущен.',
+  'fork.started': (v) =>
+    `Запущен фоновый агент: «${v?.name ?? ''}». Отслеживайте его в фоновых задачах.`,
+  'command.hidden': 'Эта команда недоступна.',
+  'bug.failed':
+    'Не удалось загрузить информацию о системе для отчёта об ошибке.',
+  'bug.popupBlocked':
+    'Всплывающее окно заблокировано: разрешите всплывающие окна и попробуйте снова.',
+  'bug.submitted': 'Отчёт об ошибке открыт в новой вкладке.',
+  'clear.blocked':
+    'Нельзя очистить во время потоковой передачи: сначала отмените (Esc).',
+  'error.unknown': 'Неизвестная ошибка',
+  'error.modelStreamInterrupted':
+    'Поток ответа модели был прерван. Повторите попытку.',
+  'error.loopDetected':
+    'Модель застряла при использовании инструментов или достигла предела безопасности, поэтому этот ход был остановлен. Ваша сессия по-прежнему открыта, попробуйте дать более конкретную инструкцию, чтобы продолжить.',
+  'shell.command': 'Команда командной строки',
+  'slash.category.custom': 'Пользовательские команды',
+  'slash.category.skill': 'Команды навыков',
+  'slash.category.system': 'Системные команды',
+  'localCommand.noSession':
+    'Пока нет активной сессии. Отправьте первое сообщение, прежде чем использовать эту команду.',
+  'localCommand.diffNoWorkspace':
+    'Пока нет доступной рабочей папки, чтобы показать изменения.',
+  'localCommand.logNoWorkspace':
+    'Пока нет доступной рабочей папки, чтобы показать историю.',
+  'localCommand.prsNoWorkspace':
+    'Пока нет доступной рабочей папки, чтобы показать pull request.',
+  'localCommand.prsUnsupported':
+    'Этот демон не поддерживает список pull request.',
+  'local.agents': 'Управление подагентами',
+  'local.bug': 'Отправить отчёт об ошибке',
+  'local.compress': 'Сжать контекст в резюме',
+  'local.compressFast': 'Быстрое сжатие контекста без ИИ',
+  'local.config': 'Получить или задать любую настройку по ключу через точку',
+  'local.diff':
+    'Показать статистику изменений рабочего дерева относительно HEAD',
+  'local.log': 'Показать историю коммитов рабочей папки',
+  'local.prs': 'Показать открытые pull request GitHub для рабочей папки',
+  'local.directory': 'Управление каталогами рабочих папок',
+  'local.docs': 'Открыть полную документацию Довод',
+  'local.doctor': 'Запустить диагностику установки и окружения',
+  'local.dream': 'Объединить файлы тем управляемой автопамяти',
+  'local.effort':
+    'Задать уровень усилий для рассуждений у поддерживающих моделей',
+  'local.export': 'Экспортировать историю текущей сессии в файл',
+  'local.forget': 'Удалить подходящие записи из управляемой автопамяти',
+  'local.hooks': 'Управление хуками',
+  'local.importConfig': 'Импортировать MCP-серверы из конфигураций Claude',
+  'local.init': 'Проанализировать проект и создать файл QWEN.md',
+  'local.insight': 'Сформировать инсайты по программированию из истории чата',
+  'local.lsp': 'Показать статус LSP-сервера',
+  'local.remember': 'Сохранить постоянную запись в систему памяти',
+  'local.summary': 'Сформировать файл сводки по проекту',
+  'local.workflows':
+    'Показать список запусков workflow или совместно приостановить/возобновить текущий запуск',
+  'skilldesc.batch':
+    'Выполнить пакетные операции над множеством файлов параллельно',
+  'skilldesc.dataviz':
+    'Рекомендации по оформлению графиков и визуализаций данных',
+  'skilldesc.extensionCreator':
+    'Создание, тестирование и настройка расширений Довод',
+  'skilldesc.goalDraft':
+    'Превратить смутное намерение в проверяемую цель /goal',
+  'skilldesc.loop':
+    'Выполнять запрос по расписанию или с самостоятельными пробуждениями',
+  'skilldesc.newApp': 'Workflow для создания нового приложения с нуля',
+  'skilldesc.qcHelper': 'Отвечать на вопросы об использовании Довод',
+  'skilldesc.review':
+    'Проверять изменённый код на ошибки, безопасность и качество',
+  'skilldesc.simplify':
+    'Упростить недавние изменения для повторного использования',
+  'skilldesc.stuck': 'Диагностировать зависшие или медленные сессии Довод',
+  'skilldesc.agentReproduceAlign':
+    'Согласовать перенесённую функцию Codex/Claude Code с оригиналом',
+  'skilldesc.agentReproduceFeature':
+    'Воспроизвести существующую функцию Codex/Claude Code',
+  'skilldesc.autofix':
+    'Проверить и исправить локальные изменения или запустить workflow Autofix репозитория',
+  'skilldesc.bugfix':
+    'Исправить ошибку из issue GitHub, сначала воспроизведя её',
+  'skilldesc.codegraph':
+    'Анализировать кодовую базу через граф и векторный индекс',
+  'skilldesc.createIssue': 'Составить и отправить issue GitHub из идеи',
+  'skilldesc.docsAuditAndRefresh':
+    'Проверить и обновить docs/ в соответствии с кодовой базой',
+  'skilldesc.docsUpdateFromDiff':
+    'Обновить официальную документацию по локальному git diff',
+  'skilldesc.e2eTesting': 'Запустить сквозные (e2e) тесты CLI Довод',
+  'skilldesc.featDev': 'Полный workflow для нетривиальной функции',
+  'skilldesc.memoryLeakDebug':
+    'Диагностировать утечки памяти CLI через снимки кучи',
+  'skilldesc.preparePr': 'Подготовить заголовок и описание PR GitHub по ветке',
+  'skilldesc.qwenCodeClaw': 'Использовать Довод как агент для понимания кода',
+  'skilldesc.structuredDebugging':
+    'Методология на основе гипотез для сложных ошибок',
+  'skilldesc.terminalCapture':
+    'Автоматизировать тестирование скриншотов терминального интерфейса',
+  'skilldesc.tmuxRealUserTesting':
+    'Тестирование с реальным пользователем через tmux с сохранением логов',
+  'skilldesc.triage': 'Сортировать и проверять issue и PR Довод',
+  'local.approvalMode': 'Изменить режим подтверждения',
+  'local.auth': 'Подключить провайдера LLM',
+  'auth.step.group': 'Тип',
+  'auth.step.provider': 'Провайдер',
+  'auth.step.protocol': 'Протокол',
+  'auth.step.baseUrl': 'Базовый URL',
+  'auth.step.apiKey': 'API-ключ',
+  'auth.step.models': 'ID моделей',
+  'auth.step.advanced': 'Расширенная конфигурация',
+  'auth.protocol.openai': 'Совместимый с OpenAI',
+  'auth.protocol.openaiDesc':
+    'Стандартный формат API OpenAI (самый распространённый)',
+  'auth.protocol.anthropic': 'Совместимый с Anthropic',
+  'auth.protocol.anthropicDesc': 'Формат Messages API от Anthropic',
+  'auth.protocol.gemini': 'Совместимый с Gemini',
+  'auth.protocol.geminiDesc': 'Формат API Google Gemini',
+  'auth.apiKeyRequired': 'API-ключ не может быть пустым.',
+  'auth.baseUrlInvalid':
+    'Базовый URL должен начинаться с http:// или https://.',
+  'auth.baseUrlPrompt': 'Введите конечную точку API для этого протокола.',
+  'auth.baseUrlRequired': 'Базовый URL не может быть пустым.',
+  'auth.documentation': 'Документация',
+  'auth.modelsRequired': 'ID моделей не может быть пустым.',
+  'auth.review': 'Проверка',
+  'auth.reviewText': 'Следующий JSON будет сохранён в settings.json:',
+  'auth.save': 'Сохранить',
+  'auth.saving': 'Сохранение...',
+  'auth.termsTitle': 'Условия использования и политика конфиденциальности',
+  'auth.continue': 'Продолжить',
+  'auth.modelsPrompt': (v) =>
+    `Введите идентификаторы моделей через запятую. Примеры: ${v?.modelIds ?? ''}`,
+  'auth.advanced.prompt':
+    'Необязательно: настройте расширенные параметры генерации.',
+  'auth.advanced.thinking': 'Включить размышления',
+  'auth.advanced.thinkingDesc':
+    'Позволяет модели проводить расширенные рассуждения перед ответом.',
+  'auth.advanced.modality': 'Включить модальность',
+  'auth.advanced.modalityDesc':
+    'Включает возможности мультимодального ввода (изображения, видео и т.д.).',
+  'auth.advanced.modalityImage': 'Изображение',
+  'auth.advanced.modalityVideo': 'Видео',
+  'auth.advanced.modalityAudio': 'Аудио',
+  'auth.advanced.modalityPdf': 'PDF',
+  'auth.advanced.contextWindow': 'Контекстное окно',
+  'auth.advanced.contextDesc':
+    'Максимум входных токенов (оставьте пустым для автоопределения по названию модели).',
+  'auth.advanced.contextPlaceholder': 'Контекстное окно (необязательно)',
+  'local.btw':
+    'Задать короткий побочный вопрос, не затрагивая основной диалог. Использование: /btw <ваш вопрос>',
+  'btw.empty': 'Укажите вопрос. Использование: /btw <ваш вопрос>',
+  'btw.side.empty': 'Укажите вопрос. Использование: /btw side <ваш вопрос>',
+  'btw.emptyAnswer': 'Ответ не получен.',
+  'btw.failed': 'Не удалось ответить на вопрос btw',
+  'btw.answering': '+ Отвечаю...',
+  'btw.shortcuts.pending': 'Нажмите Escape, Ctrl+C или Ctrl+D для отмены',
+  'btw.shortcuts.done': 'Нажмите Space, Enter или Escape, чтобы закрыть',
+  'local.clear':
+    'Начать новую сессию с пустым контекстом: предыдущая сессия остаётся на диске (можно возобновить командой /resume)',
+  'local.context':
+    'Показать разбивку использования контекстного окна. Используйте "/context detail" для детализации по элементам.',
+  'local.copy': 'Скопировать последний вывод или фрагмент',
+  'local.delete': 'Удалить сессию без возможности восстановления',
+  'local.release': 'Освободить активную сессию',
+  'local.rewind': 'Отмотать текущий диалог назад',
+  'local.branch': 'Разветвить текущий диалог в новую сессию',
+  'local.fork': 'Запустить фонового агента из этого диалога',
+  'local.help': 'Показать справку и команды',
+  'local.language': 'Изменить язык интерфейса',
+  'local.mcp': 'Управление MCP-серверами',
+  'local.memory': 'Управление памятью',
+  'local.model': 'Сменить модель или задать быструю модель',
+  'local.new': 'Начать новый диалог',
+  'local.plan': 'Перейти в режим планирования',
+  'local.goal': 'Задать цель и продолжать работу до её достижения',
+  'local.recap': 'Сформировать сводку сессии',
+  'recap.label': 'Сводка',
+  'recap.loading': 'Формирование сводки...',
+  'recap.empty': 'Недостаточно контекста диалога для формирования сводки.',
+  'recap.failed': 'Не удалось сформировать сводку',
+  'rewind.action': 'Отмотать',
+  'rewind.confirm': 'Подтвердить отмотку',
+  'rewind.empty': 'Для этой сессии нет доступных точек отмотки.',
+  'rewind.failed': (v) => `Не удалось отмотать сессию: ${v?.reason ?? ''}`,
+  'rewind.loading': 'Загрузка точек отмотки...',
+  'rewind.promptFallback': (v) => `Запрос ${v?.id ?? ''}`,
+  'rewind.rewinding': 'Отмотка...',
+  'rewind.subtitle': 'Отматывается только диалог. Файлы не изменяются.',
+  'rewind.turn': (v) => `Запрос ${v?.turn ?? 0}`,
+  'local.rename': 'Переименовать текущую сессию',
+  'rename.empty':
+    'Введите название сессии, например /rename project debugging, или используйте /rename --auto.',
+  'rename.success': (v) => `Сессия переименована в ${v?.name ?? ''}`,
+  'local.reset': 'Сбросить текущий диалог',
+  'local.resume': 'Возобновить предыдущую сессию',
+  'local.skills': 'Просмотреть доступные навыки',
+  'local.stats': 'Показать статистику сессии',
+  'local.tasks': 'Просмотреть фоновые задачи',
+  'local.status': 'Показать информацию о версии',
+  'local.theme': 'Изменить тему',
+  'local.settings': 'Просмотреть и изменить настройки',
+  'local.schedule': 'Управление запланированными задачами',
+  'local.extensions':
+    'Управление расширениями. Использование: /extensions manage|install <источник>',
+  'extensions.label': 'расширение',
+  'extensions.action.failed': (v) =>
+    `Не удалось выполнить действие с расширением${
+      v?.name ? ` for "${v.name}"` : v?.source ? ` from "${v.source}"` : ''
+    }: ${v?.error ?? 'Unknown error'}`,
+  'extensions.commands.refreshFailed':
+    'Не удалось обновить команды расширения.',
+  'extensions.install.failed': (v) =>
+    `Не удалось установить расширение${
+      v?.source ? ` from "${v.source}"` : ''
+    }: ${v?.error ?? 'Unknown error'}`,
+  'extensions.manage.agents': 'Агенты:',
+  'extensions.manage.actions': 'Действия с расширением',
+  'extensions.manage.add': 'Добавить',
+  'extensions.manage.checkingUpdates': 'Проверка обновлений...',
+  'extensions.manage.checkUpdates': 'Проверить обновления',
+  'extensions.manage.commands': 'Команды:',
+  'extensions.manage.contextFiles': 'Файлы контекста:',
+  'extensions.manage.count': (v) => `${v?.count ?? 0} расширений установлено`,
+  'extensions.manage.setting.disabled': 'Отключено',
+  'extensions.manage.setting.default': 'По умолчанию',
+  'extensions.manage.setting.enabled': 'Включено',
+  'extensions.manage.setting.unknown': 'Недоступно',
+  'extensions.manage.setting.unavailableDescription':
+    'Служба не вернула настройки расширений для этой области. Перезапустите dovod serve и попробуйте снова.',
+  'extensions.manage.userSetting': 'Глобальная настройка',
+  'extensions.manage.userSettingDescription':
+    'Применяется ко всем вашим рабочим папкам, если настройка рабочей папки её не переопределяет.',
+  'extensions.manage.workspaceSetting': 'Настройка рабочей папки',
+  'extensions.manage.workspaceSettingDescription':
+    'Применяется только к текущей рабочей папке.',
+  'extensions.manage.disable': 'Отключить расширение',
+  'extensions.manage.disabled': (v) =>
+    `Расширение "${v?.name ?? 'extension'}" отключено.`,
+  'extensions.manage.disabling': (v) =>
+    `Отключение расширения "${v?.name ?? 'extension'}"…`,
+  'extensions.manage.inherited': (v) =>
+    `Расширение "${v?.name ?? 'extension'}" теперь использует глобальную настройку.`,
+  'extensions.manage.inheriting': (v) =>
+    `Сброс расширения "${v?.name ?? 'extension'}" к глобальной настройке…`,
+  'extensions.manage.empty': 'Расширения не установлены.',
+  'extensions.manage.emptyAgents': 'У этого расширения нет агентов.',
+  'extensions.manage.emptyCommands': 'У этого расширения нет команд.',
+  'extensions.manage.emptyContextFiles':
+    'У этого расширения нет файлов контекста.',
+  'extensions.manage.emptyDescription':
+    'Установите расширение, чтобы добавить команды, навыки, агентов или MCP-серверы.',
+  'extensions.manage.emptyMcpServers': 'У этого расширения нет MCP-серверов.',
+  'extensions.manage.emptySkills': 'У этого расширения нет навыков.',
+  'extensions.manage.enable': 'Включить расширение',
+  'extensions.manage.enabled': (v) =>
+    `Расширение "${v?.name ?? 'extension'}" включено.`,
+  'extensions.manage.enabling': (v) =>
+    `Включение расширения "${v?.name ?? 'extension'}"…`,
+  'extensions.manage.install': 'Установить',
+  'extensions.manage.installDescription':
+    'Укажите источник GitHub, Git или npm, либо загрузите архив расширения.',
+  'extensions.manage.sourceTab': 'Источник',
+  'extensions.manage.archiveTab': 'Архив',
+  'extensions.manage.archiveSelect': 'Выберите архив .zip или .tar.gz.',
+  'extensions.manage.archiveSelected': (v) =>
+    `Выбран архив: ${v?.name ?? 'extension archive'}`,
+  'extensions.manage.archiveTooLarge':
+    'Архив расширения должен быть не больше 10 МБ.',
+  'extensions.manage.archiveEmpty': 'Выбранный архив расширения пуст.',
+  'extensions.manage.archiveInvalid':
+    'Выберите архив расширения .zip или .tar.gz с корректным именем файла длиной до 255 байт.',
+  'extensions.manage.installSelectPluginDescription': (v) =>
+    `Выберите плагин из "${v?.marketplace ?? 'this marketplace'}".`,
+  'extensions.manage.installTitle': 'Добавить расширение',
+  'extensions.manage.installType': 'Тип установки:',
+  'extensions.manage.mcpServers': 'MCP-серверы:',
+  'extensions.manage.marketplaceRoot': 'Корень маркетплейса',
+  'extensions.manage.name': 'Название:',
+  'extensions.manage.notUpdatable': 'нельзя обновить',
+  'extensions.manage.operationFailed': 'Операция с расширением не выполнена.',
+  'extensions.manage.noDescription': 'Без описания',
+  'extensions.manage.noMatches': 'Совпадающих расширений не найдено.',
+  'extensions.manage.origin': 'Источник:',
+  'extensions.manage.overview': 'Обзор',
+  'extensions.manage.path': 'Путь:',
+  'extensions.manage.queued': (v) =>
+    `Действие с расширением "${v?.name ?? 'extension'}" поставлено в очередь.`,
+  'extensions.manage.refreshFailed': (v) =>
+    `Действие с расширением выполнено, но не удалось обновить сессию${
+      v?.error ? `: ${v.error}` : '.'
+    }`,
+  'extensions.manage.restartRequired': 'обновлено, требуется перезапуск',
+  'extensions.manage.search': 'Поиск расширений…',
+  'extensions.manage.selectExtension': 'Выберите расширение',
+  'extensions.manage.settings': 'Настройки:',
+  'extensions.manage.skills': 'Навыки:',
+  'extensions.manage.source': 'Источник:',
+  'extensions.manage.sourcePlaceholder': 'https://github.com/owner/repository',
+  'extensions.manage.status': 'Статус:',
+  'extensions.manage.status.disabled': 'отключено',
+  'extensions.manage.status.enabled': 'включено',
+  'extensions.manage.title': 'Управление расширениями',
+  'extensions.manage.unknownUpdate': 'неизвестно',
+  'extensions.manage.uninstalled': (v) =>
+    `Расширение "${v?.name ?? 'extension'}" удалено.`,
+  'extensions.manage.uninstalling': (v) =>
+    `Удаление расширения "${v?.name ?? 'extension'}"…`,
+  'extensions.manage.uninstallAction': 'Удалить расширение',
+  'extensions.manage.uninstallConfirm': (v) =>
+    `Удалить расширение "${v?.name ?? 'extension'}"?`,
+  'extensions.manage.upToDate': 'актуальная версия',
+  'extensions.manage.update': 'Обновить расширение',
+  'extensions.manage.updateAvailable': 'доступно обновление',
+  'extensions.manage.updateError': 'не удалось проверить обновления',
+  'extensions.manage.updateComplete': 'обновлено',
+  'extensions.manage.updatedWithWarnings': 'обновлено с предупреждениями',
+  'extensions.manage.updateStatus': 'Статус обновления:',
+  'extensions.manage.updating': 'обновление…',
+  'extensions.manage.updatingExtension': (v) =>
+    `Обновление расширения "${v?.name ?? 'extension'}"…`,
+  'extensions.manage.updated': (v) =>
+    `Расширение "${v?.name ?? 'extension'}" обновлено.`,
+  'extensions.manage.updatedWithVersion': (v) =>
+    `Расширение "${v?.name ?? 'extension'}" обновлено до версии v${v?.version ?? ''}.`,
+  'extensions.manage.version': 'Версия:',
+  'extensions.manage.viewDetails': 'Подробнее',
+  'extensions.install.installed': (v) =>
+    `Расширение "${v?.name ?? 'extension'}" установлено.`,
+  'extensions.install.installedWithVersion': (v) =>
+    `Расширение "${v?.name ?? 'extension'}" v${v?.version ?? ''} установлено.`,
+  'extensions.install.missingOptionValue': (v) =>
+    `Отсутствует значение для ${v?.option ?? 'option'}`,
+  'extensions.install.requestFailed': 'Не удалось установить расширение',
+  'extensions.install.started': (v) =>
+    `Установка расширения из "${v?.source ?? ''}"...`,
+  'extensions.install.unknownOption': (v) =>
+    `Неизвестный параметр ${v?.option ?? ''}`,
+  'extensions.install.usage':
+    'Использование: /extensions manage|install <источник>',
+  'extensions.install.waitForSession':
+    'Дождитесь подключения сессии перед установкой расширения.',
+  'local.tools': 'Список доступных инструментов. Использование: /tools [desc]',
+  'loadWarning.commands':
+    'Не удалось загрузить список команд: слэш-команды могут быть неполными.',
+  'loadWarning.context':
+    'Не удалось загрузить контекст сессии: текущий режим может отображаться неточно.',
+  'loadWarning.models':
+    'Не удалось загрузить список моделей: некоторые сведения о моделях могут быть недоступны.',
+  'mcp.action.auth': 'Авторизоваться',
+  'mcp.action.authHint': 'Пока не поддерживается демоном',
+  'mcp.action.authMessage': 'Демон serve пока не поддерживает авторизацию MCP.',
+  'mcp.action.clearAuth': 'Очистить авторизацию',
+  'mcp.action.disable': 'Отключить',
+  'mcp.action.done': (v) => `${v?.action ?? 'Action'} завершено.`,
+  'mcp.action.enable': 'Включить',
+  'mcp.action.enableMessage':
+    'Демон serve пока не поддерживает включение/отключение MCP.',
+  'mcp.action.failed': (v) => `Ошибка: ${v?.error ?? ''}`,
+  'mcp.action.running': (v) => `${v?.action ?? 'Action'}...`,
+  'mcp.action.reauth': 'Повторная авторизация',
+  'mcp.action.approve': 'Подтвердить',
+  'mcp.actions': 'Действия сервера',
+  'mcp.annotation.destructive': 'деструктивное',
+  'mcp.annotation.idempotent': 'идемпотентное',
+  'mcp.annotation.openWorld': 'открытый мир',
+  'mcp.annotation.readOnly': 'только чтение',
+  'mcp.annotations': 'Аннотации',
+  'mcp.oauth.server': 'Сервер',
+  'mcp.oauth.starting': (v) =>
+    `Запуск OAuth-авторизации для MCP-сервера '${v?.name ?? ''}'...`,
+  'mcp.oauth.title': 'OAuth-авторизация',
+  'mcp.oauth.timeout':
+    'Истекло время ожидания авторизации. Обновите, чтобы проверить статус.',
+  'mcp.oauth.authenticationFailed': 'Авторизация не выполнена.',
+  'mcp.oauth.statusFailed': 'Не удалось проверить статус авторизации.',
+  'mcp.oauth.serverRemoved': 'MCP-сервер был удалён во время авторизации.',
+  'mcp.clientBudget': (v) =>
+    `${v?.count ?? 0}/${v?.budget ?? 0} клиентов · ${v?.mode ?? 'off'}`,
+  'mcp.command': 'Команда',
+  'mcp.description': 'Описание:',
+  'mcp.descriptionTitle': 'Описание',
+  'mcp.basicInfo': 'Основная информация',
+  'mcp.action.reconnect': 'Переподключить',
+  'mcp.action.edit': 'Изменить',
+  'mcp.reconnect.skipped': (v) =>
+    `Переподключение не завершено: ${v?.reason ?? 'unknown reason'}.`,
+  'mcp.reconnect.authenticationRequired':
+    'Перед переподключением требуется авторизация.',
+  'mcp.action.restart': 'Перезапустить',
+  'mcp.action.tools': 'Просмотреть инструменты',
+  'mcp.action.toolsHint': 'Enter для просмотра',
+  'mcp.emptyDescription': 'Добавьте MCP-сервер, чтобы управлять им здесь.',
+  'mcp.emptyTools': 'Инструменты не найдены.',
+  'mcp.expand': 'Развернуть MCP-сервер',
+  'mcp.collapse': 'Свернуть MCP-сервер',
+  'mcp.inputSchema': 'Схема входных данных',
+  'mcp.loadingStatus': 'Загрузка статуса MCP...',
+  'mcp.loadingTools': 'Загрузка инструментов...',
+  'mcp.name': 'Название',
+  'mcp.noDescription': 'Без описания',
+  'mcp.noMatches': 'Совпадающих MCP-серверов не найдено.',
+  'mcp.add.button': 'Добавить',
+  'mcp.add.adding': 'Добавление MCP-сервера…',
+  'mcp.add.title': 'Добавить MCP-сервер',
+  'mcp.add.description':
+    'Сохранить MCP-сервер в этой рабочей папке с названием и конфигурацией.',
+  'mcp.add.name': 'Название',
+  'mcp.add.serverDescription': 'Описание',
+  'mcp.add.serverDescriptionPlaceholder': 'Опишите этот MCP-сервер',
+  'mcp.add.scope': 'Расположение',
+  'mcp.add.scope.global': 'Глобально',
+  'mcp.add.nameRequired': 'Введите название MCP-сервера.',
+  'mcp.add.config': 'Конфигурация (JSON)',
+  'mcp.add.configInvalid': 'Конфигурация должна быть объектом JSON.',
+  'mcp.add.done': (v) => `Добавлено: ${v?.name ?? 'MCP server'}.`,
+  'mcp.edit.title': 'Изменить MCP-сервер',
+  'mcp.edit.description':
+    'Измените описание или конфигурацию. Название и расположение изменить нельзя.',
+  'mcp.edit.save': 'Сохранить изменения',
+  'mcp.edit.saving': 'Сохранение изменений…',
+  'mcp.edit.done': (v) => `Обновлено: ${v?.name ?? 'MCP server'}.`,
+  'mcp.edit.notFound': 'MCP-сервер больше не найден в настройках.',
+  'mcp.runtime.notUpdated':
+    'Конфигурация сохранена, но текущая сессия не обновлена.',
+  'mcp.runtime.removeNotUpdated':
+    'Конфигурация удалена, но текущая сессия не обновлена.',
+  'mcp.discovery.empty': 'MCP-серверы не настроены.',
+  'mcp.discovery.timeout':
+    'Обнаружение MCP занимает больше времени, чем ожидалось. Обновите, чтобы проверить снова.',
+  'mcp.add.settingsUnavailable': 'Настройки рабочей папки недоступны.',
+  'mcp.action.remove': 'Удалить',
+  'mcp.remove.title': 'Удалить MCP-сервер',
+  'mcp.remove.description': (v) =>
+    `Удалить MCP-сервер “${v?.name ?? ''}” из этой рабочей папки?`,
+  'mcp.remove.description.global': (v) =>
+    `Удалить MCP-сервер “${v?.name ?? ''}” из глобальных настроек?`,
+  'mcp.remove.done': (v) => `Удалено: ${v?.name ?? 'MCP server'}.`,
+  'mcp.remove.notWorkspace':
+    'Этот MCP-сервер не определён в настройках рабочей папки.',
+  'mcp.source.all': 'Все',
+  'mcp.noSchema': 'Нет схемы входных данных.',
+  'mcp.oauth.open': 'Открыть страницу авторизации',
+  'mcp.serverTool': 'Инструмент сервера',
+  'mcp.servers': (v) => `${v?.count ?? 0} серверов`,
+  'mcp.configuredServers': 'Настроенные MCP-серверы:',
+  'mcp.fromExtension': (v) => `(из ${v?.name ?? ''})`,
+  'mcp.extensionMcp': 'MCP расширения',
+  'mcp.invalidReason': (v) => `недействительно: ${v?.reason ?? ''}`,
+  'mcp.invalidReasonLabel': 'Причина:',
+  'mcp.invalidToolHelp':
+    'Чтобы инструмент можно было использовать в LLM, у него должны быть и название, и описание.',
+  'mcp.invalidToolWarning':
+    'Предупреждение: этот инструмент не может быть вызван LLM',
+  'mcp.manageServers': 'Управление MCP-серверами',
+  'mcp.viewDetails': 'Подробнее',
+  'mcp.parameters': 'Параметры:',
+  'mcp.required': ' обязательно',
+  'mcp.resources': 'Ресурсы',
+  'mcp.resourcesUnavailable': 'Сведения о ресурсе недоступны.',
+  'mcp.noResources': 'Нет ресурсов.',
+  'mcp.resourceCount': (v) =>
+    `${v?.count ?? 0} ${v?.count === 1 ? 'resource' : 'resources'}`,
+  'mcp.promptCount': (v) =>
+    `${v?.count ?? 0} ${v?.count === 1 ? 'prompt' : 'prompts'}`,
+  'mcp.resource.uriLabel': 'URI:',
+  'mcp.resource.nameLabel': 'Название:',
+  'mcp.resource.mimeTypeLabel': 'MIME-тип:',
+  'mcp.resource.sizeLabel': 'Размер:',
+  'mcp.resource.bytes': (v) =>
+    `${v?.count ?? 0} ${v?.count === 1 ? 'byte' : 'bytes'}`,
+  'mcp.scrollPosition': (v) => `${v?.current ?? 0}/${v?.total ?? 0}`,
+  'mcp.shortcut.back': 'Esc назад',
+  'mcp.shortcut.close': 'Esc закрыть',
+  'mcp.shortcut.selectBack': '↑↓ навигация · Enter выбрать · Esc назад',
+  'mcp.shortcut.selectClose': '↑↓ навигация · Enter выбрать · Esc закрыть',
+  'mcp.settings': 'Настройки',
+  'mcp.extension': (v) => `Расширение: ${v?.name ?? ''}`,
+  'mcp.starting': (v) =>
+    `⏳ Запуск MCP-серверов (${v?.count ?? 0} инициализируется)...`,
+  'mcp.startingNote':
+    'Примечание: первый запуск может занять больше времени. Доступность инструментов обновится автоматически.',
+  'mcp.restartSkipped': (v) =>
+    `Пропущено: ${v?.name ?? ''}: ${v?.reason ?? ''}`,
+  'mcp.restarted': (v) =>
+    `Перезапущено: ${v?.name ?? ''} за ${v?.duration ?? 0}мс`,
+  'mcp.restartEntries': (v) =>
+    `Перезапущено: ${v?.restarted ?? 0}/${v?.total ?? 0} ${v?.name ?? ''} записей${v?.failedReasons ? ` (failed: ${v.failedReasons})` : ''}`,
+  'mcp.source': 'Источник',
+  'mcp.source.extension': 'Расширение',
+  'mcp.source.project': 'MCP проекта (.mcp.json)',
+  'mcp.source.workspace': 'Настройки рабочей папки',
+  'mcp.source.user': 'Глобальные настройки',
+  'mcp.status': 'Статус',
+  'mcp.status.blocked': 'Заблокировано',
+  'mcp.status.authenticating': 'Авторизация...',
+  'mcp.status.authenticationFailed': 'Авторизация не выполнена',
+  'mcp.status.needsAuthentication': 'Требуется авторизация',
+  'mcp.status.needsApproval': 'Требуется подтверждение',
+  'mcp.status.rejected': 'Отклонено',
+  'mcp.status.connected': 'подключено',
+  'mcp.status.connecting': 'подключение',
+  'mcp.status.disconnected': 'отключено',
+  'mcp.status.disconnectedTitle': 'Отключено',
+  'mcp.status.disabled': 'выключено',
+  'mcp.status.ready': 'Готово',
+  'mcp.status.starting':
+    'Запуск... (первый запуск может занять больше времени)',
+  'mcp.status.unknown': 'неизвестно',
+  'mcp.tipDesc': 'чтобы показать описания сервера и инструментов',
+  'mcp.tipNodesc': 'чтобы скрыть описания',
+  'mcp.tipSchema': 'чтобы показать схемы параметров инструментов',
+  'mcp.tips': '💡 Советы:',
+  'mcp.toolCount': (v) => `${v?.count ?? 0} инструмент`,
+  'mcp.toolsCount': (v) => `${v?.count ?? 0} инструментов`,
+  'mcp.toolsLabel': 'Инструменты:',
+  'mcp.toolDetail': 'Сведения об инструменте',
+  'mcp.tools': 'Инструменты',
+  'mcp.toolsForServer': (v) => `Инструменты сервера ${v?.name ?? 'Server'}`,
+  'mcp.transport': 'Транспортный протокол',
+  'mcp.use': 'Использовать',
+  'mcp.userMcp': 'Глобальный MCP',
+  'mcp.workingDirectory': 'Рабочая папка',
+  'goal.aborted': 'Цель прервана',
+  'goal.usageLimited': 'Цель приостановлена: лимит использования',
+  'goal.paused': 'Цель приостановлена',
+  'goal.achieved': 'Цель достигнута',
+  'goal.check': 'Проверка цели',
+  'goal.cleared': 'Цель очищена',
+  'goal.failed': 'Цель не удалось достичь',
+  'goal.judge': 'Оценщик',
+  'goal.label': 'Цель',
+  'goal.lastCheck': 'Последняя проверка',
+  'goal.notYetMet': 'ещё не достигнута',
+  'goal.set': 'Цель установлена',
+  'goal.statusActive': '/goal active',
+  'goal.status.active': 'В процессе',
+  'goal.status.paused': 'Приостановлено',
+  'goal.status.blocked': 'Заблокировано',
+  'goal.status.usage_limited': 'Лимит использования',
+  'goal.status.complete': 'Завершено',
+  'goal.activity.idle': 'Ожидание',
+  'goal.activity.running': 'Выполняется',
+  'goal.activity.verifying': 'Проверка',
+  'goal.edit': 'Изменить цель',
+  'goal.pause': 'Приостановить цель',
+  'goal.resume': 'Возобновить цель',
+  'goal.turn': (v) => `${v?.count ?? 0} ход`,
+  'goal.turnLabel': (v) => `ход ${v?.count ?? 0}`,
+  'goal.turns': (v) => `${v?.count ?? 0} ходов`,
+  'goals.subtitle':
+    'Цель поддерживает работу своей сессии, пока условие не выполнено. Здесь отображаются только сессии, которые сейчас загружены: цель продвигается, только пока выполняется её сессия.',
+  'goals.loading': 'Загрузка целей…',
+  'goals.count': (v) =>
+    `${v?.count ?? 0} активных ${Number(v?.count) === 1 ? 'goal' : 'goals'}`,
+  'goals.empty':
+    'Нет активных целей. Установите цель с помощью /goal <condition>.',
+  'goals.refresh': 'Обновить',
+  'goals.new': 'Новая цель',
+  'goals.newHint':
+    'Цель запускается в новой сессии и выполняется, пока не выполнится её условие.',
+  'goals.condition': 'Условие',
+  'goals.conditionPlaceholder':
+    'например: `npm test` завершается с кодом 0, а `npm run lint` не выдаёт предупреждений (вставьте вывод); не изменять тестовые файлы; остановиться как заблокированную через 20 ходов',
+  'goals.cancel': 'Отмена',
+  'goals.create': 'Установить цель',
+  'goals.creating': 'Запуск…',
+  'goals.saving': 'Сохранение…',
+  'goals.save': 'Сохранить',
+  'goals.edit': 'Изменить цель',
+  'goals.objective': 'Задача',
+  'goals.clear': 'Очистить цель',
+  'goals.clearConfirm': (v) => `Очистить цель "${v?.condition ?? ''}"?`,
+  'goals.running': 'Выполняется',
+  'goals.idle': 'Ожидание',
+  'goals.dropped': (v) =>
+    `${v?.count ?? 0} сессия${Number(v?.count) === 1 ? '' : 's'} недоступна: любые цели, которые они выполняют, отсутствуют в этом списке.`,
+  'goals.notYetEvaluated': 'ещё не оценено',
+  'goals.openSessionHint': 'Открыть сессию этой цели',
+  'goals.error.emptyCondition': 'Введите условие для цели.',
+  'goals.error.clearKeyword': (v) =>
+    `"${v?.word ?? ''}" очищает цель, а не устанавливает её. Опишите условие, к которому нужно стремиться.`,
+  'goals.error.createFailed': 'Не удалось запустить цель',
+  'goals.error.saveFailed': 'Не удалось сохранить цель',
+  'goals.error.goalUnavailable': 'Цель больше недоступна.',
+  'goals.error.requiresObjective': (v) =>
+    `/goal ${v?.keyword ?? 'set'} требует указания цели.`,
+  'goals.error.invalidCommand': 'Недопустимая команда /goal',
+  'goals.error.goalsUnavailable':
+    'Просмотр целей недоступен в этом интерфейсе.',
+  'goals.error.attachmentsUnsupported':
+    'Удалите вложения перед использованием /goal.',
+  'goals.error.editFailed': 'Не удалось изменить цель',
+  'goals.error.pauseFailed': 'Не удалось приостановить цель',
+  'goals.error.resumeFailed': 'Не удалось возобновить цель',
+  'goals.error.clearFailed': 'Не удалось очистить цель',
+  'goals.error.controlBusy':
+    'Другое действие с целью ещё выполняется. Повторите попытку после его завершения.',
+  'memory.add': 'Добавить',
+  'memory.add.desc': 'Записать долговременную память',
+  'memory.autoDream': (v) =>
+    `Автосон: ${v?.status ?? 'unknown'} · ${v?.lastDream ?? 'never'} · /dream для запуска`,
+  'memory.autoDreamUnsupported':
+    'Настройки автосна пока недоступны через web-shell.',
+  'memory.autoFolder': 'Открыть папку автопамяти',
+  'memory.autoMemory': (v) => `Автопамять: ${v?.status ?? 'unknown'}`,
+  'memory.autoMemoryUnsupported':
+    'Настройки автопамяти пока недоступны через web-shell.',
+  'memory.autoSkill': (v) => `Автонавык: ${v?.status ?? 'unknown'}`,
+  'memory.autoSkillUnsupported':
+    'Настройки автонавыка пока недоступны через web-shell.',
+  'memory.chooseScope': 'Выберите, куда сохранить память',
+  'memory.closed': 'Панель памяти закрыта.',
+  'memory.contentEmpty': 'Содержимое памяти пусто.',
+  'memory.file': 'Файл памяти',
+  'memory.fileOpen': 'Файл памяти открыт.',
+  'memory.fileTruncated': 'Файл памяти открыт. Содержимое усечено.',
+  'memory.files': 'Файлы памяти',
+  'memory.footer': 'Enter для подтверждения · Esc для отмены',
+  'memory.footer.back': 'Esc для возврата назад',
+  'memory.global': 'Пользователь',
+  'memory.global.desc': 'Сохраняется в глобальный файл памяти пользователя',
+  'memory.globalReadUnsupported':
+    'Глобальная память находится вне привязанной рабочей папки, поэтому текущий API чтения файлов демона не может открыть её содержимое.',
+  'memory.loadingFile': 'Загрузка файла памяти...',
+  'memory.lastDream': '5 часов назад',
+  'memory.menu': 'Память',
+  'memory.never': 'никогда',
+  'memory.noFiles': 'Файлы памяти не найдены.',
+  'memory.on': 'включено',
+  'memory.openFolderUnsupported':
+    'Открытие папки автопамяти пока недоступно через web-shell.',
+  'memory.placeholder': (v) => `Введите содержимое ${v?.scope ?? 'memory'}...`,
+  'memory.project': 'Проект',
+  'memory.project.desc': 'Сохраняется в файл памяти этой рабочей папки',
+  'memory.refresh': 'Обновить',
+  'memory.refresh.desc': 'Обновить сведения о файле памяти',
+  'memory.refreshed': 'Память обновлена.',
+  'memory.save': 'Сохранить память',
+  'memory.savedIn': (v) => `Сохранено в ${v?.path ?? ''}`,
+  'memory.saved': (v) =>
+    `${v?.scope ?? 'Memory'} сохранено: ${v?.bytes ?? 0} байт -> ${v?.path ?? ''}`,
+  'memory.saving': 'Сохранение...',
+  'memory.show': 'Показать',
+  'memory.show.desc': 'Показать настроенные файлы памяти',
+  'memory.status': 'Файлы памяти рабочей папки и пользователя',
+  'memory.unknown': 'неизвестно',
+  'memory.write': 'Ввести содержимое памяти',
+  'mode.auto': 'Подтверждение классификатором',
+  'mode.auto.desc':
+    'Использует классификатор для подтверждения безопасных вызовов инструментов и блокировки или запроса подтверждения для рискованных',
+  'mode.auto.notice':
+    'Автоматический режим включён. LLM-классификатор оценивает каждый вызов инструмента и автоматически подтверждает безопасные действия, блокирует рискованные. Чтобы выйти: Shift+Tab или /approval-mode default.',
+  'mode.name.plan': 'plan',
+  'mode.name.default': 'default',
+  'mode.name.auto-edit': 'auto-edit',
+  'mode.name.auto': 'auto',
+  'mode.name.yolo': 'yolo',
+  'mode.autoApproved': ((v) =>
+    v?.tool
+      ? `Автоматически подтверждено: ${v.tool}`
+      : 'Ожидающий вызов инструмента автоматически подтверждён переключением режима.') as MessageValue,
+  'plan.title': 'План',
+  'model.modality.text': 'текст',
+  'model.modality.textOnly': 'только текст',
+  'model.modality.image': 'изображение',
+  'model.modality.pdf': 'pdf',
+  'model.modality.audio': 'аудио',
+  'model.modality.video': 'видео',
+  'reasoning.options': 'Параметры',
+  'reasoning.thinking': 'Размышление',
+  'reasoning.thinkingOff': 'Размышление выключено',
+  'reasoning.effort': 'Усилие',
+  'reasoning.effort.low': 'Низкий',
+  'reasoning.effort.medium': 'Средний',
+  'reasoning.effort.high': 'Высокий',
+  'reasoning.effort.xhigh': 'Очень высокий',
+  'reasoning.effort.max': 'Максимальный',
+  'reasoning.updateFailed': 'Не удалось обновить параметры рассуждений',
+  'resume.current': 'текущая',
+  'resume.activePrompt': 'активный запрос',
+  'resume.filter': 'Фильтр',
+  'resume.noMatch': (v) => `Нет сессии, соответствующей "${v?.query ?? ''}"`,
+  'resume.none': 'Нет сессий для возобновления',
+  'resume.pressSearch': 'Нажмите / для поиска',
+  'parallelAgents.title': 'Параллельные агенты',
+  'parallelAgents.done': (v) => `${v?.done ?? 0}/${v?.total ?? 0} готово`,
+  'parallelAgents.failed': (v) => `${v?.count ?? 0} неудачных`,
+  'skills.actions': 'Действия с навыком',
+  'skills.disable': 'Отключить',
+  'skills.disabled': 'Навык отключён.',
+  'skills.enable': 'Включить',
+  'skills.enabled': 'Навык включён.',
+  'skills.install.action': 'Загрузить',
+  'skills.install.description':
+    'Установите навык из GitHub, локальной папки или ZIP-архива.',
+  'skills.install.error.authentication':
+    'Для загрузки навыков требуется аутентификация.',
+  'skills.install.error.folderRequired': 'Введите путь к папке.',
+  'skills.install.error.githubRequired':
+    'Введите URL файла SKILL.md на GitHub.',
+  'skills.install.error.invalidName':
+    'Имя навыка отсутствует или содержит недопустимые символы.',
+  'skills.install.error.manifestMissing':
+    'Пакет должен содержать файл SKILL.md в корневой папке.',
+  'skills.install.error.invalidPackage':
+    'Пакет навыка недействителен. Проверьте его структуру и содержимое SKILL.md.',
+  'skills.install.error.zipTooLarge': 'Файл ZIP не должен превышать 6 МБ.',
+  'skills.install.error.invalidFolder':
+    'Укажите корректную локальную папку навыка.',
+  'skills.install.error.githubFailed':
+    'Не удалось загрузить навык с GitHub. Проверьте URL или аутентификацию и повторите попытку.',
+  'skills.install.error.invalidScope':
+    'Выберите место установки: рабочая папка или глобально.',
+  'skills.install.error.invalidSource':
+    'Демон не распознаёт этот источник загрузки. Перезапустите обновлённый демон и повторите попытку.',
+  'skills.install.error.notFound': 'Запрошенный навык не найден.',
+  'skills.install.error.nameRequired': 'Введите имя навыка.',
+  'skills.install.error.untrusted':
+    'Прежде чем загружать навыки, подтвердите доверие к этой рабочей папке.',
+  'skills.install.failed': 'Не удалось загрузить навык.',
+  'skills.install.folder': 'Локальная папка',
+  'skills.install.folderPath': 'Путь к папке',
+  'skills.install.githubUrl': 'URL файла SKILL.md',
+  'skills.install.name': 'Имя навыка',
+  'skills.install.scope': 'Установить в',
+  'skills.install.scope.global': 'Глобально',
+  'skills.install.scope.workspace': 'Рабочая папка',
+  'skills.install.selectZip': 'Выберите ZIP-архив.',
+  'skills.install.title': 'Загрузить навык',
+  'skills.install.succeeded': (v) =>
+    `Навык "${v?.name ?? ''}" загружен успешно.`,
+  'skills.install.zipSelected': (v) => `Выбрано: ${v?.name ?? ''}`,
+  'skills.delete.action': 'Удалить навык',
+  'skills.delete.description': (v) =>
+    `Удалить "${v?.name ?? ''}" с диска? Это действие нельзя отменить.`,
+  'skills.delete.failed': 'Не удалось удалить навык.',
+  'skills.delete.succeeded': (v) => `Навык "${v?.name ?? ''}" удалён успешно.`,
+  'skills.delete.title': 'Удалить навык?',
+  'skills.count': (v) =>
+    [
+      `${v?.count ?? 0} навыков`,
+      ...(v?.enabled ? [`${v.enabled} включено`] : []),
+      ...(v?.disabled ? [`${v.disabled} отключено`] : []),
+    ].join(', '),
+  'skills.details': 'Сведения о навыке',
+  'skills.extension': 'Расширение',
+  'skills.filter.all': 'Все',
+  'skills.filter.bundled': 'Встроенные',
+  'skills.filter.extension': 'Расширения',
+  'skills.filter.label': 'Фильтр навыков по источнику',
+  'skills.filter.project': 'Настройки рабочей папки',
+  'skills.filter.status.all': 'Все',
+  'skills.filter.status.disabled': 'Отключённые',
+  'skills.filter.status.enabled': 'Включённые',
+  'skills.filter.status.label': 'Фильтр навыков по статусу',
+  'skills.filter.user': 'Глобальные настройки',
+  'skills.hint': 'Подсказка',
+  'skills.invocation': 'Вызов',
+  'skills.level': 'Область действия',
+  'skills.level.bundled': 'Встроенный',
+  'skills.level.extension': 'Расширение',
+  'skills.level.project': 'Проект',
+  'skills.level.user': 'Глобальный',
+  'skills.manualReference': 'Ручная ссылка',
+  'skills.manualReferenceHint':
+    'Модель не может обнаружить этот навык автоматически. Обращайтесь к нему вручную.',
+  'skills.model': 'Модель',
+  'skills.modelAccess': 'Доступ модели',
+  'skills.modelAccess.disabled': 'Модель не может вызывать',
+  'skills.modelAccess.enabled': 'Модель может вызывать',
+  'skills.modelInvocable': 'Модель',
+  'skills.noDescription': 'Без описания',
+  'skills.noMatches': 'Нет подходящих навыков.',
+  'skills.notToggleable': 'Этот навык нельзя включить или отключить.',
+  'skills.run': 'Сослаться на навык',
+  'skills.settingUpdated': 'Настройка рабочей папки обновлена.',
+  'skills.settingUpdatedAvailabilityUnchanged':
+    'Настройка рабочей папки обновлена. Фактическая доступность навыка не изменилась.',
+  'skills.settingUnchanged':
+    'У навыка уже установлена запрошенная настройка рабочей папки, настройка не была изменена.',
+  'skills.status': 'Статус',
+  'skills.status.disabled': 'отключён',
+  'skills.status.enabled': 'включён',
+  'skills.toggleFailed': 'Не удалось обновить навык.',
+  'skills.error.inactiveExtension':
+    'Этот навык принадлежит неактивному расширению. Сначала включите расширение.',
+  'skills.toggleUnsupported':
+    'Подключённый демон не поддерживает включение или отключение навыков.',
+  'stats.accepted': 'Принято:',
+  'stats.agreementRate': 'Общий уровень согласия:',
+  'stats.api': 'API',
+  'stats.apiTime': 'Время API',
+  'stats.avgDuration': 'Средняя длительность',
+  'stats.avgLatency': 'Средняя задержка',
+  'stats.cached': 'Из кэша',
+  'stats.cacheDesc':
+    'входных токенов было обслужено из кэша, что снижает расходы.',
+  'stats.calls': 'Вызовы',
+  'stats.codeChanges': 'Изменения кода',
+  'stats.decisionSummary': 'Сводка решений пользователя',
+  'stats.duration': 'Длительность',
+  'stats.errors': 'Ошибки',
+  'stats.inputTokens': 'Входные токены',
+  'stats.metric': 'Метрика',
+  'stats.modelStats': 'Статистика модели',
+  'stats.modelTip':
+    'Совет: чтобы увидеть полную разбивку по токенам, выполните /stats model.',
+  'stats.modelUsage': 'Использование модели',
+  'stats.modified': 'Изменено:',
+  'stats.noApiCalls': 'В этой сессии не было вызовов API.',
+  'stats.noToolCalls': 'В этой сессии не было вызовов инструментов.',
+  'stats.outputTokens': 'Выходные токены',
+  'stats.overview': 'Обзор сессии',
+  'stats.performance': 'Производительность',
+  'stats.prompts': 'Запросы',
+  'stats.rejected': 'Отклонено:',
+  'stats.reqs': 'Запр.',
+  'stats.requests': 'Запросы',
+  'stats.savingsHighlight': 'Экономия:',
+  'stats.successRate': 'Доля успешных',
+  'stats.thoughts': 'Размышления',
+  'stats.tokens': 'Токены',
+  'stats.toolCalls': 'Вызовы инструментов',
+  'stats.toolName': 'Название инструмента',
+  'stats.toolStats': 'Статистика инструментов',
+  'stats.toolTime': 'Время инструмента',
+  'stats.total': 'Всего',
+  'stats.totalReviewed': 'Всего рассмотрено предложений:',
+  'tokenUsage.avgLatency': 'Средняя задержка',
+  'tokenUsage.models': 'По модели',
+  'tokenUsage.noSubagents': 'В этой сессии пока не было вызовов субагентов.',
+  'tokenUsage.noTools': 'В этой сессии пока не было вызовов инструментов.',
+  'tokenUsage.subagents': 'Субагенты',
+  'tokenUsage.thoughts': 'Рассуждения (включены в общий вывод)',
+  'tokenUsage.toolRow': (v) =>
+    `${v?.count ?? 0} вызовов · ${v?.rate ?? 0}% успешно · ${v?.duration ?? ''}`,
+  'tokenUsage.tools': 'Инструменты',
+  'tokenUsage.updatedAt': (v) => `Обновлено ${v?.time ?? ''}`,
+  'tokenUsage.unavailable': 'Использование токенов недоступно для этой сессии.',
+  'status.contextUsed': (v) => `${v?.pct ?? '0.0'}% контекста использовано`,
+  'status.disconnected': 'Отключено',
+  'status.modeHint': '(shift + tab или клик для переключения)',
+  'status.shortcuts': '? для списка сочетаний клавиш',
+  'stream.cancel': 'esc для отмены',
+  'stream.cancelArmed': 'Нажмите Esc ещё раз, чтобы остановить',
+  'stream.tokens': (v) => `${v?.count ?? 0} токенов`,
+  'todo.allDone': 'Все задачи выполнены',
+  'todo.collapse': 'Свернуть список задач',
+  'todo.completedAbove': (v) => `✓ выполнено: ${v?.count ?? 0}`,
+  'todo.detail.api': 'API',
+  'todo.detail.cached': 'Из кэша',
+  'todo.detail.end': 'Окончание',
+  'todo.detail.hide': 'Скрыть детали задачи',
+  'todo.detail.input': 'Ввод',
+  'todo.detail.noResources':
+    'Данные о токенах и времени для этой задачи не были зафиксированы.',
+  'todo.detail.output': 'Вывод',
+  'todo.detail.sectionSpent': 'Затраченное время',
+  'todo.detail.sectionTime': 'Время',
+  'todo.detail.sectionTokens': 'Токены',
+  'todo.detail.show': 'Показать детали задачи',
+  'todo.detail.start': 'Начало',
+  'todo.detail.tool': 'Инструмент',
+  'todo.expand': 'Развернуть список задач',
+  'todo.more': (v) => `... ещё ${v?.count ?? 0}`,
+  'todo.moreAbove': (v) => `... ещё ${v?.count ?? 0} выше`,
+  'todo.showLess': 'Свернуть',
+  'todo.stepProgress': (v) => `Шаг ${v?.current ?? 0} / ${v?.total ?? 0}`,
+  'todo.stepFraction': (v) => `${v?.current ?? 0} / ${v?.total ?? 0}`,
+  'planExecution.dialogTitle': 'План и задачи',
+  'planExecution.title': 'Выполнение плана',
+  'planExecution.overview': 'Обзор процесса',
+  'planExecution.overallProgress': 'Общий прогресс',
+  'planExecution.stepsCompleted': 'Выполнено шагов',
+  'planExecution.activeAgents': 'Активные агенты',
+  'planExecution.needsAttention': 'Требует внимания',
+  'planExecution.stepDetails': 'Детали шага',
+  'planExecution.subagents': 'Подагенты',
+  'planExecution.noSubagents': 'К этому шагу пока не привязан ни один агент.',
+  'planExecution.openDetails': 'Открыть детали подагента',
+  'planExecution.currentActivity': 'Текущая активность:',
+  'planExecution.toolCalls': (v) => `${v?.count ?? 0} вызовов инструментов`,
+  'planExecution.tokens': (v) => `${v?.count ?? 0} токенов`,
+  'planExecution.view': 'Просмотр выполнения плана',
+  'planExecution.dependsOn': 'Зависит от:',
+  'planExecution.unblocks': 'Разблокирует:',
+  'planExecution.unassigned': 'Непривязанные выполнения',
+  'planExecution.attention': 'Требует внимания',
+  'planExecution.status.running': 'Выполняется',
+  'planExecution.status.paused': 'Приостановлено',
+  'planExecution.status.completed': 'Завершено',
+  'planExecution.status.blocked': 'Заблокировано',
+  'planExecution.status.in_progress': 'В процессе',
+  'planExecution.status.ready': 'Готово',
+  'planExecution.edgesHidden': (v) =>
+    `Слишком много зависимостей для отображения (${v?.count ?? 0}). Вместо схемы каждый шаг перечисляет свои зависимости.`,
+  'workflow.chatTitle': 'Чат',
+  'workflow.inspector.summary': 'Прогресс процесса',
+  'workflow.inspector.selectedStep': 'Выбранный шаг',
+  'workflow.inspector.allSteps': 'Шаги',
+  'workflow.inspector.recentActivity': 'Недавняя активность агента',
+  'workflow.inspector.expandGraph': 'Развернуть граф зависимостей',
+  'workflow.inspector.graphCanvas': 'Граф зависимостей',
+  'workflow.inspector.canvasHint':
+    'Выберите узел графа, чтобы посмотреть его зависимости и запуски агента здесь.',
+  'workflow.inspector.activeAgents': (v) =>
+    `${v?.count ?? 0} активный агент${v?.count === 1 ? '' : 's'}`,
+  'workflow.inspector.attentionCount': (v) =>
+    `${v?.count ?? 0} требуют внимания`,
+  'workflow.planReview.title': 'План и проверка',
+  'workflow.planReview.question':
+    'Подтвердить план и начать совместную работу?',
+  'workflow.planReview.confirm': 'Подтвердить и начать',
+  'workflow.planReview.continuePlanning': 'Продолжить планирование',
+  'workflow.empty.title': 'В этой сессии пока нет структурированного процесса',
+  'workflow.empty.copy':
+    'Вернитесь в чат, откройте раздел "План и проверка" и запросите список задач со стабильными ID и зависимостями.',
+  'workflow.empty.action': 'Вернуться в чат и создать план',
+  'workflow.tabs.attention': 'Требует внимания',
+  'workflow.connection.connected': 'Демон подключён',
+  'workflow.connection.reconnecting': 'Демон переподключается',
+  'workflow.session.defaultTitle': 'Процесс текущей сессии',
+  'workflow.session.workspace': 'рабочая папка',
+  'workflow.dependencies.upstream': 'Зависит от',
+  'workflow.dependencies.none': 'Нет',
+  'workflow.dependencies.unblocks': 'Разблокирует',
+  'workflow.dependencies.noDownstream': 'Нет последующих шагов',
+  'workflow.activity.empty':
+    'К задаче пока не привязано ни одного запуска агента.',
+  'workflow.deliverables.title': 'Результаты сессии',
+  'workflow.deliverables.none': 'Пока не опубликовано ни одного артефакта',
+  'workflow.status.running': 'Выполняется',
+  'workflow.status.paused': 'Приостановлено',
+  'workflow.status.completed': 'Завершено',
+  'workflow.status.failed': 'Ошибка',
+  'workflow.status.cancelled': 'Отменено',
+  'workflow.task.completed': 'Завершено',
+  'workflow.task.attention': 'Требует внимания',
+  'workflow.task.running': 'Совместная работа выполняется',
+  'workflow.task.waitingExecution': 'Ожидает выполнения',
+  'planExecution.locateCurrent': 'Найти текущий шаг',
+  'status.mode': 'Режим подтверждения',
+  'chatHeader.toggleEnvironment': 'Показать/скрыть информацию об окружении',
+  'chatHeader.toggleRightPanel': 'Показать/скрыть правую панель',
+  'environment.changes': 'Изменения',
+  'environment.changeCount': (v) => `изменено: ${v?.count ?? 0}`,
+  'environment.clean': 'Нет изменений',
+  'environment.workspace': 'Рабочая папка',
+  'environment.branch': 'Ветка',
+  'environment.history': 'История коммитов',
+  'environment.agents': 'Подагенты',
+  'environment.unnamedAgent': (v) => `Агент (${v?.index ?? 0})`,
+  'workflow.open': 'Открыть процесс агента',
+  'workflow.mainAgent': 'Основной агент',
+  'workflow.empty': 'В этом процессе нет подагентов',
+  'workflow.loadFailed': 'Не удалось загрузить процесс агента',
+  'environment.unavailable': 'Недоступно',
+  'environment.attachments': 'Вложения',
+  'environment.artifacts': 'Артефакты',
+  'environment.artifactsEmpty':
+    'Здесь появятся артефакты, созданные в этой сессии.',
+  'rightPanel.attachmentLoadFailed': (v) =>
+    `Не удалось загрузить вложение: ${v?.error ?? 'Unknown error'}`,
+  'rightPanel.savedContentUnavailable':
+    'Сохранённое содержимое панели недоступно',
+  'rightPanel.restoreFailed': (v) =>
+    `Не удалось восстановить панель: ${v?.error ?? 'Unknown error'}`,
+  'userMessage.showMore': 'Показать больше',
+  'userMessage.showLess': 'Свернуть',
+  'userMessage.sendFailed': 'Не удалось отправить',
+  'userMessage.retrySend': 'Повторить отправку сообщения',
+  'message.renderError': 'Это сообщение не удалось отобразить.',
+  'tasks.title': 'Фоновые задачи',
+  'tasks.empty': 'Сейчас нет выполняющихся задач',
+  'tasks.refreshStale':
+    'Статус задачи может быть устаревшим, переподключение...',
+  'tasks.cancelFailed': 'Не удалось отменить задачу',
+  'tasks.alreadyStopped': 'Задача уже остановлена',
+  'tasks.moreAbove': (v) => `^ ещё ${v?.count ?? 0} выше`,
+  'tasks.moreBelow': (v) => `v ещё ${v?.count ?? 0} ниже`,
+  'tasks.running': 'Выполняется',
+  'tasks.pausing': 'Приостановка',
+  'tasks.completed': 'Завершено',
+  'tasks.failed': 'Ошибка',
+  'tasks.cancelled': 'Остановлено',
+  'tasks.paused': 'Приостановлено',
+  'tasks.kind.shell': 'Командная строка',
+  'tasks.kind.monitor': 'Монитор',
+  'tasks.kind.workflow': 'Процесс',
+  'workflow.graph.waiting': 'Ожидание первого запуска агента…',
+  'workflow.graph.notRecorded':
+    'Для этого запуска граф выполнения не был сохранён.',
+  'workflow.inline.loading': 'Загрузка процесса выполнения в реальном времени…',
+  'workflow.inline.unavailable':
+    'Этот запуск процесса больше недоступен в текущей сессии.',
+  'workflow.graph.omitted': (v) =>
+    `Граф ограничен для производительности: скрыто фаз ${v?.lanes ?? 0}, агентов ${v?.nodes ?? 0}, связей ${v?.edges ?? 0}.`,
+  'workflow.noPhase': 'Нет фазы',
+  'workflow.dispatchCount': (v) =>
+    `${v?.count ?? 0} запуск${v?.count === 1 ? '' : 'es'}`,
+  'workflow.selectedDispatch': 'Выбранный запуск',
+  'workflow.dependencies': 'Зависит от',
+  'workflow.action.pause': 'Пауза',
+  'workflow.action.resume': 'Продолжить',
+  'workflow.action.retry': 'Повторить неудачный путь',
+  'workflow.action.rerun': 'Перезапустить всё',
+  'workflow.action.unavailable':
+    'Состояние процесса изменилось до выполнения действия.',
+  'workflow.action.failed': 'Не удалось обновить процесс.',
+  'workflow.history.retry': (v) => `Повторено с ${v?.runId ?? ''}`,
+  'workflow.history.rerun': (v) => `Перезапущено с ${v?.runId ?? ''}`,
+  'workflow.history.cached': (v) => `из кэша: ${v?.count ?? 0}`,
+  'workflow.history.saved': (v) => `сохранённых запусков: ${v?.count ?? 0}`,
+  'workflow.history.restored': 'Сохранённый запуск · только чтение',
+  'workflow.history.showRuns': (v) => `История запусков (${v?.count ?? 0})`,
+  'workflow.history.hideRuns': 'Скрыть историю',
+  'workflow.history.filter': 'Фильтр запусков',
+  'workflow.history.filterAll': 'Все статусы',
+  'workflow.history.visibleCount': (v) =>
+    `${v?.count ?? 0} из ${v?.total ?? 0}`,
+  'workflow.history.filterEmpty':
+    'По этому фильтру сохранённых запусков не найдено.',
+  'workflow.history.exportVisible': 'Экспортировать видимые',
+  'workflow.history.delete': 'Удалить',
+  'workflow.history.deleteSaved': 'Удалить сохранённый запуск',
+  'workflow.history.confirmDelete': 'Подтвердить удаление',
+  'workflow.history.deleteUnavailable': 'Сохранённый запуск больше недоступен.',
+  'workflow.history.deleteFailed': 'Не удалось удалить сохранённый запуск.',
+  'workflow.history.compareRun': (v) => `Сравнить запуск ${v?.runId ?? ''}`,
+  'workflow.history.compare': 'Сравнить запуски',
+  'workflow.history.hideComparison': 'Скрыть сравнение',
+  'workflow.history.source': 'Исходный запуск',
+  'workflow.history.compared': 'Сравниваемый запуск',
+  'workflow.history.current': 'Текущий запуск',
+  'workflow.history.status': 'Статус',
+  'workflow.history.agents': 'Агенты',
+  'workflow.approvalNeeded': 'Требуется подтверждение',
+  'workflow.respondInChat': 'Ответить в чате',
+  'workflow.metric.agents': 'агенты',
+  'workflow.metric.running': 'выполняется',
+  'workflow.metric.queued': 'в очереди',
+  'workflow.metric.tokens': 'токены',
+  'workflow.dispatch.queued': 'В очереди',
+  'workflow.dispatch.running': 'Выполняется',
+  'workflow.dispatch.completed': 'Завершено',
+  'workflow.dispatch.failed': 'Ошибка',
+  'workflow.dispatch.cancelled': 'Отменено',
+  'workflow.dispatch.cached': 'Из кэша',
+  'tasks.action.stop': 'Остановить',
+  'tasks.action.abandon': 'Прервать',
+  'tasks.action.confirmStop': 'Подтвердить остановку',
+  'tasks.action.confirmAbandon': 'Подтвердить прерывание',
+  'tasks.action.confirmHint': 'Это завершит блокирующий ход.',
+  'tasks.pill.agent': (v) => `локальный агент: ${v?.count ?? 0}`,
+  'tasks.pill.agents': (v) => `локальных агентов: ${v?.count ?? 0}`,
+  'tasks.pill.agentPaused': (v) => `локальный агент на паузе: ${v?.count ?? 0}`,
+  'tasks.pill.agentsPaused': (v) =>
+    `локальных агентов на паузе: ${v?.count ?? 0}`,
+  'tasks.pill.done': (v) => `задача выполнена: ${v?.count ?? 0}`,
+  'tasks.pill.doneMany': (v) => `задач выполнено: ${v?.count ?? 0}`,
+  'tasks.pill.monitor': (v) => `монитор: ${v?.count ?? 0}`,
+  'tasks.pill.monitors': (v) => `мониторов: ${v?.count ?? 0}`,
+  'tasks.pill.shell': (v) => `командная строка: ${v?.count ?? 0}`,
+  'tasks.pill.shells': (v) => `командных строк: ${v?.count ?? 0}`,
+  'tasks.pill.workflow': (v) => `процесс: ${v?.count ?? 0}`,
+  'tasks.pill.workflows': (v) => `процессов: ${v?.count ?? 0}`,
+  'tasks.confirmStop':
+    'x ещё раз для подтверждения остановки · завершает блокирующий ход',
+  'tasks.shortcut.select': '↑/↓ выбор',
+  'tasks.shortcut.view': 'Enter просмотр',
+  'tasks.shortcut.stop': 'x остановить',
+  'tasks.shortcut.abandon': 'x прервать',
+  'tasks.shortcut.listClose': '←/Esc закрыть',
+  'tasks.shortcut.detailBack': '← назад',
+  'tasks.shortcut.detailClose': 'Esc/Enter/Space закрыть',
+  'tasks.shortcut.close': 'Esc закрыть',
+  'tasks.shortcut.cancelConfirm': 'Esc отмена',
+  'tasks.detail.workingDir': 'Рабочая папка',
+  'tasks.detail.outputFile': 'Файл вывода',
+  'tasks.detail.command': 'Команда',
+  'tasks.detail.events': (v) => `событий: ${v?.count ?? 0}`,
+  'tasks.detail.exit': (v) => `код выхода ${v?.exitCode ?? ''}`,
+  'tasks.detail.dropped': (v) => `пропущено: ${v?.count ?? 0}`,
+  'tasks.detail.error': 'Ошибка',
+  'tasks.detail.stoppedBecause': 'Остановлено по причине',
+  'tasks.detail.resumeBlocked': 'Продолжение заблокировано',
+  'tasks.detail.progress': 'Прогресс',
+  'tasks.detail.prompt': 'Запрос',
+  'tasks.detail.type': 'Тип',
+  'tasks.detail.runtime': 'Время',
+  'tasks.detail.eventCount': 'События',
+  'tasks.detail.pid': 'PID',
+  'tasks.detail.lastEvent': 'Последнее событие',
+  'tasks.detail.droppedCount': 'Пропущено',
+  'tasks.detail.exitCode': 'Код выхода',
+  'tasks.detail.tokenCount': 'Токены',
+  'tasks.detail.toolCallCount': 'Вызовы инструментов',
+  'tasks.detail.tokens': (v) => `${v?.count ?? 0} токенов`,
+  'tasks.detail.toolCalls': (v) => `${v?.count ?? 0} вызовов инструментов`,
+  'tasks.detail.nesting': 'Вложенность',
+  'tasks.detail.nestingValue': (v) =>
+    `Уровень ${v?.level ?? '?'} · от ${v?.parent ?? '?'}`,
+  'tasks.detail.nestingLevel': (v) => `Уровень ${v?.level ?? '?'}`,
+  'tasks.row.from': (v) => `от ${v?.parent ?? '?'}`,
+  'tasks.row.nested': 'вложенная',
+  'tips.items':
+    'Введите /, чтобы увидеть все доступные команды.|Используйте @, чтобы сослаться на путь к файлу.|Нажмите Esc, чтобы отменить выполняющийся запрос.|Используйте Shift+Enter для переноса строки.|Нажмите ↑↓, чтобы просмотреть историю сообщений.',
+  'tools.available': 'Доступные инструменты:',
+  'tools.none': 'Нет доступных инструментов.',
+  'tools.empty':
+    'Нет доступных встроенных инструментов. Сначала откройте сессию.',
+  'tools.footer': (v) =>
+    v?.name
+      ? `${v?.details ? 'Enter/Space подробности · ' : ''}t переключить ${v.name} · r обновить · Esc закрыть`
+      : 'r обновить · Esc закрыть',
+  'tools.details.hide': 'Скрыть подробности',
+  'tools.details.show': 'Показать подробности',
+  'tools.description': 'Описание',
+  'tools.details': 'Подробности инструмента',
+  'tools.loading': 'Загрузка инструментов...',
+  'tools.name': 'Название инструмента',
+  'tools.noDescription': 'Нет описания',
+  'tools.noMatches': 'Нет подходящих инструментов.',
+  'tools.search': 'Поиск инструментов…',
+  'tools.status': 'Статус',
+  'tools.status.disabled': 'отключён',
+  'tools.status.enabled': 'включён',
+  'tools.summary': (v) => `${v?.enabled ?? 0}/${v?.total ?? 0} включено`,
+  'tools.title': 'Инструменты',
+  'tools.update.disable': 'Отключить',
+  'tools.update.enable': 'Включить',
+  'tools.updating': 'Обновление...',
+  'tool.collapse': '▲ Свернуть',
+  'tool.expand': 'Развернуть',
+  'tool.collapseHint': 'Свернуть',
+  'tool.status.failed': 'Ошибка',
+  'toolGroup.moreKinds': (v) => ` +${v?.count ?? 0}`,
+  'toolGroup.summary': (v) =>
+    `Выполнено ${v?.count ?? 0} инструмент${v?.count === 1 ? '' : 's'}`,
+  'toolGroup.summary.ranAgents': (v) =>
+    `Запущено ${v?.count ?? 0} агент${v?.count === 1 ? '' : 's'}`,
+  'toolGroup.summary.editedFiles': (v) =>
+    `Отредактированы файлы ${v?.count ?? 0} раз${v?.count === 1 ? '' : 's'}`,
+  'toolGroup.summary.ranCommands': (v) =>
+    `Выполнено ${v?.count ?? 0} команд${v?.count === 1 ? '' : 's'}`,
+  'toolGroup.summary.readFiles': (v) =>
+    `Прочитаны файлы ${v?.count ?? 0} раз${v?.count === 1 ? '' : 's'}`,
+  'toolGroup.summary.searched': (v) =>
+    `Выполнен поиск ${v?.count ?? 0} раз${v?.count === 1 ? '' : 's'}`,
+  'toolGroup.summary.updatedTodos': (v) =>
+    `Обновлён список задач${v?.count === 1 ? '' : ` ${v?.count ?? 0} times`}`,
+  'toolGroup.summary.provideInformation': 'Предоставить информацию',
+  'toolGroup.summary.askedQuestions': (v) =>
+    `Задано ${v?.count ?? 0} вопрос${v?.count === 1 ? '' : 's'}`,
+  'toolGroup.summary.otherTools': (v) =>
+    `Вызвано ${v?.count ?? 0} других инструмент${v?.count === 1 ? '' : 's'}`,
+  'toolGroup.running': (v) =>
+    Number(v?.count ?? 0) > 1
+      ? `Выполняется ${v?.count ?? 0} инструментов: ${v?.name ?? 'tool'}`
+      : `Выполняется ${v?.name ?? 'tool'}`,
+  'toolGroup.runningPrefix': 'Выполняется',
+  'sessionsOverview.current': 'Текущая',
+  'sessionsOverview.empty': 'Пока нет сессий',
+  'sessionsOverview.loadFailed': 'Не удалось загрузить сессии',
+  'sessionsOverview.loading': 'Загрузка сессий…',
+  'sessionsOverview.noData': 'Нет данных',
+  'sessionsOverview.openInSplit': 'Открыть в разделённом виде',
+  'sessionsOverview.openInSplitHint':
+    'Показать выбранные сессии рядом в этом окне',
+  'sessionsOverview.splitLimit': (v) =>
+    `Выберите не более ${v?.max ?? 6} сессий, чтобы открыть их вместе`,
+  'sessionsOverview.openInTab': 'Открыть в новой вкладке',
+  'sessionsOverview.openInTabHint':
+    'Открыть выбранные сессии в разделённом виде в новой вкладке браузера',
+  'sessionsOverview.popupBlocked':
+    'Всплывающее окно заблокировано. Разрешите всплывающие окна для этого сайта, чтобы открывать сессии в новых вкладках.',
+  'sessionsOverview.refresh': 'Обновить',
+  'sessionsOverview.selectAll': 'Выбрать все',
+  'sessionsOverview.titleColumn': 'Название',
+  'sessionsOverview.sessionId': 'ID сессии',
+  'sessionsOverview.actions': 'Действия',
+  'sessionsOverview.folder': 'Рабочая папка',
+  'sessionsOverview.time': 'Время',
+  'sessionsOverview.worktree': 'Рабочая копия',
+  'sessionsOverview.selectedRows': (v) =>
+    `Выбрано строк: ${v?.count ?? 0} из ${v?.total ?? 0}.`,
+  'sessionsOverview.previousPage': 'Назад',
+  'sessionsOverview.nextPage': 'Далее',
+  'sessionsOverview.pageInfo': (v) =>
+    `Страница ${v?.page ?? 0} из ${v?.total ?? 0}`,
+  'sessionsOverview.rowsPerPage': 'Строк на странице',
+  'sessionsOverview.workspaceFilter': 'Фильтр по рабочей папке',
+  'sessionsOverview.allWorkspaces': 'Все',
+  'sessionsOverview.searchPlaceholder': 'Поиск сессий…',
+  'sessionsOverview.confirmArchiveTitle': 'Архивировать сессию?',
+  'sessionsOverview.confirmArchive': (v) =>
+    `"${v?.name ?? ''}" будет перемещена в архив сессий.`,
+  'sessionsOverview.confirmArchiveBulkTitle': (v) =>
+    `Архивировать сессии: ${v?.count ?? 0}?`,
+  'sessionsOverview.confirmArchiveBulk': (v) =>
+    `Выбранные сессии (${v?.count ?? 0}) будут перемещены в архив.`,
+  'sessionsOverview.confirmDeleteTitle': 'Удалить сессию?',
+  'sessionsOverview.confirmDelete': (v) =>
+    `"${v?.name ?? ''}" и история переписки будут удалены без возможности восстановления.`,
+  'sessionsOverview.deleteFailed': 'Не удалось удалить сессию',
+  'sessionsOverview.archiveFailed': 'Не удалось архивировать сессию',
+  'sessionsOverview.actionUnavailable':
+    'Это действие недоступно для выбранной сессии или рабочей папки',
+  'sessionsOverview.bulkArchive': 'Архивировать',
+  'sessionsOverview.bulkArchiveHint': (v) =>
+    `Архивировать выбранные сессии: ${v?.count ?? 0}`,
+  'sessionsOverview.bulkDelete': 'Удалить',
+  'sessionsOverview.bulkDeleteHint': (v) =>
+    `Удалить выбранные сессии: ${v?.count ?? 0}`,
+  'sessionsOverview.confirmDeleteBulkTitle': (v) =>
+    `Удалить сессии: ${v?.count ?? 0}?`,
+  'sessionsOverview.confirmDeleteBulk': (v) =>
+    `Выбранные сессии (${v?.count ?? 0}) и их история переписки будут удалены без возможности восстановления.`,
+  'sessionsOverview.selectSession': (v) => `Выбрать ${v?.name ?? ''}`,
+  'sessionsOverview.status.askUserQuestion': 'Нужен ответ пользователя',
+  'sessionsOverview.status.needsApproval': 'Требуется подтверждение',
+  'sessionsOverview.status.running': 'Выполняется',
+  'sessionsOverview.title': 'Обзор сессий',
+  'workspacesOverview.title': 'Рабочие папки',
+  'workspacesOverview.count': (v) => `Рабочих папок: ${v?.count ?? 0}`,
+  'workspacesOverview.column.name': 'Название',
+  'workspacesOverview.column.path': 'Путь',
+  'workspacesOverview.column.sessions': 'Сессии',
+  'workspacesOverview.column.mcp': 'MCP',
+  'workspacesOverview.column.git': 'Ветка',
+  'workspacesOverview.column.lastActivity': 'Последняя активность',
+  'workspacesOverview.column.actions': 'Действия',
+  'workspacesOverview.primaryBadge': 'основная',
+  'workspacesOverview.running': (v) => `Выполняется: ${v?.count ?? 0}`,
+  'workspacesOverview.attention': (v) => `Требуют внимания: ${v?.count ?? 0}`,
+  'workspacesOverview.truncated':
+    'Сессий больше, чем на одной странице: счётчики приблизительные, не менее указанного.',
+  'workspacesOverview.dirty': (v) => `Изменено: ${v?.count ?? 0}`,
+  'workspacesOverview.mcpFailed': (v) => `Ошибок: ${v?.count ?? 0}`,
+  'workspacesOverview.newTask': 'Новая задача',
+  'workspacesOverview.remove': 'Удалить рабочую папку',
+  'workspacesOverview.back': 'Назад',
+  'splitView.defaultActionLabel': 'Действие',
+  'channels.title': 'Каналы',
+  'channels.description':
+    'Подключите Довод к местам, где уже работает ваша команда.',
+  'channels.summary': (v) =>
+    `${v?.workspace ?? ''} · настроено: ${v?.count ?? 0}`,
+  'channels.workspace.current': 'Текущая рабочая папка',
+  'channels.workspace.label': 'Рабочая папка',
+  'channels.workspace.primary': 'Основная',
+  'channels.loading': 'Загрузка каналов',
+  'channels.configured': 'Настроенные каналы',
+  'channels.configured.description':
+    'Управляйте ботами, которые принимают и доставляют сообщения для этой рабочей папки.',
+  'channels.availablePlatforms': 'Доступные платформы',
+  'channels.availablePlatforms.description':
+    'Выберите платформу, чтобы добавить ещё одно подключение к этой рабочей папке.',
+  'channels.platform.available': 'Доступно',
+  'channels.platform.configure': 'Настроить',
+  'channels.platform.add': 'Добавить подключение',
+  'channels.platform.configureNamed': (v) =>
+    `Настроить ${v?.platform ?? 'канал'}`,
+  'channels.status.stopped': 'Остановлен',
+  'channels.status.starting': 'Запускается',
+  'channels.status.connected': 'Подключён',
+  'channels.status.partial': 'Частично подключён',
+  'channels.status.error': 'Ошибка',
+  'channels.statusDescription.stopped': 'Не в сети, сообщения не принимаются.',
+  'channels.statusDescription.starting': 'Идёт подключение к платформе.',
+  'channels.statusDescription.connected': 'В сети и готов принимать сообщения.',
+  'channels.statusDescription.partial':
+    'Подключён, но некоторые функции недоступны.',
+  'channels.statusDescription.error':
+    'Требует внимания, прежде чем сможет подключиться.',
+  'channels.startsWithServe': 'Подключать при запуске Довода',
+  'channels.startsWithServe.description':
+    'Автоматически включать этот канал после запуска Довода.',
+  'channels.unsupported.title': 'Управление каналами не поддерживается',
+  'channels.unsupported.description':
+    'Обновите Довод до версии, поддерживающей управление каналами.',
+  'channels.readOnly.title':
+    'Управление каналами доступно только для просмотра',
+  'channels.readOnly.description':
+    'Перезапустите Довод с bearer-токеном, чтобы управлять каналами.',
+  'channels.loadError.title': 'Не удалось загрузить каналы',
+  'channels.empty.title': 'Нет настроенных поддерживаемых каналов',
+  'channels.empty.description':
+    'Настройте DingTalk, WeCom, Feishu, GitHub или GitLab, чтобы принимать сообщения в этой рабочей папке.',
+  'channels.runtimeError': 'Ошибка канала во время работы',
+  'channels.action.back': 'Назад',
+  'channels.action.refresh': 'Обновить',
+  'channels.action.start': 'Запустить',
+  'channels.action.stop': 'Остановить',
+  'channels.action.restart': 'Перезапустить',
+  'channels.action.retry': 'Повторить',
+  'channels.action.edit': 'Изменить',
+  'channels.action.editNamed': (v) => `Изменить ${v?.name ?? 'канал'}`,
+  'channels.action.moreNamed': (v) => `Ещё действия для ${v?.name ?? 'канала'}`,
+  'channels.action.delete': 'Удалить',
+  'channels.action.deleteNamed': (v) => `Удалить ${v?.name ?? 'канал'}`,
+  'channels.action.startWithServeNamed': (v) =>
+    `Запустить ${v?.name ?? ''} вместе с serve`,
+  'channels.delete.title': (v) => `Удалить ${v?.name ?? 'канал'}?`,
+  'channels.delete.description':
+    'Канал будет остановлен и удалён из этой рабочей папки. Это действие нельзя отменить.',
+  'channels.delete.error': 'Канал не был удалён',
+  'channels.editor.addTitle': (v) => `Настроить ${v?.platform ?? 'канал'}`,
+  'channels.editor.editTitle': (v) => `Изменить ${v?.platform ?? 'канал'}`,
+  'channels.editor.addDescription':
+    'Подключите зарегистрированную рабочую папку к существующему приложению платформы.',
+  'channels.editor.editDescription':
+    'Обновите открытые настройки или явно измените сохранённые учётные данные.',
+  'channels.editor.section.identity': 'Идентификация',
+  'channels.editor.section.credentials': 'Учётные данные',
+  'channels.editor.section.session': 'Управление диалогами',
+  'channels.editor.section.access': 'Контроль доступа',
+  'channels.editor.section.access.description':
+    'Настройте доступ к личным сообщениям и группам отдельно.',
+  'channels.editor.session.isolation': 'Изоляция диалогов',
+  'channels.editor.instanceName': 'Имя экземпляра',
+  'channels.editor.instanceNamePlaceholder': 'например, release-bot',
+  'channels.editor.workspace': 'Рабочая папка',
+  'channels.editor.workspace.description':
+    'Сообщения, сессии и настройки канала принадлежат этой рабочей папке. По умолчанию выбрана основная рабочая папка.',
+  'channels.editor.workspace.lockedDescription':
+    'Настроенный канал остаётся привязан к своей рабочей папке. Чтобы использовать другую рабочую папку, создайте отдельный экземпляр.',
+  'channels.editor.environmentReference': 'Поддерживается $ENV_VAR',
+  'channels.editor.field.sessionScope': 'Область сессии',
+  'channels.editor.field.sessionScope.description':
+    'Определяет, какие входящие диалоги используют одну сессию агента.',
+  'channels.editor.field.sessionScope.option.user': 'По пользователю и чату',
+  'channels.editor.field.sessionScope.option.thread': 'По теме',
+  'channels.editor.field.sessionScope.option.chat_thread': 'По чату и теме',
+  'channels.editor.field.sessionScope.option.single': 'Одна общая сессия',
+  'channels.editor.field.dingtalk.clientId': 'Client ID (AppKey)',
+  'channels.editor.field.dingtalk.clientSecret': 'Client Secret (AppSecret)',
+  'channels.editor.field.wecom.botId': 'ID бота',
+  'channels.editor.field.wecom.secret': 'Секрет бота',
+  'channels.editor.field.wecom.wsUrl': 'URL WebSocket',
+  'channels.editor.field.feishu.clientId': 'App ID',
+  'channels.editor.field.feishu.clientSecret': 'App Secret',
+  'channels.editor.field.github.token': 'Персональный токен доступа',
+  'channels.editor.field.github.token.description':
+    'Необязательный классический PAT с областью "notifications". Отменяет локальную авторизацию gh',
+  'channels.editor.field.github.useLocalGh':
+    'Использовать локальную авторизацию GitHub CLI',
+  'channels.editor.field.github.useLocalGh.description':
+    'Явно использовать вход gh на уровне учётной записи хоста демона, если токен не задан',
+  'channels.editor.field.github.baseUrl': 'Базовый URL API',
+  'channels.editor.field.github.baseUrl.description':
+    'Корень API GitHub Enterprise (например, https://ghe.example.com/api/v3). Оставьте пустым для github.com',
+  'channels.editor.field.github.groupPolicy': 'Политика групп',
+  'channels.editor.field.github.groupPolicy.description':
+    'Для получения уведомлений должно быть "Open", "Allowlist" или "Pairing"',
+  'channels.editor.field.github.senderPolicy': 'Политика отправителей',
+  'channels.editor.field.github.senderPolicy.description':
+    'Используйте "Allowlist" с разрешёнными пользователями в публичных репозиториях',
+  'channels.editor.field.github.allowedUsers':
+    'Разрешённые пользователи (через запятую)',
+  'channels.editor.field.github.allowedUsers.description':
+    'Имена пользователей GitHub, используются политиками Allowlist и Pairing',
+  'channels.editor.field.github.reasonFilter': 'Фильтр причин',
+  'channels.editor.field.github.reasonFilter.description':
+    'Необязательно. Причины уведомлений для обработки через запятую. Допустимые значения: mention, review_requested, assign, author, comment, ci_activity, manual, state_change, subscribed, team_mention, security_alert, approval_requested, invitation, member_feature_requested, security_advisory_credit. Оставьте пустым, чтобы обрабатывать все.',
+  'channels.editor.field.gitlab.token': 'Персональный токен доступа',
+  'channels.editor.field.gitlab.token.description':
+    'PAT с областями "read_api" + "api"',
+  'channels.editor.field.gitlab.baseUrl': 'URL инстанса',
+  'channels.editor.field.gitlab.baseUrl.description':
+    'URL инстанса собственного размещения (например, https://gitlab.example.com). Оставьте пустым для gitlab.com',
+  'channels.editor.field.gitlab.groupPolicy': 'Политика групп',
+  'channels.editor.field.gitlab.groupPolicy.description':
+    'Для обработки задач должно быть "Open", "Allowlist" или "Pairing"',
+  'channels.editor.field.gitlab.senderPolicy': 'Политика отправителей',
+  'channels.editor.field.gitlab.senderPolicy.description':
+    'Используйте "Allowlist" с разрешёнными пользователями в публичных проектах',
+  'channels.editor.field.gitlab.allowedUsers':
+    'Разрешённые пользователи (через запятую)',
+  'channels.editor.field.gitlab.allowedUsers.description':
+    'Имена пользователей GitLab, используются политиками Allowlist и Pairing',
+  'channels.editor.field.gitlab.action_prompt_template': 'Шаблоны действий',
+  'channels.editor.field.gitlab.action_prompt_template.description':
+    'Обрабатываются только действия с заданным шаблоном, остальные пропускаются. Переменные шаблона: %project%, %project_url%, %author%, %target_type%, %iid%, %title%, %description%, %todo_id%. Используйте %% для символа % в тексте. Пример для "mentioned": Project: %project% | Author: %author% | Title: %title%',
+  'channels.editor.field.gitlab.action_prompt_template.option.mentioned':
+    'Упоминание, @bot в комментарии или описании',
+  'channels.editor.field.gitlab.action_prompt_template.option.directly_addressed':
+    'Прямое обращение, комментарий начинается с @bot',
+  'channels.editor.field.gitlab.action_prompt_template.option.assigned':
+    'Назначено, бот назначен на задачу или MR',
+  'channels.editor.field.gitlab.action_prompt_template.option.review_requested':
+    'Запрошено ревью, бот запрошен как ревьюер MR',
+  'channels.editor.field.gitlab.action_prompt_template.option.approval_required':
+    'Требуется подтверждение, MR нуждается в подтверждении бота',
+  'channels.editor.field.gitlab.action_prompt_template.option.marked':
+    'Отмечено, кто-то поставил звезду комментарию, задаче или MR бота',
+  'channels.editor.field.gitlab.action_prompt_template.option.build_failed':
+    'Сборка не удалась, пайплайн CI/CD упал на ветке или MR бота',
+  'channels.editor.field.gitlab.action_prompt_template.option.unmergeable':
+    'Нельзя слить, MR стал неслияемым (конфликты)',
+  'channels.editor.field.gitlab.action_prompt_template.option.merge_train_removed':
+    'Удалён из merge train, MR исключён из merge train',
+  'channels.editor.secret.environment': 'Хранится в переменных окружения',
+  'channels.editor.secret.stored': 'Хранится безопасно',
+  'channels.editor.secret.preserve': 'Оставить',
+  'channels.editor.secret.replace': 'Заменить',
+  'channels.editor.secret.clear': 'Очистить',
+  'channels.editor.secret.placeholder': (v) =>
+    `Введите ${v?.label ?? 'секрет'}`,
+  'channels.editor.secret.clearHint':
+    'Эти учётные данные будут удалены при сохранении.',
+  'channels.editor.field.shared.senderPolicy': 'Политика личных сообщений',
+  'channels.editor.field.shared.senderPolicy.description':
+    'Выберите, кто может начать личный диалог с этим каналом.',
+  'channels.editor.field.shared.senderPolicy.option.pairing': 'Сопряжение',
+  'channels.editor.field.shared.senderPolicy.option.allowlist':
+    'Список разрешённых',
+  'channels.editor.field.shared.senderPolicy.option.open': 'Открыто',
+  'channels.editor.field.shared.allowedUsers': 'Разрешённые ID пользователей',
+  'channels.editor.field.shared.allowedUsers.description':
+    'Устойчивые ID пользователей через запятую, которым доступен канал без сопряжения.',
+  'channels.editor.field.shared.groupPolicy': 'Политика групп',
+  'channels.editor.field.shared.groupPolicy.description':
+    'Выберите, какие групповые диалоги могут использовать этот канал.',
+  'channels.editor.field.shared.groupPolicy.option.disabled': 'Отключено',
+  'channels.editor.field.shared.groupPolicy.option.pairing': 'Сопряжение',
+  'channels.editor.field.shared.groupPolicy.option.allowlist':
+    'Список разрешённых',
+  'channels.editor.field.shared.groupPolicy.option.open': 'Открыто',
+  'channels.editor.field.shared.allowedGroupIds': 'Разрешённые ID групп',
+  'channels.editor.field.shared.allowedGroupIds.description':
+    'Устойчивые ID чатов или репозиториев через запятую, которым разрешено использовать этот канал.',
+  'channels.editor.field.shared.allowedGroupIds.placeholder':
+    'группа-a, группа-b',
+  'channels.editor.field.shared.sessionScope': 'Изоляция диалогов',
+  'channels.editor.field.shared.sessionScope.description':
+    'Выберите, как диалоги делят постоянный контекст агента.',
+  'channels.editor.field.shared.sessionScope.option.user': 'По пользователю',
+  'channels.editor.field.shared.sessionScope.option.thread':
+    'По теме (устаревший режим)',
+  'channels.editor.field.shared.sessionScope.option.chat_thread':
+    'По чату или теме',
+  'channels.editor.field.shared.sessionScope.option.single': 'Общая для всех',
+  'channels.editor.field.shared.sessionScope.detail.user':
+    'Сообщения одного пользователя продолжают один диалог, пользователи остаются изолированы друг от друга.',
+  'channels.editor.field.shared.sessionScope.detail.thread':
+    'Сохраняет устаревшую маршрутизацию по темам, используемую существующими сессиями канала.',
+  'channels.editor.field.shared.sessionScope.detail.chat_thread':
+    'Сообщения в одной группе или теме используют один диалог, лучше всего для совместной работы.',
+  'channels.editor.field.shared.sessionScope.detail.single':
+    'Все сообщения используют один диалог, лучше всего для канала с единственным ботом.',
+  'channels.editor.field.shared.multiSession': 'Именованные задачи',
+  'channels.editor.field.shared.multiSession.description':
+    'Хранить отдельный каталог именованных задач по владельцам в режиме управления демоном.',
+  'channels.editor.policy.pairing.title': 'Сопряжение',
+  'channels.editor.policy.pairing.description':
+    'Люди получают код сопряжения и могут писать после того, как вы их подтвердите.',
+  'channels.editor.pairing.title': 'Ожидающие запросы',
+  'channels.editor.pairing.description':
+    'Сверьте общий код перед подтверждением доступа. Подтверждения вступают в силу немедленно, кнопки "Сохранить" и "Отмена" их не отменяют.',
+  'channels.editor.pairing.subject.group': (v) =>
+    `Группа: ${v?.name ?? 'неизвестно'}`,
+  'channels.editor.pairing.requestedBy': (v) =>
+    `Запросил ${v?.sender ?? 'неизвестно'}`,
+  'channels.editor.pairing.refresh': 'Обновить запросы сопряжения',
+  'channels.editor.pairing.approve': 'Подтвердить',
+  'channels.editor.pairing.approveFor': (v) =>
+    `Подтвердить ${v?.sender ?? 'запрос'}, код ${v?.code ?? ''}`,
+  'channels.editor.pairing.approved': (v) =>
+    `${v?.sender ?? 'Этот пользователь'} теперь может использовать этот канал.`,
+  'channels.editor.pairing.error': 'Запросы сопряжения не были обновлены',
+  'channels.editor.pairing.unavailable':
+    'Запросы сопряжения временно недоступны. Попробуйте ещё раз.',
+  'channels.editor.pairing.retry': 'Попробовать снова',
+  'channels.editor.pairing.empty.title': 'Нет ожидающих запросов',
+  'channels.editor.pairing.empty.description':
+    'Новые запросы появятся здесь после того, как кто-то напишет боту.',
+  'channels.editor.pairing.saveFirst.title':
+    'Сначала сохраните режим сопряжения',
+  'channels.editor.pairing.saveFirst.description':
+    'Ожидающие запросы появятся здесь после сохранения этого канала в режиме сопряжения.',
+  'channels.editor.pairing.approvals.title': 'Подтверждённые сопряжения',
+  'channels.editor.pairing.approvals.description':
+    'ID пользователей и групп, подтверждённые через сопряжение для этого канала.',
+  'channels.editor.pairing.approvals.refresh':
+    'Обновить подтверждённые сопряжения',
+  'channels.editor.pairing.approvals.revoke': 'Отозвать',
+  'channels.editor.pairing.approvals.revokeFor': (v) =>
+    `Отозвать ${v?.senderId ?? 'подтверждение сопряжения'}`,
+  'channels.editor.pairing.approvals.revoked': (v) =>
+    `Подтверждение сопряжения для ${v?.senderId ?? 'этого отправителя'} отозвано.`,
+  'channels.editor.pairing.approvals.error':
+    'Подтверждённые сопряжения не были обновлены',
+  'channels.editor.pairing.approvals.unavailable':
+    'Подтверждённые сопряжения временно недоступны. Попробуйте ещё раз.',
+  'channels.editor.pairing.approvals.empty.title':
+    'Нет подтверждённых сопряжений',
+  'channels.editor.pairing.approvals.empty.description':
+    'Подтверждённые ID пользователей и групп появятся здесь.',
+  'channels.editor.pairing.approvals.confirm.title': (v) =>
+    `Отозвать подтверждение сопряжения для ${v?.senderId || 'этого отправителя'}?`,
+  'channels.editor.pairing.approvals.confirm.description':
+    'Будет удалено только подтверждение, созданное через сопряжение. Доступ, настроенный в списке разрешённых канала, не изменится.',
+  'channels.editor.pairing.approvals.confirm.action': 'Отозвать подтверждение',
+  'channels.editor.pairing.allowlist.title': 'Настроенный список разрешённых',
+  'channels.editor.pairing.allowlist.description':
+    'Пользователи из настроенного списка разрешённых остаются разрешены после отзыва подтверждения сопряжения.',
+  'channels.editor.policy.open.title': 'Открыто',
+  'channels.editor.policy.open.description':
+    'Любой, кто может обратиться к боту, может начать диалог.',
+  'channels.editor.validation.required': (v) =>
+    `${v?.label ?? 'Это поле'} обязательно.`,
+  'channels.editor.validation.credential':
+    'Введите токен или включите локальную авторизацию GitHub CLI.',
+  'channels.editor.validation.duplicate':
+    'Канал с таким именем уже существует.',
+  'channels.editor.validation.invalidName': 'Выберите другое имя экземпляра.',
+  'channels.editor.validation.invalidGroupId':
+    'Введите ID группы, отличный от __proto__, constructor или prototype.',
+  'channels.editor.validation.invalidOption':
+    'Уберите значения, которых нет в списке разрешённых.',
+  'channels.editor.validation.number': 'Введите корректное число.',
+  'channels.editor.validation.outOfRange': (v) =>
+    `Введите число больше ${v?.min ?? 0}.`,
+  'channels.editor.validation.policy': 'Выберите политику доступа.',
+  'channels.editor.saveError': 'Изменения не были сохранены',
+  'channels.editor.reloadLatest': 'Загрузить последнюю версию',
+  'channels.editor.cancel': 'Отмена',
+  'channels.editor.save': 'Сохранить',
+  'settings.action.edit': 'Изменить',
+  'settings.action.select': 'Выбрать',
+  'settings.action.save': 'Сохранить',
+  'settings.modifiedIn': (v) => `(Изменено в ${v?.scope ?? ''})`,
+  'settings.alsoModifiedIn': (v) => `(Также изменено в ${v?.scope ?? ''})`,
+  'settings.invalidNumber': 'Некорректное число',
+  'settings.requiresRestart': 'Это изменение вступит в силу после перезапуска.',
+  'settings.localControl.description':
+    'Продолжайте эту сессию Довода с телефона в той же доверенной сети.',
+  'settings.localControl.unencrypted':
+    'Без шифрования, только доверенные сети; включайте заново после смены сети',
+  'settings.localControl.awake': 'Этот Mac не будет засыпать',
+  'settings.localControl.maySleep': 'Этот Mac может засыпать',
+  'settings.localControl.urlRedacted':
+    'URL для сопряжения здесь не показан, так как у этого демона нет bearer-токена. Он был выведен в терминал, где запущен демон, выполните сопряжение оттуда.',
+  'localControl.open': 'Мобильный доступ',
+  'localControl.disabledHint':
+    'Удалённое управление отключено. Включите его в настройках, чтобы подключить телефон в той же сети.',
+  'localControl.openSettings': 'Открыть настройки',
+  'settings.models.title': 'Модели',
+  'settings.models.add': '+ Добавить модель',
+  'settings.models.setCurrent': 'Сделать текущей',
+  'settings.models.current': 'Текущая',
+  'settings.models.runtime': 'Среда выполнения',
+  'settings.models.delete': 'Удалить',
+  'settings.models.confirmDelete': 'Подтвердить',
+  'settings.models.cancel': 'Отмена',
+  'settings.models.empty': 'Настроенных моделей пока нет.',
+  'settings.models.loading': 'Загрузка моделей…',
+  'settings.models.deleteFailed': 'Не удалось удалить модель',
+  'settings.models.runtimeSyncFailed':
+    'Изменение сохранено, но обновить работающие сессии не удалось. Перезапустите qwen serve перед использованием обновлённого списка моделей.',
+  'settings.models.fallbacks.title': 'Резервные модели',
+  'settings.models.fallbacks.hint': (v) =>
+    `Выберите до ${v?.max ?? 3}; они пробуются по порядку, когда основная модель перегружена.`,
+  'settings.models.fallbacks.confirm': 'Подтвердить',
+  'settings.models.fallbacks.empty': 'Нет доступных для выбора моделей.',
+  'settings.models.fallbacks.saveFailed':
+    'Не удалось сохранить резервные модели',
+  'settings.models.fallbacks.limitReached': (v) =>
+    `Выбрано максимум резервных моделей: ${v?.max ?? 3}; снимите одну, чтобы выбрать другую.`,
+  'settings.corrupted': (v) =>
+    `Файл настроек был повреждён${v?.recovered === 'true' ? ' (восстановлен из резервной копии)' : ''}`,
+  'settings.label.ui.chatWidth': 'Ширина чата',
+  'settings.description.ui.chatWidth':
+    'Ширина содержимого чата только на стороне интерфейса. Хранится в этом браузере.',
+  'settings.label.ui.enableFollowupSuggestions':
+    'Включить подсказки для продолжения',
+  'settings.description.ui.enableFollowupSuggestions':
+    'Показывать контекстные подсказки для продолжения после завершения задачи. Tab или стрелка вправо вставляет, Enter принимает и отправляет.',
+  'settings.option.ui.chatWidth.1000': 'Обычная',
+  'settings.option.ui.chatWidth.wide': 'Сверхширокая',
+  'settings.label.visionModel': 'Модель для изображений',
+  'settings.description.visionModel':
+    'Модель с поддержкой изображений, используемая как визуальный мост. Оставьте пустым для автоматического выбора.',
 };
 
 const MESSAGES: Record<WebShellLanguage, Messages> = {

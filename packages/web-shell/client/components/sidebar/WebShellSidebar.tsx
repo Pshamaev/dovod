@@ -614,24 +614,243 @@ function IconNewChat() {
  */
 function IconDovodLogo() {
   return (
-    <svg viewBox="0 0 512 512" aria-hidden="true">
-      <rect width="512" height="512" rx="112" fill="#1F3A5F" />
-      <path
-        d="M150 340 V184 a106 106 0 0 1 212 0 V340 M118 340 H394 M118 340 V392 M394 340 V392"
-        fill="none"
-        stroke="#FFFFFF"
-        strokeWidth="40"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M208 246 L246 284 L312 208"
-        fill="none"
-        stroke="#E8B04B"
-        strokeWidth="34"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg viewBox="0 0 1090 1090" aria-hidden="true">
+      <rect width="1090" height="1090" rx="240" fill="#FFFFFF" />
+      <g transform="translate(87.2 87.2) scale(0.84) translate(-41 26)">
+        <path
+          fill="#014ED9"
+          fillRule="evenodd"
+          d="M696 258H843.5A277.5 277.5 0 0 1 843.5 813H696ZM786 358H828.5A176.5 176.5 0 0 1 828.5 711H786Z"
+        />
+        <g shapeRendering="crispEdges" fill="#2C333A">
+          <rect x="400" y="230" width="30.6" height="10.6" />
+          <rect x="400" y="240" width="30.6" height="10.6" />
+          <rect x="320" y="250" width="20.6" height="10.6" />
+          <rect x="460" y="260" width="20.6" height="10.6" />
+          <rect x="500" y="260" width="190.6" height="10.6" />
+          <rect x="240" y="270" width="30.6" height="10.6" />
+          <rect x="460" y="270" width="20.6" height="10.6" />
+          <rect x="500" y="270" width="190.6" height="10.6" />
+          <rect x="240" y="280" width="30.6" height="10.6" />
+          <rect x="500" y="280" width="190.6" height="10.6" />
+          <rect x="240" y="290" width="30.6" height="10.6" />
+          <rect x="410" y="290" width="30.6" height="10.6" />
+          <rect x="480" y="290" width="210.6" height="10.6" />
+          <rect x="240" y="300" width="30.6" height="10.6" />
+          <rect x="410" y="300" width="30.6" height="10.6" />
+          <rect x="540" y="300" width="150.6" height="10.6" />
+          <rect x="340" y="310" width="40.6" height="10.6" />
+          <rect x="430" y="310" width="50.6" height="10.6" />
+          <rect x="540" y="310" width="150.6" height="10.6" />
+          <rect x="170" y="320" width="10.6" height="10.6" />
+          <rect x="300" y="320" width="10.6" height="10.6" />
+          <rect x="340" y="320" width="40.6" height="10.6" />
+          <rect x="430" y="320" width="50.6" height="10.6" />
+          <rect x="510" y="320" width="20.6" height="10.6" />
+          <rect x="560" y="320" width="130.6" height="10.6" />
+          <rect x="160" y="330" width="20.6" height="10.6" />
+          <rect x="340" y="330" width="40.6" height="10.6" />
+          <rect x="430" y="330" width="50.6" height="10.6" />
+          <rect x="510" y="330" width="20.6" height="10.6" />
+          <rect x="560" y="330" width="130.6" height="10.6" />
+          <rect x="340" y="340" width="60.6" height="10.6" />
+          <rect x="430" y="340" width="50.6" height="10.6" />
+          <rect x="510" y="340" width="180.6" height="10.6" />
+          <rect x="380" y="350" width="30.6" height="10.6" />
+          <rect x="430" y="350" width="70.6" height="10.6" />
+          <rect x="530" y="350" width="160.6" height="10.6" />
+          <rect x="380" y="360" width="30.6" height="10.6" />
+          <rect x="470" y="360" width="30.6" height="10.6" />
+          <rect x="530" y="360" width="50.6" height="10.6" />
+          <rect x="610" y="360" width="80.6" height="10.6" />
+          <rect x="220" y="370" width="10.6" height="10.6" />
+          <rect x="270" y="370" width="50.6" height="10.6" />
+          <rect x="400" y="370" width="30.6" height="10.6" />
+          <rect x="470" y="370" width="40.6" height="10.6" />
+          <rect x="530" y="370" width="160.6" height="10.6" />
+          <rect x="80" y="380" width="20.6" height="10.6" />
+          <rect x="270" y="380" width="50.6" height="10.6" />
+          <rect x="400" y="380" width="30.6" height="10.6" />
+          <rect x="480" y="380" width="50.6" height="10.6" />
+          <rect x="560" y="380" width="130.6" height="10.6" />
+          <rect x="80" y="390" width="20.6" height="10.6" />
+          <rect x="270" y="390" width="50.6" height="10.6" />
+          <rect x="400" y="390" width="20.6" height="10.6" />
+          <rect x="440" y="390" width="20.6" height="10.6" />
+          <rect x="480" y="390" width="50.6" height="10.6" />
+          <rect x="560" y="390" width="130.6" height="10.6" />
+          <rect x="270" y="400" width="50.6" height="10.6" />
+          <rect x="360" y="400" width="10.6" height="10.6" />
+          <rect x="440" y="400" width="20.6" height="10.6" />
+          <rect x="480" y="400" width="50.6" height="10.6" />
+          <rect x="540" y="400" width="150.6" height="10.6" />
+          <rect x="270" y="410" width="50.6" height="10.6" />
+          <rect x="480" y="410" width="50.6" height="10.6" />
+          <rect x="540" y="410" width="150.6" height="10.6" />
+          <rect x="170" y="420" width="40.6" height="10.6" />
+          <rect x="270" y="420" width="50.6" height="10.6" />
+          <rect x="390" y="420" width="90.6" height="10.6" />
+          <rect x="580" y="420" width="110.6" height="10.6" />
+          <rect x="170" y="430" width="40.6" height="10.6" />
+          <rect x="340" y="430" width="20.6" height="10.6" />
+          <rect x="380" y="430" width="100.6" height="10.6" />
+          <rect x="520" y="430" width="40.6" height="10.6" />
+          <rect x="580" y="430" width="110.6" height="10.6" />
+          <rect x="170" y="440" width="40.6" height="10.6" />
+          <rect x="350" y="440" width="10.6" height="10.6" />
+          <rect x="380" y="440" width="70.6" height="10.6" />
+          <rect x="520" y="440" width="40.6" height="10.6" />
+          <rect x="600" y="440" width="90.6" height="10.6" />
+          <rect x="120" y="450" width="10.6" height="10.6" />
+          <rect x="290" y="450" width="10.6" height="10.6" />
+          <rect x="380" y="450" width="70.6" height="10.6" />
+          <rect x="480" y="450" width="20.6" height="10.6" />
+          <rect x="520" y="450" width="170.6" height="10.6" />
+          <rect x="290" y="460" width="10.6" height="10.6" />
+          <rect x="380" y="460" width="70.6" height="10.6" />
+          <rect x="480" y="460" width="20.6" height="10.6" />
+          <rect x="520" y="460" width="170.6" height="10.6" />
+          <rect x="380" y="470" width="70.6" height="10.6" />
+          <rect x="490" y="470" width="30.6" height="10.6" />
+          <rect x="570" y="470" width="120.6" height="10.6" />
+          <rect x="50" y="480" width="10.6" height="10.6" />
+          <rect x="230" y="480" width="30.6" height="10.6" />
+          <rect x="310" y="480" width="40.6" height="10.6" />
+          <rect x="380" y="480" width="90.6" height="10.6" />
+          <rect x="500" y="480" width="20.6" height="10.6" />
+          <rect x="560" y="480" width="130.6" height="10.6" />
+          <rect x="230" y="490" width="30.6" height="10.6" />
+          <rect x="310" y="490" width="40.6" height="10.6" />
+          <rect x="440" y="490" width="80.6" height="10.6" />
+          <rect x="530" y="490" width="160.6" height="10.6" />
+          <rect x="230" y="500" width="30.6" height="10.6" />
+          <rect x="310" y="500" width="40.6" height="10.6" />
+          <rect x="440" y="500" width="60.6" height="10.6" />
+          <rect x="520" y="500" width="170.6" height="10.6" />
+          <rect x="230" y="510" width="30.6" height="10.6" />
+          <rect x="310" y="510" width="40.6" height="10.6" />
+          <rect x="460" y="510" width="50.6" height="10.6" />
+          <rect x="520" y="510" width="170.6" height="10.6" />
+          <rect x="350" y="520" width="30.6" height="10.6" />
+          <rect x="460" y="520" width="40.6" height="10.6" />
+          <rect x="520" y="520" width="40.6" height="10.6" />
+          <rect x="590" y="520" width="100.6" height="10.6" />
+          <rect x="100" y="530" width="40.6" height="10.6" />
+          <rect x="350" y="530" width="30.6" height="10.6" />
+          <rect x="400" y="530" width="20.6" height="10.6" />
+          <rect x="440" y="530" width="20.6" height="10.6" />
+          <rect x="480" y="530" width="20.6" height="10.6" />
+          <rect x="550" y="530" width="140.6" height="10.6" />
+          <rect x="100" y="540" width="40.6" height="10.6" />
+          <rect x="350" y="540" width="30.6" height="10.6" />
+          <rect x="440" y="540" width="20.6" height="10.6" />
+          <rect x="480" y="540" width="20.6" height="10.6" />
+          <rect x="520" y="540" width="10.6" height="10.6" />
+          <rect x="550" y="540" width="140.6" height="10.6" />
+          <rect x="100" y="550" width="40.6" height="10.6" />
+          <rect x="280" y="550" width="20.6" height="10.6" />
+          <rect x="500" y="550" width="20.6" height="10.6" />
+          <rect x="550" y="550" width="140.6" height="10.6" />
+          <rect x="110" y="560" width="30.6" height="10.6" />
+          <rect x="280" y="560" width="30.6" height="10.6" />
+          <rect x="500" y="560" width="190.6" height="10.6" />
+          <rect x="210" y="570" width="20.6" height="10.6" />
+          <rect x="280" y="570" width="30.6" height="10.6" />
+          <rect x="340" y="570" width="60.6" height="10.6" />
+          <rect x="450" y="570" width="40.6" height="10.6" />
+          <rect x="520" y="570" width="60.6" height="10.6" />
+          <rect x="600" y="570" width="90.6" height="10.6" />
+          <rect x="210" y="580" width="20.6" height="10.6" />
+          <rect x="340" y="580" width="60.6" height="10.6" />
+          <rect x="450" y="580" width="40.6" height="10.6" />
+          <rect x="520" y="580" width="170.6" height="10.6" />
+          <rect x="340" y="590" width="60.6" height="10.6" />
+          <rect x="450" y="590" width="40.6" height="10.6" />
+          <rect x="560" y="590" width="130.6" height="10.6" />
+          <rect x="340" y="600" width="60.6" height="10.6" />
+          <rect x="430" y="600" width="10.6" height="10.6" />
+          <rect x="450" y="600" width="70.6" height="10.6" />
+          <rect x="530" y="600" width="10.6" height="10.6" />
+          <rect x="560" y="600" width="130.6" height="10.6" />
+          <rect x="80" y="610" width="10.6" height="10.6" />
+          <rect x="340" y="610" width="60.6" height="10.6" />
+          <rect x="420" y="610" width="30.6" height="10.6" />
+          <rect x="480" y="610" width="40.6" height="10.6" />
+          <rect x="560" y="610" width="130.6" height="10.6" />
+          <rect x="340" y="620" width="100.6" height="10.6" />
+          <rect x="480" y="620" width="40.6" height="10.6" />
+          <rect x="530" y="620" width="160.6" height="10.6" />
+          <rect x="170" y="630" width="20.6" height="10.6" />
+          <rect x="400" y="630" width="20.6" height="10.6" />
+          <rect x="480" y="630" width="30.6" height="10.6" />
+          <rect x="530" y="630" width="40.6" height="10.6" />
+          <rect x="600" y="630" width="90.6" height="10.6" />
+          <rect x="170" y="640" width="20.6" height="10.6" />
+          <rect x="250" y="640" width="50.6" height="10.6" />
+          <rect x="400" y="640" width="20.6" height="10.6" />
+          <rect x="440" y="640" width="40.6" height="10.6" />
+          <rect x="530" y="640" width="160.6" height="10.6" />
+          <rect x="250" y="650" width="50.6" height="10.6" />
+          <rect x="440" y="650" width="40.6" height="10.6" />
+          <rect x="490" y="650" width="10.6" height="10.6" />
+          <rect x="570" y="650" width="120.6" height="10.6" />
+          <rect x="250" y="660" width="50.6" height="10.6" />
+          <rect x="360" y="660" width="20.6" height="10.6" />
+          <rect x="440" y="660" width="40.6" height="10.6" />
+          <rect x="500" y="660" width="50.6" height="10.6" />
+          <rect x="570" y="660" width="120.6" height="10.6" />
+          <rect x="250" y="670" width="50.6" height="10.6" />
+          <rect x="440" y="670" width="40.6" height="10.6" />
+          <rect x="500" y="670" width="190.6" height="10.6" />
+          <rect x="110" y="680" width="20.6" height="10.6" />
+          <rect x="250" y="680" width="50.6" height="10.6" />
+          <rect x="400" y="680" width="40.6" height="10.6" />
+          <rect x="500" y="680" width="190.6" height="10.6" />
+          <rect x="110" y="690" width="20.6" height="10.6" />
+          <rect x="400" y="690" width="40.6" height="10.6" />
+          <rect x="490" y="690" width="200.6" height="10.6" />
+          <rect x="320" y="700" width="30.6" height="10.6" />
+          <rect x="400" y="700" width="40.6" height="10.6" />
+          <rect x="490" y="700" width="60.6" height="10.6" />
+          <rect x="560" y="700" width="130.6" height="10.6" />
+          <rect x="320" y="710" width="30.6" height="10.6" />
+          <rect x="400" y="710" width="40.6" height="10.6" />
+          <rect x="460" y="710" width="40.6" height="10.6" />
+          <rect x="540" y="710" width="10.6" height="10.6" />
+          <rect x="570" y="710" width="120.6" height="10.6" />
+          <rect x="320" y="720" width="30.6" height="10.6" />
+          <rect x="460" y="720" width="50.6" height="10.6" />
+          <rect x="540" y="720" width="10.6" height="10.6" />
+          <rect x="570" y="720" width="120.6" height="10.6" />
+          <rect x="170" y="730" width="10.6" height="10.6" />
+          <rect x="460" y="730" width="50.6" height="10.6" />
+          <rect x="520" y="730" width="10.6" height="10.6" />
+          <rect x="570" y="730" width="120.6" height="10.6" />
+          <rect x="240" y="740" width="30.6" height="10.6" />
+          <rect x="410" y="740" width="10.6" height="10.6" />
+          <rect x="460" y="740" width="50.6" height="10.6" />
+          <rect x="540" y="740" width="150.6" height="10.6" />
+          <rect x="240" y="750" width="30.6" height="10.6" />
+          <rect x="460" y="750" width="50.6" height="10.6" />
+          <rect x="540" y="750" width="50.6" height="10.6" />
+          <rect x="600" y="750" width="90.6" height="10.6" />
+          <rect x="240" y="760" width="30.6" height="10.6" />
+          <rect x="540" y="760" width="150.6" height="10.6" />
+          <rect x="370" y="770" width="30.6" height="10.6" />
+          <rect x="440" y="770" width="20.6" height="10.6" />
+          <rect x="530" y="770" width="40.6" height="10.6" />
+          <rect x="590" y="770" width="100.6" height="10.6" />
+          <rect x="370" y="780" width="30.6" height="10.6" />
+          <rect x="440" y="780" width="20.6" height="10.6" />
+          <rect x="500" y="780" width="40.6" height="10.6" />
+          <rect x="580" y="780" width="110.6" height="10.6" />
+          <rect x="370" y="790" width="20.6" height="10.6" />
+          <rect x="500" y="790" width="40.6" height="10.6" />
+          <rect x="560" y="790" width="130.6" height="10.6" />
+          <rect x="500" y="800" width="40.6" height="10.6" />
+          <rect x="560" y="800" width="130.6" height="10.6" />
+        </g>
+      </g>
     </svg>
   );
 }
