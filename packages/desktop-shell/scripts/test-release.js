@@ -1219,6 +1219,11 @@ function testDovodSeeding(directory) {
     false,
     'no credential may be baked into the settings template',
   );
+  assert.deepEqual(
+    template.permissions.allow,
+    ['Bash(python *dovod_prompts.py*)', 'Bash(python3 *dovod_prompts.py*)'],
+    'only the dovod_prompts.py entry script is pre-approved (the daemon cannot confirm shell commands)',
+  );
   const envTemplate = fs.readFileSync(
     path.join(resourceDir, 'env.template'),
     'utf8',
@@ -1288,6 +1293,38 @@ function testDovodSeeding(directory) {
   assert.equal(mergedSettings.mcpServers.other.command, 'x');
   assert.equal(mergedSettings.model.name, '${DOVOD_MODEL}');
   assert.equal(mergedSettings.modelProviders.openai[0].envKey, 'DOVOD_API_KEY');
+  assert.deepEqual(
+    mergedSettings.permissions.allow,
+    ['Bash(python *dovod_prompts.py*)', 'Bash(python3 *dovod_prompts.py*)'],
+    'python rules are appended to settings that had no permissions block',
+  );
+
+  // permissions.allow is appended, never replaced or duplicated.
+  fs.writeFileSync(
+    path.join(qwenHome, 'settings.json'),
+    JSON.stringify({
+      $version: 4,
+      permissions: {
+        allow: ['Bash(git status)', 'Bash(python *dovod_prompts.py*)'],
+        deny: ['Bash(rm *)'],
+      },
+    }),
+  );
+  assert.equal(seedDovod({ resourceDir, qwenHome }).settings, 'merged');
+  const permMerged = JSON.parse(
+    fs.readFileSync(path.join(qwenHome, 'settings.json'), 'utf8'),
+  );
+  assert.deepEqual(permMerged.permissions.allow, [
+    'Bash(git status)',
+    'Bash(python *dovod_prompts.py*)',
+    'Bash(python3 *dovod_prompts.py*)',
+  ]);
+  assert.deepEqual(permMerged.permissions.deny, ['Bash(rm *)']);
+  assert.equal(
+    seedDovod({ resourceDir, qwenHome }).settings,
+    'unchanged',
+    'a second seed adds nothing once the rules are present',
+  );
 
   // A real MCP template is added exactly once and never overwritten.
   const realResources = path.join(directory, 'resources');
