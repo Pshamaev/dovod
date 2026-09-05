@@ -1,6 +1,6 @@
 {
-  "command": "PLACEHOLDER",
-  "args": [],
-  "env": {},
-  "description": "MCP-сервер Довода. Заполняется при сборке пакета из garant-bot/dovod-tools (см. install_dovod.ps1)."
+  "command": "node",
+  "args": ["__DOVOD_TOOLS__\\..\\dist\\mcp\\citationServer.js"],
+  "cwd": "__DOVOD_TOOLS__\\..",
+  "description": "Проверка ссылок на нормы через ГАРАНТ (garant-bot/dist/mcp/citationServer.js). Путь подставляется из DOVOD_TOOLS при первом запуске."
 }
