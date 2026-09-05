@@ -1,4 +1,2 @@
-# Modified for DOVOD — placeholder, replaced at packaging time from
-# garant-bot/dovod-tools/qwen/commands/inventory.toml
-description = "Опись материалов дела: перечень документов и их реквизитов."
-prompt = "PLACEHOLDER: replaced at packaging time"
+description = "DOVOD запрос 1: опись материалов дела, противоречия и отсутствующие документы (запускать из папки для_модели)"
+prompt = '!{python "__DOVOD_TOOLS__\dovod_prompts.py" inventory}'
