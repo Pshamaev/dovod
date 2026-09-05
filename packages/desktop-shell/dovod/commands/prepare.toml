@@ -1,4 +1,8 @@
-# Modified for DOVOD — placeholder, replaced at packaging time from
-# garant-bot/dovod-tools/qwen/commands/prepare.toml
-description = "Подготовка дела: собрать материалы и задать рамку работы."
-prompt = "PLACEHOLDER: replaced at packaging time"
+description = "DOVOD: подготовить папку дела (аргумент - путь к папке дела, по умолчанию текущая папка Qwen) - распознавание и обезличивание; хвост лога и КАК_ЗАПУСКАТЬ.txt без блока запросов (сами запросы - команды /dovod:inventory, /dovod:position, /dovod:stage, /dovod:draft, /dovod:reconcile)"
+prompt = '''Ниже готовый результат работы dovod_prepare.py. Ничего от себя не добавляй, не сокращай и не пересказывай, просто покажи это человеку как есть.
+
+Хвост вывода dovod_prepare.py:
+!{python "__DOVOD_TOOLS__\dovod_prompts.py" prepare-run {{args}}}
+
+КАК_ЗАПУСКАТЬ.txt без блока запросов:
+!{python "__DOVOD_TOOLS__\dovod_prompts.py" prepare-summary {{args}}}'''
