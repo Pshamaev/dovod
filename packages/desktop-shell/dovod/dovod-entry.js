@@ -12,9 +12,12 @@
 //                                              otherwise only absent keys are merged:
 //                                              security.auth.selectedType, model.name,
 //                                              modelProviders, mcpServers.dovod
-// The MCP server entry is added only when dovod/mcp-server.template.json has
-// a real `command` (the bundled placeholder "PLACEHOLDER" is skipped so a
-// half-packaged build never spawns a broken server).
+// The token __DOVOD_TOOLS__ inside the command files and the MCP template is
+// replaced with DOVOD_TOOLS (environment or <QWEN_HOME>/.env), the path to
+// garant-bot/dovod-tools on this machine. While DOVOD_TOOLS is unset the
+// commands are still seeded verbatim (the user can fill the path later) and
+// the MCP server is NOT registered, so a bare install never spawns a broken
+// server. A template whose `command` is "PLACEHOLDER" is skipped too.
 //
 // Set DOVOD_SKIP_SEED=1 to skip seeding (used by the packaged smoke test).
 
@@ -60,7 +63,29 @@ function isPlainObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function seedCommands(resourceDir, qwenHome) {
+// Reads DOVOD_TOOLS (the path to garant-bot/dovod-tools on this machine)
+// from the environment or from <QWEN_HOME>/.env. Returns '' when unset.
+export function resolveDovodTools(qwenHome, env = process.env) {
+  const fromEnv = typeof env['DOVOD_TOOLS'] === 'string' ? env['DOVOD_TOOLS'].trim() : '';
+  if (fromEnv) return fromEnv;
+  const envFile = path.join(qwenHome, '.env');
+  if (!fs.existsSync(envFile)) return '';
+  for (const line of fs.readFileSync(envFile, 'utf8').split(/\r?\n/)) {
+    const match = /^\s*(?:export\s+)?DOVOD_TOOLS\s*=\s*(.*?)\s*$/.exec(line);
+    if (!match) continue;
+    return match[1].replace(/^(["'])(.*)\1$/, '$2').trim();
+  }
+  return '';
+}
+
+const TOOLS_PLACEHOLDER = '__DOVOD_TOOLS__';
+
+function substituteTools(text, toolsPath) {
+  if (!toolsPath) return text;
+  return text.split(TOOLS_PLACEHOLDER).join(toolsPath);
+}
+
+function seedCommands(resourceDir, qwenHome, toolsPath) {
   const source = path.join(resourceDir, 'commands');
   if (!fs.existsSync(source)) return 0;
   const target = path.join(qwenHome, 'commands', 'dovod');
@@ -70,7 +95,8 @@ function seedCommands(resourceDir, qwenHome) {
     const destination = path.join(target, entry);
     if (fs.existsSync(destination)) continue;
     fs.mkdirSync(target, { recursive: true });
-    fs.copyFileSync(path.join(source, entry), destination);
+    const content = fs.readFileSync(path.join(source, entry), 'utf8');
+    fs.writeFileSync(destination, substituteTools(content, toolsPath));
     copied += 1;
   }
   return copied;
@@ -85,10 +111,16 @@ function seedEnvFile(resourceDir, qwenHome) {
   return true;
 }
 
-function readMcpServerTemplate(resourceDir) {
+function readMcpServerTemplate(resourceDir, toolsPath) {
   const file = path.join(resourceDir, 'mcp-server.template.json');
   if (!fs.existsSync(file)) return undefined;
-  const entry = readJson(file);
+  const raw = substituteTools(
+    fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''),
+    toolsPath ? JSON.stringify(toolsPath).slice(1, -1) : '',
+  );
+  // Unresolved placeholder: DOVOD_TOOLS is not configured on this machine.
+  if (raw.includes(TOOLS_PLACEHOLDER)) return undefined;
+  const entry = JSON.parse(raw);
   if (!isPlainObject(entry)) return undefined;
   const command = typeof entry.command === 'string' ? entry.command.trim() : '';
   const url = typeof entry.url === 'string' ? entry.url.trim() : '';
@@ -154,12 +186,13 @@ export function seedDovod({
     summary.settings = 'no-resources';
     return summary;
   }
-  summary.commands = seedCommands(resourceDir, qwenHome);
   summary.env = seedEnvFile(resourceDir, qwenHome);
+  const toolsPath = resolveDovodTools(qwenHome);
+  summary.commands = seedCommands(resourceDir, qwenHome, toolsPath);
 
   const templateFile = path.join(resourceDir, 'settings.template.json');
   const template = fs.existsSync(templateFile) ? readJson(templateFile) : {};
-  const mcpServer = readMcpServerTemplate(resourceDir);
+  const mcpServer = readMcpServerTemplate(resourceDir, toolsPath);
   const settingsFile = path.join(qwenHome, 'settings.json');
   if (!fs.existsSync(settingsFile)) {
     const fresh = structuredClone(template);
