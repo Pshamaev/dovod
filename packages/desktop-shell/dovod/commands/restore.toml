@@ -1,4 +1,4 @@
-# Modified for DOVOD — placeholder, replaced at packaging time from
-# garant-bot/dovod-tools/qwen/commands/restore.toml
-description = "Восстановление: вернуть рабочее состояние дела после перерыва."
-prompt = "PLACEHOLDER: replaced at packaging time"
+description = "DOVOD: вернуть реальные имена и адреса, собрать docx в Результат (аргумент - путь к папке дела, по умолчанию на два уровня выше папки для_модели)"
+prompt = '''Ниже готовый результат работы dovod_restore.py. Ничего от себя не добавляй и не пересказывай, просто покажи это человеку как есть.
+
+!{python "__DOVOD_TOOLS__\dovod_prompts.py" restore-run {{args}}}'''
