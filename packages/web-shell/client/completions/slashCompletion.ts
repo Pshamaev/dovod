@@ -74,6 +74,7 @@ const SUBCOMMAND_TREE_ZH: Record<string, SubcommandNode[]> = {
       name: 'ui',
       description: '设置 UI 语言',
       children: [
+        { name: 'ru', description: 'Русский' },
         { name: 'en', description: 'English' },
         { name: 'zh-CN', description: '中文' },
       ],
@@ -114,6 +115,7 @@ const SUBCOMMAND_TREE_EN: Record<string, SubcommandNode[]> = {
       name: 'ui',
       description: 'Set UI language',
       children: [
+        { name: 'ru', description: 'Русский' },
         { name: 'en', description: 'English' },
         { name: 'zh-CN', description: '中文' },
       ],

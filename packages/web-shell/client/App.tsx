@@ -1052,7 +1052,7 @@ export interface WebShellProps {
   /** Called when `/theme` changes the web-shell theme. */
   onThemeChange?: (theme: WebShellTheme) => void;
   /** UI language for the web-shell. Defaults to `?language=` or browser language. */
-  language?: 'en' | 'zh-CN' | 'zh' | 'zh-cn';
+  language?: 'ru' | 'en' | 'zh-CN' | 'zh' | 'zh-cn';
   /** Called when `/language ui` changes the web-shell UI language. */
   onLanguageChange?: (language: WebShellLanguage) => void;
   /** Additional CSS class name appended to the root element. */
@@ -13524,6 +13524,7 @@ export function App({
                     }),
                     t('language.usage'),
                     t('language.options'),
+                    '  - ru: Русский',
                     '  - en: English',
                     '  - zh-CN: 中文',
                   ].join('\n'),

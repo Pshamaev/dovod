@@ -1,3 +1,4 @@
+// Modified for DOVOD: product name.
 import { useI18n } from '../i18n';
 import styles from './WelcomeHeader.module.css';
 
@@ -17,7 +18,7 @@ export function WelcomeHeader(props: WelcomeHeaderProps) {
     <div className={styles.header}>
       <div className={styles.titleRow}>
         <span>{t('welcome.titlePrefix')}</span>
-        <span className={styles.title}>Qwen Code</span>
+        <span className={styles.title}>Довод</span>
       </div>
       <div className={styles.subtitle}>{t('welcome.prompt')}</div>
     </div>

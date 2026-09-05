@@ -405,7 +405,7 @@ export const ThinkingMessage = memo(function ThinkingMessage({
               translateContent={thinkingActive ? undefined : content}
               showTranslateButton={
                 !documentMode &&
-                language === 'zh-CN' &&
+                language !== 'en' &&
                 !thinkingActive &&
                 generateContent !== undefined
               }
@@ -481,7 +481,11 @@ export function ThinkingTranslateButton({
       let completed = false;
       try {
         const targetLanguage =
-          language === 'zh-CN' ? 'Simplified Chinese' : 'English';
+          language === 'zh-CN'
+            ? 'Simplified Chinese'
+            : language === 'ru'
+              ? 'Russian'
+              : 'English';
         const prompt = `Translate the following model reasoning into ${targetLanguage}. Preserve its meaning and Markdown formatting. Output only the translation.\n\n${content}`;
         for await (const event of generateContent(prompt, {
           signal: controller.signal,

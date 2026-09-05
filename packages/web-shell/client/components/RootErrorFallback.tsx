@@ -1,3 +1,4 @@
+// Modified for DOVOD: Russian fallback copy.
 import type { CSSProperties } from 'react';
 import type { WebShellLanguage } from '../i18n';
 
@@ -18,6 +19,11 @@ interface FallbackCopy {
 // whole App, which owns that provider), so it cannot call useI18n. It carries
 // its own minimal copy instead of pulling the full translation table.
 const COPY: Record<WebShellLanguage, FallbackCopy> = {
+  ru: {
+    title: 'Что-то пошло не так',
+    body: 'Произошла непредвиденная ошибка, и это содержимое не удалось показать.',
+    retry: 'Повторить',
+  },
   en: {
     title: 'Something went wrong',
     body: 'An unexpected error occurred and this content could not be displayed.',
