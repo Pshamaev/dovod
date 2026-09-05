@@ -1,4 +1,2 @@
-# Modified for DOVOD — placeholder, replaced at packaging time from
-# garant-bot/dovod-tools/qwen/commands/reconcile.toml
-description = "Сверка: сопоставить проект с материалами дела и позицией."
-prompt = "PLACEHOLDER: replaced at packaging time"
+description = "DOVOD запрос 4: сверить проект документа с правовой позицией и исправить расхождения (после /dovod:draft)"
+prompt = '!{python "__DOVOD_TOOLS__\dovod_prompts.py" reconcile}'
