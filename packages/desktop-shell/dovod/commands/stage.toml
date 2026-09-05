@@ -1,4 +1,2 @@
-# Modified for DOVOD — placeholder, replaced at packaging time from
-# garant-bot/dovod-tools/qwen/commands/stage.toml
-description = "Стадия процесса: определить текущую стадию и ближайшие шаги."
-prompt = "PLACEHOLDER: replaced at packaging time"
+description = "DOVOD запрос 3 без документа: определить стадию дела и предложить нужный документ, ничего не готовя; дальше вызови /dovod:draft <описание документа>"
+prompt = '!{python "__DOVOD_TOOLS__\dovod_prompts.py" stage}'
