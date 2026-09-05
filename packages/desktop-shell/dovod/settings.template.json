@@ -22,5 +22,8 @@
       }
     ]
   },
+  "permissions": {
+    "allow": ["Bash(python *)", "Bash(python3 *)"]
+  },
   "mcpServers": {}
 }
