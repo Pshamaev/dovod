@@ -13,6 +13,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolveLogRoot, sliceNewLog } from './resolve-log-root.js';
 import {
   mergeDovodSettings,
+  resolveDovodTools,
   resolveQwenHome,
   seedDovod,
 } from '../dovod/dovod-entry.js';
@@ -1201,7 +1202,7 @@ function testDovodSeeding(directory) {
       'utf8',
     );
     assert.match(toml, /^description = ".*[\u0400-\u04FF].*"$/m);
-    assert.match(toml, /^prompt = "/m);
+    assert.match(toml, /^prompt = ['"]/m);
   }
   const template = JSON.parse(
     fs.readFileSync(path.join(resourceDir, 'settings.template.json'), 'utf8'),
@@ -1334,5 +1335,50 @@ function testDovodSeeding(directory) {
   assert.match(
     fs.readFileSync(path.join(qwenHome, 'settings.json'), 'utf8'),
     /user comment/,
+  );
+
+  // Without DOVOD_TOOLS the commands keep the __DOVOD_TOOLS__ token and no
+  // MCP server is registered (checked above). With DOVOD_TOOLS in .env the
+  // token is resolved in every command and in the MCP template.
+  for (const name of commandNames) {
+    assert.match(
+      fs.readFileSync(path.join(resourceDir, 'commands', `${name}.toml`), 'utf8'),
+      /__DOVOD_TOOLS__/,
+      `${name}.toml must reference dovod-tools through the __DOVOD_TOOLS__ token`,
+    );
+  }
+  const toolsPath = path.join('C:', 'tools', 'dovod-tools');
+  const toolsHome = path.join(directory, 'tools-home', '.qwen');
+  fs.mkdirSync(toolsHome, { recursive: true });
+  fs.writeFileSync(path.join(toolsHome, '.env'), `DOVOD_TOOLS=${toolsPath}\n`);
+  assert.equal(resolveDovodTools(toolsHome, {}), toolsPath);
+  assert.equal(
+    resolveDovodTools(toolsHome, { DOVOD_TOOLS: '/opt/dovod-tools' }),
+    '/opt/dovod-tools',
+    'the environment wins over .env',
+  );
+  const seededWithTools = seedDovod({ resourceDir, qwenHome: toolsHome });
+  assert.equal(seededWithTools.commands, commandNames.length);
+  assert.equal(seededWithTools.settings, 'created');
+  for (const name of commandNames) {
+    const seeded = fs.readFileSync(
+      path.join(toolsHome, 'commands', 'dovod', `${name}.toml`),
+      'utf8',
+    );
+    assert.equal(seeded.includes('__DOVOD_TOOLS__'), false);
+    assert.ok(seeded.includes(toolsPath), `${name}.toml resolves DOVOD_TOOLS`);
+  }
+  const toolsSettings = JSON.parse(
+    fs.readFileSync(path.join(toolsHome, 'settings.json'), 'utf8'),
+  );
+  assert.equal(toolsSettings.mcpServers.dovod.command, 'node');
+  assert.equal(toolsSettings.mcpServers.dovod.args.length, 1);
+  assert.ok(
+    toolsSettings.mcpServers.dovod.args[0].startsWith(toolsPath),
+    'the MCP server path is resolved from DOVOD_TOOLS',
+  );
+  assert.equal(
+    toolsSettings.mcpServers.dovod.args[0].includes('__DOVOD_TOOLS__'),
+    false,
   );
 }
