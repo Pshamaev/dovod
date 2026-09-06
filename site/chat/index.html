@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Довод в браузере</title>
+<meta name="description" content="Довод в браузере: ответы на правовые вопросы с опорой на источники ГАРАНТ. Без файлов: материалы дела обрабатывает настольная версия.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+  :root{
+    --blue:#014ED9; --blue-deep:#0038A8; --ink:#2C333A; --ink-soft:#5B6470;
+    --paper:#FFFFFF; --ground:#F4F6FA; --tint:#E8EFFC; --line:#D9DEE7; --warn:#FFF4DE; --warn-ink:#7A4B00;
+    --display:"Manrope",system-ui,"Segoe UI",Arial,sans-serif;
+    --serif:"PT Serif",Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.5;display:flex;flex-direction:column}
+  a{color:var(--blue)}
+  header{background:var(--paper);border-bottom:1px solid var(--line);flex:0 0 auto}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px;width:100%}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:800;font-size:20px}
+  .brand img{width:34px;height:34px}
+  .brand b{color:var(--blue)}
+  .brand span.mode{font-weight:500;color:var(--ink-soft);font-size:15px;margin-left:6px}
+  .nav nav{display:flex;gap:18px;font-family:var(--display);font-weight:700;font-size:14px}
+  .nav nav a{color:var(--ink-soft);text-decoration:none}
+  .nav nav a:hover{color:var(--blue)}
+  main{flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
+  .notice{background:var(--warn);color:var(--warn-ink);font-family:var(--display);font-size:14px;line-height:1.45;border-bottom:1px solid #F0DDB5}
+  .notice .wrap{display:flex;gap:14px;align-items:flex-start;padding:10px 20px}
+  .notice .sq{margin-top:4px}
+  .notice a{color:var(--warn-ink);font-weight:700}
+  .notice .sq{width:12px;height:12px;background:var(--blue);flex:0 0 auto}
+  #log{flex:1 1 auto;overflow-y:auto;padding:24px 0 12px}
+  .msg{display:grid;gap:6px;margin:0 0 22px}
+  .msg .who{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+  .msg.user .who{color:var(--blue)}
+  .msg .body{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 18px;white-space:pre-wrap;overflow-wrap:anywhere}
+  .msg.user .body{background:var(--tint);border-color:#C9D9F7}
+  .msg .body b{font-family:var(--display);font-size:15px;letter-spacing:.02em}
+  .msg .body a{word-break:break-all}
+  .msg.wait .body{color:var(--ink-soft);font-style:italic}
+  .msg.fallback .body{background:var(--warn);border-color:#F0DDB5;color:var(--warn-ink)}
+  .fb{display:flex;gap:8px;flex-wrap:wrap}
+  .fb button{font-family:var(--display);font-weight:700;font-size:13px;padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+  .fb button:hover{border-color:var(--blue);color:var(--blue)}
+  .fb button[disabled]{opacity:.6;cursor:default}
+  .fb .done{font-family:var(--display);font-size:13px;color:var(--ink-soft);align-self:center}
+  form.ask{flex:0 0 auto;background:var(--paper);border-top:1px solid var(--line);padding:14px 0 18px}
+  form.ask .wrap{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+  textarea{width:100%;min-height:56px;max-height:220px;resize:vertical;font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--ground);color:var(--ink)}
+  textarea:focus{outline:3px solid #9FC0FF;outline-offset:1px;border-color:var(--blue)}
+  .btn{font-family:var(--display);font-weight:700;font-size:15px;padding:13px 20px;border-radius:8px;border:2px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+  .btn:hover{background:var(--blue-deep);border-color:var(--blue-deep)}
+  .btn[disabled]{opacity:.55;cursor:default}
+  .btn.ghost{background:transparent;color:var(--blue)}
+  .hint{font-family:var(--display);font-size:13px;color:var(--ink-soft);margin:8px 0 0}
+  .gate{margin:auto;max-width:520px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:30px 30px 26px}
+  .gate h1{font-family:var(--display);font-size:26px;margin:0 0 8px;text-wrap:balance}
+  .gate p{margin:0 0 18px;color:var(--ink-soft)}
+  .gate input{width:100%;font:inherit;font-family:var(--display);font-size:18px;letter-spacing:.06em;padding:12px 14px;border:1px solid var(--line);border-radius:8px;margin-bottom:12px}
+  .gate .err{color:#B3261E;font-family:var(--display);font-size:14px;min-height:20px;margin:6px 0 0}
+  .ways{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0 4px}
+  .way{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--ground);font-size:15px}
+  .way h3{font-family:var(--display);font-size:15px;margin:0 0 6px}
+  .way p{margin:0;color:var(--ink-soft);font-size:14px}
+  .way a{font-family:var(--display);font-weight:700;font-size:14px;text-decoration:none}
+  .welcome{max-width:720px;margin:0 auto;color:var(--ink-soft)}
+  .welcome h2{font-family:var(--display);color:var(--ink);font-size:22px;margin:0 0 10px}
+  .welcome .ex{display:grid;gap:8px;margin-top:14px}
+  .welcome .ex button{text-align:left;font:inherit;font-size:15px;padding:10px 14px;border:1px solid var(--line);background:var(--paper);border-radius:8px;cursor:pointer;color:var(--ink)}
+  .welcome .ex button:hover{border-color:var(--blue)}
+  @media (max-width:720px){.ways{grid-template-columns:1fr}.nav nav{display:none}form.ask .wrap{grid-template-columns:1fr}.gate{margin:16px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../"><img src="../mark.svg" alt=""> <span>ДО<b>ВОД</b></span><span class="mode">в браузере</span></a>
+    <nav>
+      <a href="../#download">Настольная версия</a>
+      <a id="tgTop" href="#" hidden>Telegram</a>
+      <a href="#" id="logout">Сменить код</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="notice" id="notice" hidden>
+    <div class="wrap"><span class="sq"></span><span>Здесь только вопросы по праву с опорой на источники. Файлы и папки дел в браузер не загружаются: материалы дела обрабатывает <a href="../#download">настольная версия</a>, она же делает обезличивание.</span></div>
+  </div>
+
+  <section class="gate" id="gate">
+    <h1>Довод в браузере</h1>
+    <p>Тестовый доступ по коду приглашения. Код выдаётся лично, спросите у нас: <a href="mailto:platon@platon.law?subject=Довод, код доступа">platon@platon.law</a>.</p>
+    <form id="gateForm">
+      <input id="code" type="text" autocomplete="off" spellcheck="false" placeholder="Код приглашения" aria-label="Код приглашения">
+      <button class="btn" type="submit">Войти</button>
+      <div class="err" id="gateErr"></div>
+    </form>
+    <div class="ways">
+      <div class="way"><h3>В браузере</h3><p>Вопросы по праву, ответ с источниками ГАРАНТ. Без файлов.</p></div>
+      <div class="way"><h3>На компьютере</h3><p>Папка дела, обезличивание, опись, позиция, проект документа.</p><a href="../#download">Скачать для Windows</a></div>
+      <div class="way"><h3>В Telegram</h3><p>Те же ответы в мессенджере, с телефона.</p><a id="tgWay" href="#" hidden>Открыть бота</a><span id="tgWayOff" style="font-family:var(--display);font-size:14px;color:var(--ink-soft)">Доступ выдаётся вместе с кодом.</span></div>
+    </div>
+  </section>
+
+  <div id="log" hidden>
+    <div class="wrap" id="logInner">
+      <div class="welcome" id="welcome">
+        <h2>Спросите как коллегу</h2>
+        <p>Формулируйте вопрос так, как поставили бы его помощнику: с фактами, стадией и тем, что нужно на выходе. Имена и реквизиты в вопросе не нужны, ответ от них не зависит.</p>
+        <div class="ex">
+          <button type="button" data-q="Какие расходы на содержание общего имущества можно взыскать с сособственника, который не проживает в квартире, и какой срок давности?">Взыскание расходов на общее имущество с сособственника</button>
+          <button type="button" data-q="Требование кредитора заявлено после закрытия реестра в банкротстве гражданина. Какие последствия и как оспорить отказ во включении?">Требование кредитора после закрытия реестра</button>
+          <button type="button" data-q="Суд отказал в возврате дела прокурору по ст. 237 УПК РФ. Как обжаловать и какие доводы работают на практике?">Отказ в возврате дела прокурору</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form class="ask" id="askForm" hidden>
+    <div class="wrap">
+      <div>
+        <textarea id="q" placeholder="Ваш вопрос" aria-label="Вопрос"></textarea>
+        <div class="hint">Enter отправляет, Shift+Enter переносит строку. Ответ занимает 20-60 секунд: идёт поиск по источникам.</div>
+      </div>
+      <button class="btn" type="submit" id="send">Спросить</button>
+    </div>
+  </form>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var API_BASE = 'https://api.dovod.law';
+  var TG_BOT = '';               // адрес бота, например https://t.me/xxx_bot; пусто = ссылка скрыта
+  var STORE_KEY = 'dovod.web.code';
+  var WAIT = ['Читаю источники...', 'Сверяю нормы...', 'Проверяю ссылки...', 'Собираю ответ по частям...', 'Отделяю установленное от предполагаемого...', 'Ещё несколько секунд...', 'Довожу до результата...'];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var gate = $('gate'), log = $('log'), logInner = $('logInner'), askForm = $('askForm'), q = $('q'), send = $('send'), notice = $('notice');
+  var code = null, busy = false;
+
+  if (TG_BOT) { ['tgTop', 'tgWay'].forEach(function (id) { $(id).href = TG_BOT; $(id).hidden = false; }); $('tgWayOff').hidden = true; }
+
+  try { code = localStorage.getItem(STORE_KEY) || null; } catch (e) { code = null; }
+  render();
+
+  function render() {
+    var on = !!code;
+    gate.hidden = on; log.hidden = !on; askForm.hidden = !on; notice.hidden = !on;
+    if (on) q.focus(); else $('code').focus();
+  }
+
+  $('gateForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var v = $('code').value.trim();
+    if (!v) { $('gateErr').textContent = 'Введите код.'; return; }
+    code = v;
+    try { localStorage.setItem(STORE_KEY, v); } catch (e) {}
+    $('gateErr').textContent = '';
+    render();
+  });
+
+  $('logout').addEventListener('click', function (ev) {
+    ev.preventDefault();
+    code = null;
+    try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+    render();
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.welcome .ex button'), function (b) {
+    b.addEventListener('click', function () { q.value = b.getAttribute('data-q'); q.focus(); });
+  });
+
+  q.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); askForm.requestSubmit(); }
+  });
+
+  askForm.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var text = q.value.trim();
+    if (!text || busy) return;
+    ask(text);
+  });
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function addMsg(kind, who, bodyHtml, bodyText) {
+    var m = el('div', 'msg ' + kind);
+    m.appendChild(el('div', 'who', who));
+    var b = el('div', 'body');
+    if (bodyHtml !== null && bodyHtml !== undefined) b.innerHTML = bodyHtml; else b.textContent = bodyText || '';
+    m.appendChild(b);
+    logInner.appendChild(m);
+    log.scrollTop = log.scrollHeight;
+    return m;
+  }
+
+  // Ответ приходит уже экранированным (только <b>), ссылки делаем кликабельными.
+  function safeHtml(html) {
+    var cleaned = String(html).replace(/<(?!\/?b>)[^>]*>/g, '');
+    return cleaned.replace(/(https?:\/\/[^\s<]+)/g, function (u) {
+      var tail = '';
+      var m = u.match(/[.,;:)\]]+$/); if (m) { tail = m[0]; u = u.slice(0, -tail.length); }
+      return '<a href="' + u + '" target="_blank" rel="noopener">' + u + '</a>' + tail;
+    });
+  }
+
+  function ask(text) {
+    busy = true; send.disabled = true; q.value = '';
+    var w = $('welcome'); if (w) w.remove();
+    addMsg('user', 'Вы', null, text);
+    var wait = addMsg('wait', 'Довод', null, WAIT[0]);
+    var i = 0;
+    var timer = setInterval(function () { i = (i + 1) % WAIT.length; wait.querySelector('.body').textContent = WAIT[i]; }, 7000);
+    var ctrl = new AbortController();
+    var kill = setTimeout(function () { ctrl.abort(); }, 120000);
+
+    fetch(API_BASE + '/api/ask', {
+      method: 'POST', mode: 'cors', signal: ctrl.signal,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: text, code: code })
+    }).then(function (r) {
+      return r.json().then(function (j) { return { status: r.status, j: j }; }, function () { return { status: r.status, j: null }; });
+    }).then(function (res) {
+      clearInterval(timer); clearTimeout(kill); wait.remove();
+      var j = res.j || {};
+      if (res.status === 401) {
+        addMsg('fallback', 'Довод', null, 'Код приглашения не подошёл. Проверьте код или запросите новый: platon@platon.law.');
+        code = null; try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+        setTimeout(render, 1500);
+        return;
+      }
+      if (res.status === 429) {
+        addMsg('fallback', 'Довод', null, j.error === 'busy' ? 'Предыдущий вопрос ещё обрабатывается, дождитесь ответа.' : 'Слишком много вопросов подряд. Подождите минуту.');
+        return;
+      }
+      if (res.status !== 200) {
+        addMsg('fallback', 'Довод', null, 'Сервис временно недоступен (код ' + res.status + '). Попробуйте позже.');
+        return;
+      }
+      if (j.kind !== 'answer') { addMsg('fallback', 'Довод', null, j.text || 'Ответ не получен.'); return; }
+      var m = addMsg('answer', 'Довод', safeHtml(j.html || j.text || ''));
+      m.appendChild(feedback(j.answerId));
+      log.scrollTop = log.scrollHeight;
+    }).catch(function (err) {
+      clearInterval(timer); clearTimeout(kill); wait.remove();
+      addMsg('fallback', 'Довод', null, err && err.name === 'AbortError' ? 'Ответ не пришёл за две минуты. Попробуйте сформулировать вопрос короче.' : 'Нет связи с сервисом. Проверьте сеть и попробуйте ещё раз.');
+    }).then(function () { busy = false; send.disabled = false; q.focus(); });
+  }
+
+  function feedback(answerId) {
+    var box = el('div', 'fb');
+    var useful = el('button', null, 'Полезно'), bad = el('button', null, 'Не помогло');
+    [useful, bad].forEach(function (b) { b.type = 'button'; box.appendChild(b); });
+    function sendFb(type) {
+      useful.disabled = bad.disabled = true;
+      fetch(API_BASE + '/api/feedback', { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answerId: answerId, code: code, type: type }) }).catch(function () {});
+      box.appendChild(el('span', 'done', 'Спасибо, учтём.'));
+    }
+    useful.addEventListener('click', function () { sendFb('useful'); });
+    bad.addEventListener('click', function () { sendFb('bad'); });
+    return box;
+  }
+})();
+</script>
+</body>
+</html>
