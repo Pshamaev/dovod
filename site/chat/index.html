@@ -215,7 +215,8 @@
     return cleaned.replace(/(https?:\/\/[^\s<]+)/g, function (u) {
       var tail = '';
       var m = u.match(/[.,;:)\]]+$/); if (m) { tail = m[0]; u = u.slice(0, -tail.length); }
-      return '<a href="' + u + '" target="_blank" rel="noopener">' + u + '</a>' + tail;
+      var safeU = u.replace(/"/g, '&quot;');
+      return '<a href="' + safeU + '" target="_blank" rel="noopener noreferrer">' + u + '</a>' + tail;
     });
   }
 
