@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Довод</title>
+<meta name="description" content="Довод: программа для юриста, которая превращает папку дела в опись, правовую позицию и проект документа с проверенными ссылками. Документы не покидают ваш компьютер.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+  :root{
+    --blue:#014ED9; --blue-deep:#0038A8; --ink:#2C333A; --ink-soft:#5B6470;
+    --paper:#FFFFFF; --ground:#F4F6FA; --tint:#E8EFFC; --line:#D9DEE7;
+    --display:"Manrope",system-ui,"Segoe UI",Arial,sans-serif;
+    --serif:"PT Serif",Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.55}
+  a{color:var(--blue)}
+  h1,h2,h3{font-family:var(--display);color:var(--ink);text-wrap:balance;margin:0}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  header{background:var(--paper);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px;gap:24px}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.01em}
+  .brand .mark{width:40px;height:40px}
+  .brand b{color:var(--blue)}
+  .nav nav{display:flex;gap:28px;font-family:var(--display);font-weight:700;font-size:15px}
+  .nav nav a{color:var(--ink-soft);text-decoration:none}
+  .nav nav a:hover,.nav nav a:focus-visible{color:var(--blue)}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:16px;padding:14px 22px;border-radius:8px;text-decoration:none;border:2px solid var(--blue);background:var(--blue);color:#fff}
+  .btn:hover,.btn:focus-visible{background:var(--blue-deep);border-color:var(--blue-deep)}
+  .btn.ghost{background:transparent;color:var(--blue)}
+  .btn.ghost:hover,.btn.ghost:focus-visible{background:var(--tint)}
+  a:focus-visible,.btn:focus-visible{outline:3px solid #9FC0FF;outline-offset:3px}
+  .hero{background:var(--paper);padding:72px 0 64px}
+  .hero .wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:48px;align-items:center}
+  .eyebrow{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+  h1{font-size:clamp(38px,5.4vw,62px);font-weight:800;line-height:1.05;margin:14px 0 20px}
+  h1 .cap{color:var(--blue)}
+  .lead{font-size:21px;max-width:34em;color:var(--ink);margin:0 0 30px}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .cta small{display:block;width:100%;font-family:var(--display);font-size:14px;color:var(--ink-soft);margin-top:6px}
+  .hero .mark{width:100%;max-width:420px;display:block;margin:0 auto}
+  section{padding:64px 0}
+  .section-title{font-size:clamp(26px,3.2vw,36px);font-weight:800;line-height:1.15;margin-bottom:14px}
+  .section-sub{max-width:36em;color:var(--ink-soft);margin:0 0 36px}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);background:var(--paper);border-radius:10px;overflow:hidden}
+  .step{padding:26px 24px 28px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+  .step:last-child{border-right:0}
+  .step .n{font-family:var(--display);font-weight:800;font-size:13px;color:var(--blue);letter-spacing:.1em}
+  .step h3{font-size:19px;font-weight:700;line-height:1.25}
+  .step p{margin:0;font-size:16px;color:var(--ink-soft)}
+  .step code{font-family:ui-monospace,Consolas,monospace;font-size:14px;color:var(--ink);background:var(--tint);padding:2px 6px;border-radius:4px}
+  .privacy{background:var(--ink);color:#E9EDF3}
+  .privacy .wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  .privacy h2{color:#fff}
+  .privacy p{color:#C9D1DC}
+  .privacy img{width:100%;height:auto;border-radius:10px;display:block;background:#fff}
+  .privacy ul{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:12px}
+  .privacy li{display:grid;grid-template-columns:22px 1fr;gap:12px;align-items:start}
+  .privacy li:before{content:"";width:14px;height:14px;margin-top:8px;background:var(--blue);display:block}
+  .inside{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  .item{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:24px 26px}
+  .item h3{font-size:18px;margin-bottom:8px}
+  .item p{margin:0;font-size:16px;color:var(--ink-soft)}
+  .download{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .download .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+  .req{font-family:var(--display);font-size:15px;color:var(--ink-soft);display:grid;gap:8px;margin:0;padding:0;list-style:none}
+  .req li{display:grid;grid-template-columns:auto 1fr;gap:10px}
+  .req li span:first-child{color:var(--ink);font-weight:700;min-width:120px}
+  .note{background:var(--tint);border-radius:10px;padding:18px 20px;font-size:16px;margin-top:22px}
+  footer{padding:36px 0;color:var(--ink-soft);font-family:var(--display);font-size:14px}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  @media (max-width:860px){
+    .hero .wrap,.privacy .wrap,.download .wrap{grid-template-columns:1fr}
+    .hero .mark{max-width:260px}
+    .steps{grid-template-columns:1fr 1fr}
+    .step:nth-child(2){border-right:0}
+    .step:nth-child(1),.step:nth-child(2){border-bottom:1px solid var(--line)}
+    .inside{grid-template-columns:1fr}
+    .nav nav{display:none}
+  }
+  @media (max-width:520px){.steps{grid-template-columns:1fr}.step{border-right:0;border-bottom:1px solid var(--line)}.step:last-child{border-bottom:0}}
+  @media (prefers-reduced-motion:no-preference){.btn{transition:background .15s ease}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#"><img class="mark" src="mark.svg" alt="" width="40" height="40"> <span>ДО<b>ВОД</b></span></a>
+    <nav>
+      <a href="#how">Как работает</a>
+      <a href="#privacy">Приватность</a>
+      <a href="#inside">Что внутри</a>
+      <a href="#download">Скачать</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Программа для юриста, Windows</div>
+      <h1><span class="cap">ДОВОД</span>ит до результата</h1>
+      <p class="lead">Папка дела на входе: сканы, фотографии, docx, переписка. На выходе: опись материалов с противоречиями, правовая позиция, проект документа с проверенными ссылками на нормы. Документы не покидают ваш компьютер.</p>
+      <div class="cta">
+        <a class="btn" href="#download">Скачать тестовую версию</a>
+        <a class="btn ghost" href="mailto:platon@platon.law?subject=Довод">Написать нам</a>
+        <small>Windows 10 и 11, 64 бит. Установщик без цифровой подписи, SmartScreen предупредит.</small>
+      </div>
+    </div>
+    <div><img class="mark" src="mark.svg" alt="Знак Довода" width="420" height="420"></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2 class="section-title">Четыре шага, в этом порядке</h2>
+    <p class="section-sub">Каждый шаг это одна команда в окне Довода. Между шагами ничего настраивать не нужно.</p>
+    <div class="steps">
+      <div class="step"><div class="n">ШАГ 1</div><h3>Подготовка</h3><p>Распознавание сканов и фотографий, единый текст дела с номерами страниц, обезличивание: имена, паспорта, адреса, даты рождения заменяются на псевдонимы, карта соответствий остаётся у вас.</p><p><code>/dovod:prepare</code></p></div>
+      <div class="step"><div class="n">ШАГ 2</div><h3>Опись и позиция</h3><p>Опись материалов, противоречия между документами, чего в папке не хватает. Затем правовая позиция по фактам дела с указанием документа и страницы под каждым утверждением.</p><p><code>/dovod:inventory</code> <code>/dovod:position</code></p></div>
+      <div class="step"><div class="n">ШАГ 3</div><h3>Проект документа</h3><p>Стадия дела и нужный документ: заявление, отзыв, жалоба. Проект пишется по позиции, ссылки на нормы и судебную практику проверяются по правовой базе, непроверенное помечается отдельно.</p><p><code>/dovod:stage</code> <code>/dovod:draft</code></p></div>
+      <div class="step"><div class="n">ШАГ 4</div><h3>Сверка и результат</h3><p>Проект сверяется с позицией, расхождения исправляются. Реальные имена и реквизиты возвращаются на место, готовые документы собираются в docx в папке дела.</p><p><code>/dovod:reconcile</code> <code>/dovod:restore</code></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="privacy" class="privacy">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Приватность</div>
+      <h2 class="section-title">Материалы дела остаются на вашем компьютере</h2>
+      <p>Распознавание и обезличивание выполняются локально. Языковой модели уходит только обезличенный текст, в котором нет ни одного настоящего имени, паспорта или адреса. Обратная подстановка происходит тоже у вас, по карте, которую видите только вы.</p>
+      <ul>
+        <li>Ворота утечек: перед отправкой текст проверяется автоматически, найденные персональные данные останавливают отправку.</li>
+        <li>Карта лиц и реквизитов хранится в папке дела и никуда не передаётся.</li>
+        <li>Проверка ссылок на нормы идёт по реквизитам, а не по тексту дела.</li>
+      </ul>
+    </div>
+    <div><img src="banner.jpg" alt="Слева: связки бумаг, папки, сканы вперемешку. Справа: аккуратные документы с отмеченными пунктами. Между ними знак Довода." width="880" height="495" loading="lazy"></div>
+  </div>
+</section>
+
+<section id="inside">
+  <div class="wrap">
+    <h2 class="section-title">Что внутри</h2>
+    <p class="section-sub">Не чат общего назначения, а конвейер под работу с делом: каждый инструмент решает одну задачу и проверяется отдельно.</p>
+    <div class="inside">
+      <div class="item"><h3>Распознавание сканов и фотографий</h3><p>Два движка OCR с выбором лучшего результата на каждой странице, поворот перекошенных снимков, отметка страниц, которые прочитать не удалось.</p></div>
+      <div class="item"><h3>Обезличивание с картой</h3><p>Фамилии в любом падеже, инициалы, паспорта, ИНН, телефоны, адреса, даты и места рождения. Одна и та же персона получает один псевдоним во всех документах.</p></div>
+      <div class="item"><h3>Проверка ссылок на нормы и практику</h3><p>Каждая ссылка в проекте сверяется с правовой базой: статья существует, номер и дата акта совпадают, цитата есть в тексте. Непроверенное так и помечается.</p></div>
+      <div class="item"><h3>Факты с опорой на страницу</h3><p>Под каждым утверждением позиции стоит документ, страница и цитата. Утверждение без опоры не попадает в проект.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="download" class="download">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Тестовая версия</div>
+      <h2 class="section-title">Скачать Довод</h2>
+      <p>Довод сейчас проходит проверку на реальных делах. Установщик доступен на странице выпусков. Установка требует Python 3.13 и Tesseract OCR, подробная инструкция приложена к выпуску; если проще, напишите, поможем поставить.</p>
+      <div class="cta">
+        <a class="btn" href="https://github.com/Pshamaev/dovod/releases">Страница выпусков</a>
+        <a class="btn ghost" href="mailto:platon@platon.law?subject=Довод, тестовый доступ">Запросить доступ</a>
+      </div>
+      <div class="note">Ключ к языковой модели в установщик не зашит. Тестовым участникам мы выдаём доступ отдельно, модель и поставщик могут меняться без переустановки программы.</div>
+    </div>
+    <div>
+      <h3 style="font-family:var(--display);font-size:16px;margin-bottom:14px">Требования</h3>
+      <ul class="req">
+        <li><span>Система</span><span>Windows 10 или 11, 64 бит</span></li>
+        <li><span>Место</span><span>около 400 МБ с моделями распознавания</span></li>
+        <li><span>Python</span><span>3.13, для конвейера дела</span></li>
+        <li><span>Tesseract</span><span>OCR с русским пакетом, ставится отдельно</span></li>
+        <li><span>Сеть</span><span>только для языковой модели и проверки ссылок; тексты документов не передаются</span></li>
+        <li><span>Лицензия</span><span>оболочка на основе Qwen Code, Apache 2.0</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Довод (DOVOD). Адвокат Платон Шамаев.</div>
+    <div><a href="mailto:platon@platon.law">platon@platon.law</a> · <a href="https://github.com/Pshamaev/dovod">Исходный код</a></div>
+  </div>
+</footer>
+</body>
+</html>
