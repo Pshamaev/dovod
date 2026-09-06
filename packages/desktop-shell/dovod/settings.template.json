@@ -23,7 +23,10 @@
     ]
   },
   "permissions": {
-    "allow": ["Bash(python *dovod_prompts.py*)", "Bash(python3 *dovod_prompts.py*)"]
+    "allow": [
+      "Bash(python __DOVOD_TOOLS__\\dovod_prompts.py)",
+      "Bash(python3 __DOVOD_TOOLS__\\dovod_prompts.py)"
+    ]
   },
   "mcpServers": {}
 }
