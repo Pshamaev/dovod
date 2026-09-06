@@ -80,7 +80,10 @@ function getInitialLanguage(): WebShellLanguage {
   const params = new URLSearchParams(window.location.search);
   const raw = params.get('language') ?? params.get('lang');
   if (raw) return normalizeLanguage(raw);
-  return normalizeLanguage(readStoredLanguage() ?? navigator.language);
+  // DOVOD: the product is Russian by default. The OS/browser language is
+  // deliberately ignored (an English Windows must not flip the UI to
+  // English); only an explicit choice (`/language ui ...`, stored) wins.
+  return readStoredLanguage() ?? 'ru';
 }
 
 function getSessionIdFromUrl(): string | undefined {
