@@ -1221,8 +1221,11 @@ function testDovodSeeding(directory) {
   );
   assert.deepEqual(
     template.permissions.allow,
-    ['Bash(python *dovod_prompts.py*)', 'Bash(python3 *dovod_prompts.py*)'],
-    'only the dovod_prompts.py entry script is pre-approved (the daemon cannot confirm shell commands)',
+    [
+      'Bash(python __DOVOD_TOOLS__\\dovod_prompts.py)',
+      'Bash(python3 __DOVOD_TOOLS__\\dovod_prompts.py)',
+    ],
+    'only the dovod_prompts.py entry script is pre-approved, as a literal rule (AUTO mode strips wildcard interpreter rules)',
   );
   const envTemplate = fs.readFileSync(
     path.join(resourceDir, 'env.template'),
@@ -1255,6 +1258,11 @@ function testDovodSeeding(directory) {
     created.mcpServers.dovod,
     undefined,
     'the PLACEHOLDER MCP server must not be registered',
+  );
+  assert.equal(
+    created.permissions,
+    undefined,
+    'no permission rule is written while DOVOD_TOOLS is unresolved',
   );
   assert.ok(fs.existsSync(path.join(qwenHome, '.env')));
 
@@ -1293,37 +1301,10 @@ function testDovodSeeding(directory) {
   assert.equal(mergedSettings.mcpServers.other.command, 'x');
   assert.equal(mergedSettings.model.name, '${DOVOD_MODEL}');
   assert.equal(mergedSettings.modelProviders.openai[0].envKey, 'DOVOD_API_KEY');
-  assert.deepEqual(
-    mergedSettings.permissions.allow,
-    ['Bash(python *dovod_prompts.py*)', 'Bash(python3 *dovod_prompts.py*)'],
-    'python rules are appended to settings that had no permissions block',
-  );
-
-  // permissions.allow is appended, never replaced or duplicated.
-  fs.writeFileSync(
-    path.join(qwenHome, 'settings.json'),
-    JSON.stringify({
-      $version: 4,
-      permissions: {
-        allow: ['Bash(git status)', 'Bash(python *dovod_prompts.py*)'],
-        deny: ['Bash(rm *)'],
-      },
-    }),
-  );
-  assert.equal(seedDovod({ resourceDir, qwenHome }).settings, 'merged');
-  const permMerged = JSON.parse(
-    fs.readFileSync(path.join(qwenHome, 'settings.json'), 'utf8'),
-  );
-  assert.deepEqual(permMerged.permissions.allow, [
-    'Bash(git status)',
-    'Bash(python *dovod_prompts.py*)',
-    'Bash(python3 *dovod_prompts.py*)',
-  ]);
-  assert.deepEqual(permMerged.permissions.deny, ['Bash(rm *)']);
   assert.equal(
-    seedDovod({ resourceDir, qwenHome }).settings,
-    'unchanged',
-    'a second seed adds nothing once the rules are present',
+    mergedSettings.permissions,
+    undefined,
+    'no permission rule is written while DOVOD_TOOLS is unresolved',
   );
 
   // A real MCP template is added exactly once and never overwritten.
@@ -1379,7 +1360,10 @@ function testDovodSeeding(directory) {
   // token is resolved in every command and in the MCP template.
   for (const name of commandNames) {
     assert.match(
-      fs.readFileSync(path.join(resourceDir, 'commands', `${name}.toml`), 'utf8'),
+      fs.readFileSync(
+        path.join(resourceDir, 'commands', `${name}.toml`),
+        'utf8',
+      ),
       /__DOVOD_TOOLS__/,
       `${name}.toml must reference dovod-tools through the __DOVOD_TOOLS__ token`,
     );
@@ -1417,5 +1401,45 @@ function testDovodSeeding(directory) {
   assert.equal(
     toolsSettings.mcpServers.dovod.args[0].includes('__DOVOD_TOOLS__'),
     false,
+  );
+  const literalRules = [
+    `Bash(python ${toolsPath}\\dovod_prompts.py)`,
+    `Bash(python3 ${toolsPath}\\dovod_prompts.py)`,
+  ];
+  assert.deepEqual(
+    toolsSettings.permissions.allow,
+    literalRules,
+    'the pre-approval is a literal rule built from DOVOD_TOOLS',
+  );
+  for (const rule of literalRules) {
+    assert.equal(rule.includes('*'), false, 'no wildcard in the rule');
+  }
+  // Existing rules are kept, ours appended once, second seed is a no-op.
+  fs.writeFileSync(
+    path.join(toolsHome, 'settings.json'),
+    JSON.stringify({
+      $version: 4,
+      permissions: {
+        allow: ['Bash(git status)', literalRules[0]],
+        deny: ['Bash(rm *)'],
+      },
+    }),
+  );
+  assert.equal(
+    seedDovod({ resourceDir, qwenHome: toolsHome }).settings,
+    'merged',
+  );
+  const permMerged = JSON.parse(
+    fs.readFileSync(path.join(toolsHome, 'settings.json'), 'utf8'),
+  );
+  assert.deepEqual(permMerged.permissions.allow, [
+    'Bash(git status)',
+    ...literalRules,
+  ]);
+  assert.deepEqual(permMerged.permissions.deny, ['Bash(rm *)']);
+  assert.equal(
+    seedDovod({ resourceDir, qwenHome: toolsHome }).settings,
+    'unchanged',
+    'a second seed adds nothing once the rules are present',
   );
 }

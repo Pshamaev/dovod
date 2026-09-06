@@ -67,7 +67,8 @@ function isPlainObject(value) {
 // Reads DOVOD_TOOLS (the path to garant-bot/dovod-tools on this machine)
 // from the environment or from <QWEN_HOME>/.env. Returns '' when unset.
 export function resolveDovodTools(qwenHome, env = process.env) {
-  const fromEnv = typeof env['DOVOD_TOOLS'] === 'string' ? env['DOVOD_TOOLS'].trim() : '';
+  const fromEnv =
+    typeof env['DOVOD_TOOLS'] === 'string' ? env['DOVOD_TOOLS'].trim() : '';
   if (fromEnv) return fromEnv;
   const envFile = path.join(qwenHome, '.env');
   if (!fs.existsSync(envFile)) return '';
@@ -132,7 +133,12 @@ function readMcpServerTemplate(resourceDir, toolsPath) {
 // Merges the Dovod defaults into an existing settings object without
 // touching anything the user already configured. Returns true when the
 // object changed.
-export function mergeDovodSettings(settings, template, mcpServer) {
+export function mergeDovodSettings(
+  settings,
+  template,
+  mcpServer,
+  toolsPath = '',
+) {
   let changed = false;
   const selectedType = template?.security?.auth?.selectedType;
   if (selectedType && !settings.security?.auth?.selectedType) {
@@ -168,10 +174,15 @@ export function mergeDovodSettings(settings, template, mcpServer) {
   }
   // permissions.allow: the /dovod:* commands run the dovod_prompts.py entry
   // script through a shell injection; the daemon cannot ask for confirmation,
-  // so the narrow rules from the template (that script only) are appended to
-  // whatever the user already allows (never replaced, never duplicated).
+  // so a literal rule for that script (no wildcards: AUTO approval mode strips
+  // wildcard interpreter rules as dangerous) is appended to whatever the user
+  // already allows (never replaced, never duplicated). Rules still carrying
+  // the __DOVOD_TOOLS__ token (DOVOD_TOOLS unset) are not written.
   const templateAllow = Array.isArray(template?.permissions?.allow)
-    ? template.permissions.allow.filter((rule) => typeof rule === 'string')
+    ? template.permissions.allow
+        .filter((rule) => typeof rule === 'string')
+        .map((rule) => substituteTools(rule, toolsPath))
+        .filter((rule) => !rule.includes(TOOLS_PLACEHOLDER))
     : [];
   if (templateAllow.length > 0) {
     if (!isPlainObject(settings.permissions)) settings.permissions = {};
@@ -216,6 +227,8 @@ export function seedDovod({
   const settingsFile = path.join(qwenHome, 'settings.json');
   if (!fs.existsSync(settingsFile)) {
     const fresh = structuredClone(template);
+    delete fresh.permissions;
+    mergeDovodSettings(fresh, template, mcpServer, toolsPath);
     if (mcpServer) {
       fresh.mcpServers = isPlainObject(fresh.mcpServers)
         ? fresh.mcpServers
@@ -239,7 +252,7 @@ export function seedDovod({
     summary.settings = 'invalid';
     return summary;
   }
-  if (mergeDovodSettings(settings, template, mcpServer)) {
+  if (mergeDovodSettings(settings, template, mcpServer, toolsPath)) {
     writeJsonAtomic(settingsFile, settings);
     summary.settings = 'merged';
   }
