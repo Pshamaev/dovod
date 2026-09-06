@@ -52,6 +52,29 @@ export const WITTY_LOADING_PHRASES_EN = [
   "New line? That's Ctrl+J.",
 ];
 
+// DOVOD: Russian phrases, calm and professional (the product is used by
+// lawyers while a case is being processed).
+export const WITTY_LOADING_PHRASES_RU = [
+  'Читаю материалы дела...',
+  'Сверяю даты и номера документов...',
+  'Ищу противоречия между документами...',
+  'Проверяю ссылки на нормы...',
+  'Собираю позицию по частям...',
+  'Перечитываю ключевой документ ещё раз...',
+  'Уточняю формулировки...',
+  'Складываю факты в хронологию...',
+  'Отделяю установленное от предполагаемого...',
+  'Проверяю, ничего ли не пропущено...',
+  'Готовлю ответ, это займёт немного времени...',
+  'Довожу до результата...',
+  'Раскладываю папку по полочкам...',
+  'Смотрю, какие документы отсутствуют...',
+  'Сверяю проект с правовой позицией...',
+  'Взвешиваю доводы сторон...',
+  'Ещё несколько секунд...',
+  'Работаю, не отвлекайтесь...',
+];
+
 export const WITTY_LOADING_PHRASES_ZH = [
   '正在努力搬砖，请稍候...',
   '老板在身后，快加载啊！',
@@ -80,10 +103,10 @@ export const WITTY_LOADING_PHRASES_ZH = [
 ];
 
 export function getLoadingPhrases(language?: string): string[] {
-  const resolvedLanguage =
-    language ??
-    (typeof navigator !== 'undefined' ? navigator.language.toLowerCase() : '');
-  return resolvedLanguage.toLowerCase().startsWith('zh')
-    ? WITTY_LOADING_PHRASES_ZH
-    : WITTY_LOADING_PHRASES_EN;
+  // DOVOD: Russian by default; English and Chinese only when the UI language
+  // is explicitly one of them (the OS/browser language is not consulted).
+  const resolvedLanguage = (language ?? 'ru').toLowerCase();
+  if (resolvedLanguage.startsWith('zh')) return WITTY_LOADING_PHRASES_ZH;
+  if (resolvedLanguage.startsWith('en')) return WITTY_LOADING_PHRASES_EN;
+  return WITTY_LOADING_PHRASES_RU;
 }
