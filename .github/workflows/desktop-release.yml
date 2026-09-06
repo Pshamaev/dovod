@@ -237,8 +237,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$TAURI_SIGNING_PRIVATE_KEY" ]; then
-            echo '::error::TAURI_SIGNING_PRIVATE_KEY is required for published releases.'
-            exit 1
+            echo '::warning::TAURI_SIGNING_PRIVATE_KEY is not configured: the release is published without updater signatures (no auto-update).'
           fi
 
       - name: 'Import macOS certificate'
@@ -416,7 +415,7 @@ jobs:
         run: |
           set -euo pipefail
           args=( ${{ matrix.tauri_args }} )
-          if [ "$DRY_RUN" = 'true' ]; then
+          if [ "$DRY_RUN" = 'true' ] || [ -z "$TAURI_SIGNING_PRIVATE_KEY" ]; then
             args+=(--no-sign)
           elif [ "$RUNNER_OS" = 'Windows' ] && [ -n "$WINDOWS_CONFIG" ]; then
             args+=(--config "$WINDOWS_CONFIG")
@@ -584,12 +583,18 @@ jobs:
           cd release-assets
           # Generate the updater manifest before checksumming so SHA256SUMS.txt
           # also covers desktop-latest.json (fetched unauthenticated by clients).
-          node ../.github/scripts/create-desktop-update-manifest.mjs \
-            --assets . \
-            --repository "$GH_REPO" \
-            --tag "$RELEASE_TAG" \
-            --version "$RELEASE_VERSION" \
-            --output desktop-latest.json
+          # DOVOD: skipped when the build ran without updater signatures
+          # (no TAURI_SIGNING_PRIVATE_KEY) or only Windows was built.
+          if compgen -G '*.sig' >/dev/null && ls -- *-apple-darwin.app.tar.gz >/dev/null 2>&1; then
+            node ../.github/scripts/create-desktop-update-manifest.mjs \
+              --assets . \
+              --repository "$GH_REPO" \
+              --tag "$RELEASE_TAG" \
+              --version "$RELEASE_VERSION" \
+              --output desktop-latest.json
+          else
+            echo '::notice::Updater manifest skipped: unsigned or Windows-only build.'
+          fi
           if [ "$ELECTRON_BRIDGE" = 'true' ]; then
             for manifest in macos:latest-mac.yml windows:latest.yml linux:latest-linux.yml; do
               platform="${manifest%%:*}"
@@ -642,6 +647,10 @@ jobs:
           RELEASE_VERSION: '${{ needs.prepare.outputs.version }}'
         run: |
           set -euo pipefail
+          if [ ! -f release-assets/desktop-latest.json ]; then
+            echo '::notice::Stable updater feed not updated: no updater manifest in this release.'
+            exit 0
+          fi
           feed_assets=(release-assets/desktop-latest.json)
           if [ "$ELECTRON_BRIDGE" = 'true' ]; then
             shopt -s nullglob
