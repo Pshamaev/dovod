@@ -98,7 +98,7 @@
 
   <section class="gate" id="gate">
     <h1>Довод в браузере</h1>
-    <p>Тестовый доступ по коду приглашения. Код выдаётся лично, спросите у нас: <a href="mailto:platon@platon.law?subject=Довод, код доступа">platon@platon.law</a>.</p>
+    <p>Тестовый доступ по коду приглашения. Код выдаётся лично, спросите у нас: <a href="mailto:info@dovod.law?subject=Довод, код доступа">info@dovod.law</a>.</p>
     <form id="gateForm">
       <input id="code" type="text" autocomplete="off" spellcheck="false" placeholder="Код приглашения" aria-label="Код приглашения">
       <button class="btn" type="submit">Войти</button>
@@ -240,7 +240,7 @@
       clearInterval(timer); clearTimeout(kill); wait.remove();
       var j = res.j || {};
       if (res.status === 401) {
-        addMsg('fallback', 'Довод', null, 'Код приглашения не подошёл. Проверьте код или запросите новый: platon@platon.law.');
+        addMsg('fallback', 'Довод', null, 'Код приглашения не подошёл. Проверьте код или запросите новый: info@dovod.law.');
         code = null; try { localStorage.removeItem(STORE_KEY); } catch (e) {}
         setTimeout(render, 1500);
         return;
