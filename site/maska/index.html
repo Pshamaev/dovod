@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Маска</title>
+<meta name="description" content="Маска: бесплатная программа для Windows, которая обезличивает документ перед отправкой в ChatGPT, Claude и другие нейросети и возвращает настоящие имена в ответ. Локально, без загрузки документов в интернет.">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+  :root{
+    --blue:#014ED9; --blue-deep:#0038A8; --ink:#2C333A; --ink-soft:#5B6470;
+    --paper:#FFFFFF; --ground:#F4F6FA; --tint:#E8EFFC; --line:#D9DEE7;
+    --display:"Manrope",system-ui,"Segoe UI",Arial,sans-serif;
+    --serif:"PT Serif",Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.55}
+  a{color:var(--blue)}
+  h1,h2,h3{font-family:var(--display);color:var(--ink);text-wrap:balance;margin:0}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  header{background:var(--paper);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px;gap:24px}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.01em}
+  .brand small{font-weight:500;font-size:14px;color:var(--ink-soft)}
+  .nav nav{display:flex;gap:28px;font-family:var(--display);font-weight:700;font-size:15px}
+  .nav nav a{color:var(--ink-soft);text-decoration:none}
+  .nav nav a:hover,.nav nav a:focus-visible{color:var(--blue)}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:16px;padding:14px 22px;border-radius:8px;text-decoration:none;border:2px solid var(--blue);background:var(--blue);color:#fff}
+  .btn:hover,.btn:focus-visible{background:var(--blue-deep);border-color:var(--blue-deep)}
+  .btn.ghost{background:transparent;color:var(--blue)}
+  .btn.ghost:hover,.btn.ghost:focus-visible{background:var(--tint)}
+  a:focus-visible,.btn:focus-visible{outline:3px solid #9FC0FF;outline-offset:3px}
+  .hero{background:var(--paper);padding:72px 0 64px}
+  .hero .wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:48px;align-items:center}
+  .eyebrow{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+  h1{font-size:clamp(38px,5.4vw,62px);font-weight:800;line-height:1.05;margin:14px 0 20px}
+  .lead{font-size:21px;max-width:34em;color:var(--ink);margin:0 0 30px}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .cta small{display:block;width:100%;font-family:var(--display);font-size:14px;color:var(--ink-soft);margin-top:6px}
+  .sample{background:var(--ground);border:1px solid var(--line);border-radius:10px;padding:22px 24px;font-family:ui-monospace,Consolas,monospace;font-size:15px;line-height:1.6;color:var(--ink)}
+  .sample .lbl{font-family:var(--display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+  .sample .tok{background:var(--tint);border-radius:4px;padding:1px 5px;color:var(--blue-deep)}
+  .sample hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+  section{padding:64px 0}
+  .section-title{font-size:clamp(26px,3.2vw,36px);font-weight:800;line-height:1.15;margin-bottom:14px}
+  .section-sub{max-width:36em;color:var(--ink-soft);margin:0 0 36px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);background:var(--paper);border-radius:10px;overflow:hidden}
+  .step{padding:26px 24px 28px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+  .step:last-child{border-right:0}
+  .step .n{font-family:var(--display);font-weight:800;font-size:13px;color:var(--blue);letter-spacing:.1em}
+  .step h3{font-size:19px;font-weight:700;line-height:1.25}
+  .step p{margin:0;font-size:16px;color:var(--ink-soft)}
+  .inside{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  .item{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:24px 26px}
+  .item h3{font-size:18px;margin-bottom:8px}
+  .item p{margin:0;font-size:16px;color:var(--ink-soft)}
+  .privacy{background:var(--ink);color:#E9EDF3}
+  .privacy h2{color:#fff}
+  .privacy p{color:#C9D1DC;max-width:40em}
+  .download{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .download .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+  .req{font-family:var(--display);font-size:15px;color:var(--ink-soft);display:grid;gap:8px;margin:0;padding:0;list-style:none}
+  .req li{display:grid;grid-template-columns:auto 1fr;gap:10px}
+  .req li span:first-child{color:var(--ink);font-weight:700;min-width:120px}
+  .note{background:var(--tint);border-radius:10px;padding:18px 20px;font-size:16px;margin-top:22px}
+  .lawyer{background:var(--tint);border-top:1px solid var(--line)}
+  .lawyer .wrap{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+  .lawyer p{margin:0;max-width:36em}
+  footer{padding:36px 0;color:var(--ink-soft);font-family:var(--display);font-size:14px}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  @media (max-width:860px){
+    .hero .wrap,.download .wrap{grid-template-columns:1fr}
+    .steps{grid-template-columns:1fr}
+    .step{border-right:0;border-bottom:1px solid var(--line)}
+    .step:last-child{border-bottom:0}
+    .inside{grid-template-columns:1fr}
+    .nav nav{gap:16px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#"><span>Маска</span> <small>технология Довод</small></a>
+    <nav>
+      <a href="#how">Как работает</a>
+      <a href="#what">Что скрывает</a>
+      <a href="#download">Скачать</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Бесплатная программа для Windows</div>
+      <h1>Обезличивайте документы перед отправкой в нейросети</h1>
+      <p class="lead">Маска убирает из документа фамилии, даты рождения, паспортные данные, телефоны и адреса, а после ответа ChatGPT, Claude или любой другой нейросети возвращает настоящие имена на место. Локально. Бесплатно. Без загрузки документов в интернет.</p>
+      <div class="cta">
+        <a class="btn" href="../downloads/Maska-win64.zip">Скачать Маску для Windows</a>
+        <small>Архив 33 МБ, без установки: распаковать и запустить Maska.exe. Windows 10 или 11, 64 бита.</small>
+      </div>
+    </div>
+    <div class="sample">
+      <div class="lbl">Было</div>
+      Кузнецова Мария Петровна, 12.03.1985 года рождения, обратилась с заявлением. Допросить Кузнецову по существу дела. Тел. +7 916 123-45-67.
+      <hr>
+      <div class="lbl">Уходит в нейросеть</div>
+      <span class="tok">ЛИЦО_1</span>, <span class="tok">ДАТА_РОЖДЕНИЯ_1</span> года рождения, обратилась с заявлением. Допросить <span class="tok">ЛИЦО_1:вин:ф</span> по существу дела. Тел. <span class="tok">ТЕЛЕФОН_1</span>.
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2 class="section-title">Как работает</h2>
+    <p class="section-sub">Три шага, никакой настройки. Программа не требует аккаунта и не выходит в интернет.</p>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><h3>Обезличить</h3><p>Выберите файл docx, txt или pdf с текстовым слоем. Рядом с ним появятся обезличенный текст, тот же текст в docx и карта замен. В окне видно, что во что заменено.</p></div>
+      <div class="step"><div class="n">02</div><h3>Отправить в нейросеть</h3><p>Нажмите «Скопировать обезличенный текст» и вставьте в ChatGPT, Claude, DeepSeek, любой другой сервис. Первой строкой идёт инструкция для нейросети сохранять обозначения как есть.</p></div>
+      <div class="step"><div class="n">03</div><h3>Вернуть имена</h3><p>Вставьте ответ нейросети во вкладку «Вернуть имена». Маска подставит настоящие фамилии и имена в нужном падеже и сохранит результат в docx.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="what">
+  <div class="wrap">
+    <h2 class="section-title">Что скрывает</h2>
+    <p class="section-sub">Фамилии, имена и отчества во всех падежах, даты рождения, паспортные данные, телефоны, электронную почту, адреса, ИНН физических лиц.</p>
+    <div class="inside">
+      <div class="item"><h3>Склонение</h3><p>Каждое упоминание получает метку падежа, поэтому при возврате «Кузнецову» останется «Кузнецову», а не превратится в именительный.</p></div>
+      <div class="item"><h3>Одна фамилия без имени</h3><p>Если человек назван в документе хотя бы раз полностью, дальше программа узнаёт его и по одной фамилии. Фамилию, которая нигде не встречается с именем и без ролевого слова рядом, программа может не распознать, поэтому таблицу замен стоит просмотреть перед отправкой.</p></div>
+      <div class="item"><h3>Реквизиты организаций</h3><p>Названия компаний, ИНН и ОГРН юридических лиц не заменяются: в судебных документах они нужны нейросети, чтобы понять, кто есть кто. Если это нежелательно, уберите их вручную перед отправкой.</p></div>
+      <div class="item"><h3>Сканы и фотографии</h3><p>Пока не поддерживаются: нужен документ с текстовым слоем. Для сканов и фотографий дела есть Довод, он распознаёт их сам.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="privacy">
+  <div class="wrap">
+    <h2 class="section-title">Ничего не покидает ваш компьютер</h2>
+    <p>Маска работает полностью локально: у неё нет сервера, аккаунта, телеметрии и обновлений по сети. Карта замен лежит рядом с вашим файлом и нигде больше. Единственное, что уходит в интернет, это обезличенный текст, который вы сами вставляете в нейросеть.</p>
+  </div>
+</section>
+
+<section id="download" class="download">
+  <div class="wrap">
+    <div>
+      <h2 class="section-title">Скачать Маску</h2>
+      <p class="section-sub">Первая версия, сентябрь 2026. Без установщика: распакуйте архив в любую папку и запустите Maska.exe.</p>
+      <div class="cta">
+        <a class="btn" href="../downloads/Maska-win64.zip">Скачать Maska-win64.zip</a>
+      </div>
+      <div class="note">Windows при первом запуске может показать окно SmartScreen «Система защитила ваш компьютер», потому что программа пока не подписана сертификатом. Нажмите «Подробнее», затем «Выполнить в любом случае».</div>
+    </div>
+    <div>
+      <h3 style="font-family:var(--display);font-size:16px;margin-bottom:14px">Требования</h3>
+      <ul class="req">
+        <li><span>Система</span><span>Windows 10 или 11, 64 бита</span></li>
+        <li><span>Место</span><span>около 65 МБ после распаковки</span></li>
+        <li><span>Форматы</span><span>docx, txt, pdf с текстовым слоем</span></li>
+        <li><span>Сеть</span><span>не нужна</span></li>
+        <li><span>Цена</span><span>бесплатно</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="lawyer">
+  <div class="wrap">
+    <p><b>Вы юрист?</b> Довод работает с делом целиком: папка дела на входе, опись, правовая позиция и проект документа с проверенными ссылками на нормы. Тот же принцип: документы не покидают ваш компьютер.</p>
+    <a class="btn ghost" href="../">Посмотреть Довод</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Маска, технология Довод. Адвокат Платон Шамаев.</div>
+    <div><a href="mailto:info@dovod.law">info@dovod.law</a></div>
+  </div>
+</footer>
+</body>
+</html>
