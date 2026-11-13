@@ -98,6 +98,12 @@ packages/vscode-ide-companion/*.vsix
 
 logs/
 .repro-runs/
+# DOVOD: пробные сборки и разведка упаковки (не коммитятся)
+_spike/
+# DOVOD: служебные файлы хода работы исполнителя и мусорная корзина (вместо rm)
+_bridge_reports/
+_to_delete/
+_git_stale_locks/
 # GHA credentials
 gha-creds-*.json
 
