@@ -536,6 +536,10 @@ function testRuntimePreparation(directory) {
       recursive: true,
     },
   );
+  fs.copyFileSync(
+    path.join(packageDir, 'dovod-tools.json'),
+    path.join(testPackageDir, 'dovod-tools.json'),
+  );
   fs.writeFileSync(
     path.join(directory, '.nvmrc'),
     `${process.versions.node.split('.')[0]}\n`,

@@ -2,6 +2,24 @@
 
 Формат строки: дата; что сделано; чем проверено; что дальше. Новые записи сверху.
 
+- 2026-11-13; DESKTOP_016_D3: исправлен testRuntimePreparation в
+  packages/desktop-shell/scripts/test-release.js, упавший после DESKTOP_016_D на
+  прогоне 43429052832 (ENOENT .../runtime/packages/desktop-shell/dovod-tools.json).
+  prepare-runtime.js безусловно читает dovod-tools.json при запуске, а testRuntimePreparation
+  копировал во временную копию package.json, NOTICE, dovod/, но не сам
+  dovod-tools.json; добавлена одна строка fs.copyFileSync тем же способом, каким
+  этот файл уже копируется в соседней testDovodToolsInstallation. Остальные файлы
+  DESKTOP_016_D (eyecheck.toml, settings.template.json, env.template,
+  mcp-server.template.json) лежат внутри dovod/, который уже копируется целиком -
+  правок не требуют. Подробности: docs/reports/2026-11-13_desktop_016_D.md (раздел
+  DESKTOP_016_D3). Проверено: node packages/desktop-shell/scripts/test-release.js
+  напрямую - прогон дошёл дальше прежней точки падения D2 и упал на том же месте
+  (tar -czf, BSD tar принимает "C:" за имя хоста - окружение этой машины, не
+  связано с правкой); сам факт устранения ENOENT в spawnSync дальше по функции не
+  проверен локально (недостижим из-за tar), только по коду. Push: origin
+  HEAD:refs/heads/dovod-016, main не трогался; дальше: владелец читает итог
+  прогона 016 в CI (там tar другой, GNU) и решает, нужен ли отдельный фикс
+  tar-шага test-release.js под BSD tar (вне рамок этого задания).
 - 2026-11-13; DESKTOP_016_D2: исправлен test:release, упавший после DESKTOP_016_D.
   В packages/desktop-shell/scripts/test-release.js (testDesktopReleaseHardening,
   строка 480) регулярка ждала в ключе кэша Node буквально inputs.dry_run, а job
