@@ -1697,11 +1697,22 @@ function testDovodSeeding(directory) {
   // The shipped mcp-server.template.json has an explicit PLACEHOLDER command
   // and no url, so the citation-check server never registers in 0.1.6 - not
   // even once DOVOD_TOOLS resolves - and no step depends on its absence.
+  // mcpServers itself may legitimately be undefined or an empty object (the
+  // latter comes straight from settings.template.json); what must never
+  // happen is a `dovod` entry, or any entry at all with command PLACEHOLDER.
+  const toolsMcpServers = toolsSettings.mcpServers || {};
   assert.equal(
-    toolsSettings.mcpServers,
+    toolsMcpServers.dovod,
     undefined,
     'the PLACEHOLDER citation-check server must never be registered in 0.1.6',
   );
+  for (const [serverName, server] of Object.entries(toolsMcpServers)) {
+    assert.notEqual(
+      server?.command,
+      'PLACEHOLDER',
+      `mcpServers.${serverName} must not keep the literal PLACEHOLDER command`,
+    );
+  }
   const literalRules = [`Bash("${toolsPath}\\dovod_prompts.exe")`];
   assert.deepEqual(
     toolsSettings.permissions.allow,
