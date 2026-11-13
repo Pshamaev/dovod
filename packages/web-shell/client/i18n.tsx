@@ -8512,7 +8512,7 @@ const RU: Messages = {
   'workflowRuns.emptySaved':
     'Пока нет сохранённых многоразовых рабочих процессов.',
   'workflowRuns.emptySavedHint':
-    'Нажмите «Новый», чтобы создать его с помощью Довод, сохраните завершённый запуск из терминала или добавьте файл .js в .qwen/workflows.',
+    'Нажмите «Новый», чтобы создать его с помощью Довод, сохраните завершённый запуск из терминала или добавьте файл .js в папку workflows профиля Довода.',
   'workflowRuns.project': 'Проект',
   'workflowRuns.user': 'Пользователь',
   'workflowRuns.projectDescription': 'Доступно в этом проекте',
@@ -10438,7 +10438,7 @@ const RU: Messages = {
   'settings.models.loading': 'Загрузка моделей…',
   'settings.models.deleteFailed': 'Не удалось удалить модель',
   'settings.models.runtimeSyncFailed':
-    'Изменение сохранено, но обновить работающие сессии не удалось. Перезапустите qwen serve перед использованием обновлённого списка моделей.',
+    'Изменение сохранено, но обновить работающие сессии не удалось. Перезапустите Довод перед использованием обновлённого списка моделей.',
   'settings.models.fallbacks.title': 'Резервные модели',
   'settings.models.fallbacks.hint': (v) =>
     `Выберите до ${v?.max ?? 3}; они пробуются по порядку, когда основная модель перегружена.`,
@@ -10462,6 +10462,18 @@ const RU: Messages = {
   'settings.label.visionModel': 'Модель для изображений',
   'settings.description.visionModel':
     'Модель с поддержкой изображений, используемая как визуальный мост. Оставьте пустым для автоматического выбора.',
+  'settings.label.context.fileFiltering.respectGitIgnore':
+    'Соблюдать .gitignore',
+  'settings.description.context.fileFiltering.respectGitIgnore':
+    'Учитывать файлы .gitignore при поиске.',
+  'settings.label.context.fileFiltering.respectQwenIgnore':
+    'Соблюдать .qwenignore',
+  'settings.description.context.fileFiltering.respectQwenIgnore':
+    'Учитывать файл .qwenignore и указанные пользовательские файлы исключений при поиске.',
+  'settings.label.context.fileFiltering.enableFuzzySearch':
+    'Нечёткий поиск файлов',
+  'settings.description.context.fileFiltering.enableFuzzySearch':
+    'Включить нечёткий поиск при поиске файлов.',
 };
 
 const MESSAGES: Record<WebShellLanguage, Messages> = {
