@@ -60,6 +60,7 @@ try {
   testElectronBridgeManifest(path.join(root, 'electron-bridge'));
   testVersionSynchronization(path.join(root, 'version'));
   testRuntimePreparation(path.join(root, 'runtime'));
+  testDovodToolsInstallation(path.join(root, 'dovod-tools'));
   testDovodSeeding(path.join(root, 'dovod-seed'));
   console.log('Desktop release helper checks passed.');
 } finally {
@@ -689,6 +690,153 @@ globalThis.fetch = async (url) => {
   assert.deepEqual(
     fs.readdirSync(runtimeDir).filter((entry) => entry.startsWith('.prepare-')),
     [],
+  );
+}
+
+// DOVOD: the pipeline package must land inside the checksummed runtime root
+// for a Windows build, and its absence must stop the build instead of
+// producing an installer without the pipeline.
+function testDovodToolsInstallation(directory) {
+  const testPackageDir = path.join(directory, 'packages', 'desktop-shell');
+  const testScript = path.join(testPackageDir, 'scripts', 'prepare-runtime.js');
+  const sourceRoot = path.join(directory, 'source');
+  const runtimeDir = path.join(testPackageDir, 'runtime');
+  const nodeVersion = process.versions.node;
+  const archiveName = `node-v${nodeVersion}-win-x64.zip`;
+  const archivePath = path.join(directory, archiveName);
+  const checksumsPath = path.join(directory, 'SHASUMS256.txt');
+  const fetchMock = path.join(directory, 'mock-fetch.mjs');
+  const extractedRoot = path.join(directory, `node-v${nodeVersion}-win-x64`);
+  const toolsDir = path.join(directory, 'package', 'dovod-tools');
+  const entry = JSON.parse(
+    fs.readFileSync(path.join(packageDir, 'dovod-tools.json'), 'utf8'),
+  ).entry;
+
+  fs.mkdirSync(path.join(sourceRoot, 'dist', 'web-shell', 'assets'), {
+    recursive: true,
+  });
+  fs.writeFileSync(
+    path.join(sourceRoot, 'package.json'),
+    JSON.stringify({ version: '0.0.0-test' }),
+  );
+  fs.writeFileSync(path.join(sourceRoot, 'LICENSE'), 'test license');
+  fs.mkdirSync(path.dirname(testScript), { recursive: true });
+  fs.copyFileSync(
+    path.join(packageDir, 'scripts', 'prepare-runtime.js'),
+    testScript,
+  );
+  fs.copyFileSync(
+    path.join(packageDir, 'dovod-tools.json'),
+    path.join(testPackageDir, 'dovod-tools.json'),
+  );
+  fs.cpSync(
+    path.join(packageDir, 'dovod'),
+    path.join(testPackageDir, 'dovod'),
+    { recursive: true },
+  );
+  fs.writeFileSync(
+    path.join(directory, '.nvmrc'),
+    `${nodeVersion.split('.')[0]}\n`,
+  );
+  fs.writeFileSync(
+    path.join(testPackageDir, 'package.json'),
+    JSON.stringify({ version: '0.0.0-test' }),
+  );
+  fs.writeFileSync(path.join(testPackageDir, 'NOTICE'), 'test notice');
+  for (const file of [
+    'cli.js',
+    'cli-entry.js',
+    path.join('web-shell', 'index.html'),
+    path.join('web-shell', 'assets', 'app.js'),
+  ]) {
+    fs.writeFileSync(path.join(sourceRoot, 'dist', file), 'test');
+  }
+  fs.mkdirSync(extractedRoot, { recursive: true });
+  fs.writeFileSync(path.join(extractedRoot, 'node.exe'), 'node');
+  fs.writeFileSync(path.join(extractedRoot, 'LICENSE'), 'node license');
+  // A tar archive named .zip is enough: extractNodeArchive shells out to
+  // `tar -xf`, which detects the format from the contents.
+  execFileSync('tar', [
+    '-cf',
+    archivePath,
+    '-C',
+    directory,
+    path.basename(extractedRoot),
+  ]);
+  fs.writeFileSync(
+    checksumsPath,
+    `${crypto.createHash('sha256').update(fs.readFileSync(archivePath)).digest('hex')}  ${archiveName}\n`,
+  );
+  fs.writeFileSync(
+    fetchMock,
+    `import fs from 'node:fs';
+globalThis.fetch = async (url) => {
+  const value = String(url);
+  const source = value.endsWith('/SHASUMS256.txt')
+    ? process.env.QWEN_TEST_NODE_CHECKSUMS
+    : process.env.QWEN_TEST_NODE_ARCHIVE;
+  return new Response(fs.readFileSync(source), { status: 200 });
+};
+`,
+  );
+  fs.mkdirSync(path.join(toolsDir, '_internal'), { recursive: true });
+  fs.writeFileSync(path.join(toolsDir, entry), 'pipeline');
+  fs.writeFileSync(path.join(toolsDir, '_internal', 'python3.dll'), 'dll');
+
+  const env = {
+    ...process.env,
+    DOVOD_TOOLS_ARCHIVE: '',
+    DOVOD_TOOLS_DIR: '',
+    DOVOD_TOOLS_TOKEN: '',
+    QWEN_CODE_COMMIT: 'test-commit',
+    QWEN_CODE_ROOT: sourceRoot,
+    QWEN_DESKTOP_NODE_CACHE_DIR: path.join(directory, 'cache'),
+    QWEN_DESKTOP_SKIP_BUILD: '1',
+    QWEN_DESKTOP_TARGET: 'win32-x64',
+    QWEN_TEST_NODE_ARCHIVE: archivePath,
+    QWEN_TEST_NODE_CHECKSUMS: checksumsPath,
+    NODE_OPTIONS: [
+      process.env.NODE_OPTIONS,
+      `--import=${pathToFileURL(fetchMock).href}`,
+    ]
+      .filter(Boolean)
+      .join(' '),
+    npm_execpath: process.env.npm_execpath || process.argv[1],
+  };
+
+  const withoutPackage = spawnSync(process.execPath, [testScript], {
+    encoding: 'utf8',
+    env,
+  });
+  assert.notEqual(
+    withoutPackage.status,
+    0,
+    'a Windows build without the pipeline package must fail',
+  );
+  assert.match(withoutPackage.stderr, /Нет пакета конвейера/);
+  assert.match(withoutPackage.stderr, /DOVOD_TOOLS_TOKEN/);
+
+  const installed = spawnSync(process.execPath, [testScript], {
+    encoding: 'utf8',
+    env: { ...env, DOVOD_TOOLS_DIR: toolsDir },
+  });
+  assert.equal(installed.status, 0, installed.stderr);
+  const runtimeRoot = path.join(runtimeDir, 'qwen-code');
+  for (const bundled of [
+    path.join('dovod-tools', entry),
+    path.join('dovod-tools', '_internal', 'python3.dll'),
+  ]) {
+    assert.ok(
+      fs.existsSync(path.join(runtimeRoot, bundled)),
+      `the pipeline package must bundle ${bundled}`,
+    );
+  }
+  const checksums = JSON.parse(
+    fs.readFileSync(path.join(runtimeRoot, 'checksums.json'), 'utf8'),
+  );
+  assert.ok(
+    checksums[`dovod-tools/${entry}`],
+    'the pipeline package must be covered by checksums.json so smoke:runtime verifies it',
   );
 }
 

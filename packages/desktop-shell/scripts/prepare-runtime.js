@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Modified for DOVOD: bundles the dovod/ resource folder and the dovod-entry.js
-// runtime wrapper next to the upstream CLI.
+// Modified for DOVOD: bundles the dovod/ resource folder, the dovod-entry.js
+// runtime wrapper and the dovod-tools pipeline package next to the upstream CLI.
 
 import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
@@ -44,6 +44,11 @@ const desktopVersion = JSON.parse(
 const binDir = path.join(packageRoot, 'bin');
 const dovodSourceDir = path.join(packageDir, 'dovod');
 const dovodDir = path.join(packageRoot, 'dovod');
+// DOVOD: the one place where the pipeline package version is pinned.
+const dovodToolsConfig = JSON.parse(
+  fs.readFileSync(path.join(packageDir, 'dovod-tools.json'), 'utf8'),
+);
+const dovodToolsDir = path.join(packageRoot, 'dovod-tools');
 
 const target = desktopTarget();
 const skipBuild = process.env.QWEN_DESKTOP_SKIP_BUILD === '1';
@@ -85,6 +90,7 @@ try {
   fs.mkdirSync(binDir, { recursive: true });
   copyDirectory(distDir, libDir);
   bundleDovodResources();
+  await installDovodTools(dovodToolsDir, target);
   await installNodeRuntime(nodeDir, target);
   writeLaunchers(target);
   copyRequiredFile(
@@ -238,8 +244,11 @@ function nodeArchiveName(version, desktopTarget) {
   return `node-v${version}-${nodeTarget}.${extension}`;
 }
 
-async function download(url, destination) {
-  const response = await fetch(url, { signal: AbortSignal.timeout(120_000) });
+async function download(url, destination, headers = {}) {
+  const response = await fetch(url, {
+    headers,
+    signal: AbortSignal.timeout(120_000),
+  });
   if (!response.ok || !response.body) {
     throw new Error(`Failed to download ${url}: HTTP ${response.status}`);
   }
@@ -308,6 +317,194 @@ function bundleDovodResources() {
     },
   });
   copyRequiredFile(entrySource, path.join(libDir, 'dovod-entry.js'));
+}
+
+// DOVOD: installs the case pipeline package (dovod-tools) into the runtime.
+//
+// The package is built from another repository (PyInstaller onedir, Windows
+// only) and published as a private GitHub release asset: one `*.zip` plus its
+// `*.sha256`. It is installed INSIDE packageRoot so writeChecksums() covers it
+// and `npm run smoke:runtime` verifies it together with the Node.js runtime.
+//
+// Sources, in order of precedence:
+//   DOVOD_TOOLS_DIR      - an already unpacked package tree (local work, tests)
+//   DOVOD_TOOLS_ARCHIVE  - an already downloaded zip; its sha256 comes from
+//                          DOVOD_TOOLS_SHA256 or from <archive>.sha256
+//   DOVOD_TOOLS_TOKEN    - read-only token for the release (this is what CI uses)
+// Without any of them the build stops with an explicit error instead of
+// quietly producing an installer without the pipeline.
+async function installDovodTools(destination, desktopTarget) {
+  const entry = dovodToolsConfig.entry;
+  const tag = process.env.DOVOD_TOOLS_TAG || dovodToolsConfig.tag;
+  const repository =
+    process.env.DOVOD_TOOLS_REPOSITORY || dovodToolsConfig.repository;
+  if (!desktopTarget.startsWith('win32-')) {
+    console.log(
+      `Пакет конвейера собран только под Windows: цель ${desktopTarget} остаётся без dovod-tools.`,
+    );
+    return;
+  }
+  const localDir = (process.env.DOVOD_TOOLS_DIR || '').trim();
+  if (localDir) {
+    installDovodToolsTree(path.resolve(localDir), destination, entry);
+    console.log(`Пакет конвейера взят из папки ${localDir}`);
+    return;
+  }
+  const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'dovod-tools-'));
+  try {
+    const localArchive = (process.env.DOVOD_TOOLS_ARCHIVE || '').trim();
+    let archivePath;
+    let expected;
+    if (localArchive) {
+      archivePath = path.resolve(localArchive);
+      expected = readDovodToolsChecksum(
+        process.env.DOVOD_TOOLS_SHA256 &&
+          path.resolve(process.env.DOVOD_TOOLS_SHA256),
+        `${archivePath}.sha256`,
+      );
+    } else {
+      const token = (process.env.DOVOD_TOOLS_TOKEN || '').trim();
+      if (!token) {
+        throw new Error(
+          [
+            `Нет пакета конвейера (dovod-tools ${tag}), установщик без него не собирается.`,
+            'Задайте один из вариантов:',
+            `  DOVOD_TOOLS_TOKEN - токен чтения релизов ${repository} (так работает сборка в GitHub Actions);`,
+            '  DOVOD_TOOLS_ARCHIVE - путь к уже скачанному zip рядом с файлом .sha256;',
+            '  DOVOD_TOOLS_DIR - путь к уже распакованной папке пакета.',
+          ].join('\n'),
+        );
+      }
+      const assets = await findDovodToolsAssets(repository, tag, token);
+      archivePath = path.join(temporaryRoot, assets.archive.name);
+      const checksumPath = path.join(temporaryRoot, assets.checksum.name);
+      await download(assets.archive.url, archivePath, releaseAssetHeaders(token));
+      await download(
+        assets.checksum.url,
+        checksumPath,
+        releaseAssetHeaders(token),
+      );
+      expected = readDovodToolsChecksum(checksumPath);
+      console.log(
+        `Пакет конвейера скачан: ${assets.archive.name} (релиз ${tag} в ${repository})`,
+      );
+    }
+    const actual = crypto
+      .createHash('sha256')
+      .update(fs.readFileSync(archivePath))
+      .digest('hex');
+    if (actual !== expected) {
+      throw new Error(
+        `Контрольная сумма пакета конвейера не совпала: ожидалось ${expected}, получено ${actual}`,
+      );
+    }
+    const unpacked = path.join(temporaryRoot, 'unpacked');
+    fs.mkdirSync(unpacked, { recursive: true });
+    extractNodeArchive(archivePath, unpacked);
+    installDovodToolsTree(dovodToolsRoot(unpacked, entry), destination, entry);
+  } finally {
+    fs.rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+}
+
+function releaseAssetHeaders(token) {
+  return {
+    Accept: 'application/octet-stream',
+    Authorization: `Bearer ${token}`,
+    'User-Agent': 'dovod-desktop-build',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+}
+
+// Resolves the release by tag and picks exactly one `*.zip` asset and exactly
+// one `*.sha256` asset, so the exact asset name may change in the packaging
+// repository without a change here.
+async function findDovodToolsAssets(repository, tag, token) {
+  const url = `https://api.github.com/repos/${repository}/releases/tags/${tag}`;
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'User-Agent': 'dovod-desktop-build',
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!response.ok) {
+    throw new Error(
+      `Релиз ${tag} в ${repository} не прочитан: HTTP ${response.status}. ` +
+        'Проверьте тег и права токена DOVOD_TOOLS_TOKEN (Contents: read).',
+    );
+  }
+  const release = await response.json();
+  const assets = Array.isArray(release.assets) ? release.assets : [];
+  const pick = (suffix) => {
+    const found = assets.filter((asset) => asset.name?.endsWith(suffix));
+    if (found.length !== 1) {
+      throw new Error(
+        `Релиз ${tag} в ${repository} должен содержать ровно один ассет ${suffix}, найдено ${found.length}.`,
+      );
+    }
+    return { name: found[0].name, url: found[0].url };
+  };
+  const checksum = pick('.sha256');
+  const archive = assets.filter(
+    (asset) => asset.name?.endsWith('.zip') && asset.name !== checksum.name,
+  );
+  if (archive.length !== 1) {
+    throw new Error(
+      `Релиз ${tag} в ${repository} должен содержать ровно один ассет .zip, найдено ${archive.length}.`,
+    );
+  }
+  return { archive: { name: archive[0].name, url: archive[0].url }, checksum };
+}
+
+// A .sha256 file is either a bare hash or the `sha256sum` format
+// (`<hash>  <file>`); both are accepted.
+function readDovodToolsChecksum(...candidates) {
+  const file = candidates.find(
+    (candidate) => candidate && fs.existsSync(candidate),
+  );
+  if (!file) {
+    throw new Error(
+      `Файл контрольной суммы пакета конвейера не найден: ${candidates.filter(Boolean).join(', ')}`,
+    );
+  }
+  const match = /\b[0-9a-f]{64}\b/.exec(fs.readFileSync(file, 'utf8'));
+  if (!match) {
+    throw new Error(`В файле ${file} нет суммы sha256`);
+  }
+  return match[0];
+}
+
+// The archive may hold the package tree at its root or inside a single
+// top-level directory; both layouts resolve to the directory with the entry.
+function dovodToolsRoot(directory, entry) {
+  if (fs.existsSync(path.join(directory, entry))) return directory;
+  const nested = fs
+    .readdirSync(directory, { withFileTypes: true })
+    .filter((candidate) => candidate.isDirectory())
+    .map((candidate) => path.join(directory, candidate.name));
+  const match = nested.find((candidate) =>
+    fs.existsSync(path.join(candidate, entry)),
+  );
+  if (!match) {
+    throw new Error(
+      `В пакете конвейера нет ${entry}: ${directory} (проверьте сборку пакета)`,
+    );
+  }
+  return match;
+}
+
+function installDovodToolsTree(source, destination, entry) {
+  if (!fs.statSync(source, { throwIfNoEntry: false })?.isDirectory()) {
+    throw new Error(`Папка пакета конвейера не найдена: ${source}`);
+  }
+  if (!fs.statSync(path.join(source, entry), { throwIfNoEntry: false })?.isFile()) {
+    throw new Error(`В пакете конвейера нет ${entry}: ${source}`);
+  }
+  fs.mkdirSync(destination, { recursive: true });
+  copyDirectory(source, destination);
 }
 
 function copyRequiredFile(source, destination) {

@@ -1,0 +1,6 @@
+{
+  "comment": "DOVOD: единственное место, где задана версия пакета конвейера (dovod-tools). Пакет собирается в своём репозитории и выкладывается приватным релизом; сборка установщика скачивает ассеты *.zip и *.sha256 этого тега. Переменные окружения DOVOD_TOOLS_REPOSITORY и DOVOD_TOOLS_TAG перебивают значения отсюда.",
+  "repository": "Pshamaev/node-djkdrpae",
+  "tag": "dovod-tools-v0.1.6-rc1",
+  "entry": "dovod_prompts.exe"
+}

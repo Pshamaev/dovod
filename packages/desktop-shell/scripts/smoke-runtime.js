@@ -121,6 +121,9 @@ function finish(error) {
 }
 
 function verifyRuntimeIntegrity() {
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(runtimeRoot, 'manifest.json'), 'utf8'),
+  );
   const required = [
     'manifest.json',
     'checksums.json',
@@ -135,15 +138,20 @@ function verifyRuntimeIntegrity() {
     'dovod/mcp-server.template.json',
     'dovod/commands/prepare.toml',
   ];
+  // DOVOD: the pipeline package is Windows-only, so it is required exactly
+  // when the runtime was prepared for a Windows target.
+  if (String(manifest.target).startsWith('win32-')) {
+    const entry = JSON.parse(
+      fs.readFileSync(path.join(packageDir, 'dovod-tools.json'), 'utf8'),
+    ).entry;
+    required.push(`dovod-tools/${entry}`);
+  }
   for (const relative of required) {
     const file = path.join(runtimeRoot, relative);
     if (!fs.statSync(file, { throwIfNoEntry: false })?.isFile()) {
       throw new Error(`Bundled runtime file is missing: ${relative}`);
     }
   }
-  const manifest = JSON.parse(
-    fs.readFileSync(path.join(runtimeRoot, 'manifest.json'), 'utf8'),
-  );
   for (const field of [
     'desktopVersion',
     'qwenCodeVersion',
