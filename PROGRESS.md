@@ -2,6 +2,20 @@
 
 Формат строки: дата; что сделано; чем проверено; что дальше. Новые записи сверху.
 
+- 2026-11-13; DESKTOP_016_D2: исправлен test:release, упавший после DESKTOP_016_D.
+  В packages/desktop-shell/scripts/test-release.js (testDesktopReleaseHardening,
+  строка 480) регулярка ждала в ключе кэша Node буквально inputs.dry_run, а job
+  build в desktop-release.yml с коммита 6f57a21113 читает env.DRY_RUN; строка
+  переписана на env.DRY_RUN, проверка не ослаблена. Поиск по inputs\. и dry_run по
+  всему файлу других таких мест не нашёл. Коммит в main-dovod: см. docs/reports/
+  2026-11-13_desktop_016_D.md (раздел DESKTOP_016_D2). Проверено: node
+  packages/desktop-shell/scripts/test-release.js напрямую - проверки до
+  testDesktopReleaseHardening включительно прошли; скрипт упал позже в
+  testRuntimePreparation на tar -czf (BSD tar на этой машине принимает "C:" в
+  пути за имя хоста) - окружение, не связано с правкой. Push: origin
+  HEAD:refs/heads/dovod-016, main не трогался; дальше: владелец читает прогон
+  dovod-016 и решает, нужен ли отдельный фикс testRuntimePreparation под Windows
+  BSD tar (вне рамок этого задания).
 - 2026-11-13; DESKTOP_016_D: встраивание пакета конвейера в установщик 0.1.6 (без
   интерфейса, он в 0.1.7). Коммиты в main-dovod: 57fe89994f (докоммичен отчёт A),
   2cee9a00b8 (prepare-runtime.js скачивает dovod-tools по токену DOVOD_TOOLS_TOKEN,

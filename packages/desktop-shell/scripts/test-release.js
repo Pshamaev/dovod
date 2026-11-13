@@ -477,7 +477,7 @@ function testDesktopReleaseHardening() {
   );
   assert.match(
     workflow,
-    /desktop-node-v2-\$\{\{ matrix\.rust_target \}\}-\$\{\{ env\.NODE_VERSION \}\}-\$\{\{ inputs\.dry_run \}\}/,
+    /desktop-node-v2-\$\{\{ matrix\.rust_target \}\}-\$\{\{ env\.NODE_VERSION \}\}-\$\{\{ env\.DRY_RUN \}\}/,
     'release builds must persist the bundled Node.js archive cache',
   );
   assert.match(workflow, /actions\/cache\/restore@/);
