@@ -2,6 +2,29 @@
 
 Формат строки: дата; что сделано; чем проверено; что дальше. Новые записи сверху.
 
+- 2026-11-13; DESKTOP_016_D4: исправлен testDovodSeeding в
+  packages/desktop-shell/scripts/test-release.js, упавший после DESKTOP_016_D3
+  на прогоне 43467239547 (testRuntimePreparation теперь проходит, упала
+  testDovodSeeding, строка 1700: AssertionError mcpServers {} !== undefined).
+  Суть требования безопасности - отсутствие mcpServers.dovod и любой записи с
+  command PLACEHOLDER, а не форма самого mcpServers; settings.template.json
+  сеет mcpServers: {}, и это не нарушение. Проверка переписана так, чтобы
+  принимать и undefined, и {}, но требовать явного отсутствия dovod и записей
+  с PLACEHOLDER. Добавлен разовый скрипт packages/desktop-shell/_archive/
+  run-tail-tests.mjs: обходит BSD tar этой машины (флаг локального архива
+  только в своей временной копии test-release.js, без правки боевых
+  test-release.js и prepare-runtime.js) и запускает testDovodToolsInstallation
+  и testDovodSeeding. Подробности и результат прогона: docs/reports/
+  2026-11-13_desktop_016_D.md (раздел DESKTOP_016_D4). Проверено: прогон
+  run-tail-tests.mjs (лог logs/2026-11-13_desktop_016_D4_tail.log, не
+  коммитится) - testDovodSeeding прошёл полностью; testDovodToolsInstallation
+  упал на нетронутом вызове tar при распаковке внутри prepare-runtime.js, то
+  же ограничение BSD tar, что в D2/D3, не связано с этой правкой; контрольный
+  node packages/desktop-shell/scripts/test-release.js целиком падает в том же
+  месте, что раньше (testRuntimePreparation, tar -czf) - правка ничего не
+  сломала в проверках до неё. Коммит: 0bd9ce1b4a. Push: origin
+  HEAD:refs/heads/dovod-016, main не трогался; дальше: владелец читает итог
+  прогона 016 в CI.
 - 2026-11-13; DESKTOP_016_D3: исправлен testRuntimePreparation в
   packages/desktop-shell/scripts/test-release.js, упавший после DESKTOP_016_D на
   прогоне 43429052832 (ENOENT .../runtime/packages/desktop-shell/dovod-tools.json).
