@@ -185,6 +185,21 @@ export function mergeDovodSettings(
     settings.modelProviders = template.modelProviders;
     changed = true;
   }
+  // tools.disabled: removes the file tools and the agent's shell terminal
+  // from the model's registry (not permissions.deny, which would also block
+  // the /dovod:* commands - see the comment on permissions.allow below). Only
+  // filled in when the user has no tools.disabled of their own yet, same rule
+  // as model.name above, so a value the user already set (including an empty
+  // list, meaning "nothing disabled") is never touched.
+  if (
+    Array.isArray(template?.tools?.disabled) &&
+    template.tools.disabled.length > 0 &&
+    !Array.isArray(settings.tools?.disabled)
+  ) {
+    settings.tools = isPlainObject(settings.tools) ? settings.tools : {};
+    settings.tools.disabled = [...template.tools.disabled];
+    changed = true;
+  }
   // permissions.allow: the /dovod:* commands run the dovod_prompts.exe entry
   // of the bundled pipeline through a shell injection; the daemon cannot ask
   // for confirmation, so a literal rule for that executable (no wildcards:

@@ -1410,6 +1410,80 @@ function testDovodSeeding(directory) {
     /ShellExecutionService\.execute\(/,
     'the !{...} injection must run the command itself, not through the shell tool',
   );
+  // tools.disabled: every name must be a real, current tool name (tool-names.ts
+  // is the single source; a stale or misspelled name would silently leave that
+  // tool enabled instead of failing the build). The file is read as text, not
+  // imported, since this script runs on plain node without a TypeScript loader.
+  const toolNamesSource = fs.readFileSync(
+    path.join(repoRoot, 'packages', 'core', 'src', 'tools', 'tool-names.ts'),
+    'utf8',
+  );
+  const knownToolNames = new Set(
+    [...toolNamesSource.matchAll(/^\s*[A-Z_]+:\s*'([a-z_]+)'/gm)].map(
+      (match) => match[1],
+    ),
+  );
+  assert.ok(
+    knownToolNames.size > 10,
+    'sanity check: tool-names.ts must have been parsed, not matched empty',
+  );
+  const disabledTools = template.tools.disabled;
+  assert.deepEqual(
+    disabledTools,
+    [
+      'run_shell_command',
+      'edit',
+      'write_file',
+      'read_file',
+      'glob',
+      'grep_search',
+      'list_directory',
+      'notebook_edit',
+      'web_fetch',
+      'web_search',
+      'agent',
+      'skill',
+      'workflow',
+      'lsp',
+      'enter_worktree',
+      'exit_worktree',
+      'cron_create',
+      'cron_list',
+      'cron_delete',
+      'send_message',
+      'create_sub_session',
+      'monitor',
+      'image_gen',
+      'save_memory',
+    ],
+    'tools.disabled must list exactly the file tools and the agent terminal from report DESKTOP_016_A 5.3',
+  );
+  assert.equal(
+    new Set(disabledTools).size,
+    disabledTools.length,
+    'no duplicate entries in tools.disabled',
+  );
+  for (const name of disabledTools) {
+    assert.ok(
+      knownToolNames.has(name),
+      `tools.disabled references an unknown tool name: ${name} (check tool-names.ts for a rename)`,
+    );
+  }
+  // This is the key reason tools.disabled is used instead of
+  // permissions.deny on run_shell_command: deny on the shell tool would also
+  // block the !{...} injection the /dovod:* commands depend on (see the
+  // isHardDenial check below), while tools.disabled only removes shell from
+  // the model's own registry.
+  const shellUtils = fs.readFileSync(
+    path.join(repoRoot, 'packages', 'core', 'src', 'utils', 'shell-utils.ts'),
+    'utf8',
+  );
+  assert.match(
+    shellUtils,
+    /isHardDenial:\s*true/,
+    'a deny decision for run_shell_command must still hard-block shellProcessor; otherwise tools.disabled would be the wrong lever',
+  );
+
   const envTemplate = fs.readFileSync(
     path.join(resourceDir, 'env.template'),
     'utf8',
@@ -1463,6 +1537,11 @@ function testDovodSeeding(directory) {
     undefined,
     'no permission rule is written while DOVOD_TOOLS is unresolved',
   );
+  assert.deepEqual(
+    created.tools.disabled,
+    disabledTools,
+    'tools.disabled is written on first launch regardless of DOVOD_TOOLS resolution',
+  );
   assert.ok(fs.existsSync(path.join(qwenHome, '.env')));
 
   // Second launch: nothing changes, user edits survive.
@@ -1504,6 +1583,26 @@ function testDovodSeeding(directory) {
     mergedSettings.permissions,
     undefined,
     'no permission rule is written while DOVOD_TOOLS is unresolved',
+  );
+  assert.deepEqual(
+    mergedSettings.tools.disabled,
+    disabledTools,
+    'an existing settings.json without a tools key (an upgrade from 0.1.5) must gain tools.disabled on the next launch',
+  );
+
+  // A user who already set their own tools.disabled (even an empty list,
+  // meaning "nothing disabled") keeps that choice untouched.
+  fs.writeFileSync(
+    path.join(qwenHome, 'settings.json'),
+    JSON.stringify({ $version: 4, tools: { disabled: ['edit'] } }),
+  );
+  const toolsPreserved = seedDovod({ resourceDir, qwenHome });
+  assert.equal(toolsPreserved.settings, 'merged');
+  assert.deepEqual(
+    JSON.parse(fs.readFileSync(path.join(qwenHome, 'settings.json'), 'utf8'))
+      .tools.disabled,
+    ['edit'],
+    'an existing tools.disabled, however short, is never overwritten',
   );
 
   // A real MCP template is added exactly once and never overwritten.

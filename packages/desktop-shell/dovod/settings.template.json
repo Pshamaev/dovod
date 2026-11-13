@@ -25,5 +25,33 @@
   "permissions": {
     "allow": ["Bash(\"__DOVOD_TOOLS__\\dovod_prompts.exe\")"]
   },
+  "tools": {
+    "disabled": [
+      "run_shell_command",
+      "edit",
+      "write_file",
+      "read_file",
+      "glob",
+      "grep_search",
+      "list_directory",
+      "notebook_edit",
+      "web_fetch",
+      "web_search",
+      "agent",
+      "skill",
+      "workflow",
+      "lsp",
+      "enter_worktree",
+      "exit_worktree",
+      "cron_create",
+      "cron_list",
+      "cron_delete",
+      "send_message",
+      "create_sub_session",
+      "monitor",
+      "image_gen",
+      "save_memory"
+    ]
+  },
   "mcpServers": {}
 }
