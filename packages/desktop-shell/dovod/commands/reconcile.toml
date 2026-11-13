@@ -1,2 +1,2 @@
 description = "DOVOD запрос 4: сверить проект документа с правовой позицией и исправить расхождения (после /dovod:draft)"
-prompt = '!{python "__DOVOD_TOOLS__\dovod_prompts.py" reconcile}'
+prompt = '!{"__DOVOD_TOOLS__\dovod_prompts.exe" reconcile}'

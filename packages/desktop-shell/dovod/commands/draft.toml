@@ -1,2 +1,2 @@
 description = "DOVOD запрос 3 с документом: подготовить проект <описание документа> с проверкой ссылок; записывает строку ДОКУМЕНТ в КАК_ЗАПУСКАТЬ.txt. Аргумент - что готовим, например: отзыв на заявление о фальсификации"
-prompt = '!{python "__DOVOD_TOOLS__\dovod_prompts.py" draft {{args}}}'
+prompt = '!{"__DOVOD_TOOLS__\dovod_prompts.exe" draft {{args}}}'

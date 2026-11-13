@@ -1,2 +1,2 @@
 description = "DOVOD запрос 2: правовая позиция по материалам дела (после /dovod:inventory, в том же чате)"
-prompt = '!{python "__DOVOD_TOOLS__\dovod_prompts.py" position}'
+prompt = '!{"__DOVOD_TOOLS__\dovod_prompts.exe" position}'

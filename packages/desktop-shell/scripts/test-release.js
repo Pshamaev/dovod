@@ -1328,6 +1328,7 @@ function testDovodSeeding(directory) {
   const resourceDir = path.join(packageDir, 'dovod');
   const commandNames = [
     'prepare',
+    'eyecheck',
     'inventory',
     'position',
     'stage',
@@ -1342,7 +1343,7 @@ function testDovodSeeding(directory) {
       .map((name) => name.replace(/\.toml$/, ''))
       .sort(),
     [...commandNames].sort(),
-    'the seven DOVOD commands must ship as TOML templates',
+    'the eight DOVOD commands must ship as TOML templates',
   );
   for (const name of commandNames) {
     const toml = fs.readFileSync(
@@ -1369,11 +1370,45 @@ function testDovodSeeding(directory) {
   );
   assert.deepEqual(
     template.permissions.allow,
-    [
-      'Bash(python __DOVOD_TOOLS__\\dovod_prompts.py)',
-      'Bash(python3 __DOVOD_TOOLS__\\dovod_prompts.py)',
-    ],
-    'only the dovod_prompts.py entry script is pre-approved, as a literal rule (AUTO mode strips wildcard interpreter rules)',
+    ['Bash("__DOVOD_TOOLS__\\dovod_prompts.exe")'],
+    'only the bundled dovod_prompts.exe entry is pre-approved, as a literal rule (AUTO mode strips wildcard interpreter rules)',
+  );
+  for (const name of commandNames) {
+    const toml = fs.readFileSync(
+      path.join(resourceDir, 'commands', `${name}.toml`),
+      'utf8',
+    );
+    assert.doesNotMatch(
+      toml,
+      /python/,
+      `${name}.toml must call the packaged executable, not a Python interpreter`,
+    );
+  }
+  // The /dovod:* commands inject their shell command instead of going through
+  // the shell tool, so they keep working with run_shell_command in
+  // tools.disabled - provided shellProcessor still checks permissions and
+  // executes directly.
+  const shellProcessor = fs.readFileSync(
+    path.join(
+      repoRoot,
+      'packages',
+      'cli',
+      'src',
+      'services',
+      'prompt-processors',
+      'shellProcessor.ts',
+    ),
+    'utf8',
+  );
+  assert.match(
+    shellProcessor,
+    /checkCommandPermissions\(/,
+    'the !{...} injection must evaluate permissions itself',
+  );
+  assert.match(
+    shellProcessor,
+    /ShellExecutionService\.execute\(/,
+    'the !{...} injection must run the command itself, not through the shell tool',
   );
   const envTemplate = fs.readFileSync(
     path.join(resourceDir, 'env.template'),
@@ -1382,6 +1417,22 @@ function testDovodSeeding(directory) {
   for (const key of ['DOVOD_API_BASE', 'DOVOD_API_KEY', 'DOVOD_MODEL']) {
     assert.match(envTemplate, new RegExp(`^${key}=$`, 'm'));
   }
+  assert.doesNotMatch(
+    envTemplate,
+    /DOVOD_TOOLS/,
+    'env.template must not offer DOVOD_TOOLS: since 0.1.6 the path is resolved from the installed package, not typed in by the user',
+  );
+  // The citation-check server is explicitly disabled in 0.1.6, by command
+  // rather than by an unresolved __DOVOD_TOOLS__ token, so the step that
+  // depends on its absence does not depend on resolution state either.
+  const mcpTemplate = JSON.parse(
+    fs.readFileSync(
+      path.join(resourceDir, 'mcp-server.template.json'),
+      'utf8',
+    ),
+  );
+  assert.equal(mcpTemplate.command, 'PLACEHOLDER');
+  assert.equal(mcpTemplate.url, undefined);
 
   assert.equal(
     resolveQwenHome({}, path.join('/', 'home', 'user')),
@@ -1540,28 +1591,72 @@ function testDovodSeeding(directory) {
   const toolsSettings = JSON.parse(
     fs.readFileSync(path.join(toolsHome, 'settings.json'), 'utf8'),
   );
-  assert.equal(toolsSettings.mcpServers.dovod.command, 'node');
-  assert.equal(toolsSettings.mcpServers.dovod.args.length, 1);
-  assert.ok(
-    toolsSettings.mcpServers.dovod.args[0].startsWith(toolsPath),
-    'the MCP server path is resolved from DOVOD_TOOLS',
-  );
+  // The shipped mcp-server.template.json has an explicit PLACEHOLDER command
+  // and no url, so the citation-check server never registers in 0.1.6 - not
+  // even once DOVOD_TOOLS resolves - and no step depends on its absence.
   assert.equal(
-    toolsSettings.mcpServers.dovod.args[0].includes('__DOVOD_TOOLS__'),
-    false,
+    toolsSettings.mcpServers,
+    undefined,
+    'the PLACEHOLDER citation-check server must never be registered in 0.1.6',
   );
-  const literalRules = [
-    `Bash(python ${toolsPath}\\dovod_prompts.py)`,
-    `Bash(python3 ${toolsPath}\\dovod_prompts.py)`,
-  ];
+  const literalRules = [`Bash("${toolsPath}\\dovod_prompts.exe")`];
   assert.deepEqual(
     toolsSettings.permissions.allow,
     literalRules,
-    'the pre-approval is a literal rule built from DOVOD_TOOLS',
+    'the pre-approval is a literal rule built from the resolved pipeline path',
   );
   for (const rule of literalRules) {
     assert.equal(rule.includes('*'), false, 'no wildcard in the rule');
   }
+  // Every injected command of every seeded command file must be covered by a
+  // pre-approval rule. Without `*` a rule matches by literal prefix
+  // (matchesCommandPattern in core/permissions/rule-parser.ts), so this is
+  // what catches a rule that forgets the quotes around the path.
+  const allowedPrefixes = literalRules.map((rule) =>
+    rule.slice('Bash('.length, -1),
+  );
+  for (const name of commandNames) {
+    const seeded = fs.readFileSync(
+      path.join(toolsHome, 'commands', 'dovod', `${name}.toml`),
+      'utf8',
+    );
+    // `}` that is not part of the `{{args}}` placeholder closes an injection.
+    const injected = [...seeded.matchAll(/!\{([\s\S]*?)\}(?!\})/g)].map(
+      (match) => match[1].trim().replace(/\s+/g, ' '),
+    );
+    assert.ok(
+      injected.length > 0,
+      `${name}.toml must inject at least one command`,
+    );
+    for (const command of injected) {
+      assert.ok(
+        allowedPrefixes.some(
+          (prefix) => command === prefix || command.startsWith(`${prefix} `),
+        ),
+        `permissions.allow must pre-approve the command injected by ${name}.toml: ${command}`,
+      );
+    }
+  }
+  // The package shipped with the installer wins over a leftover 0.1.5
+  // DOVOD_TOOLS in .env, so the packaged commands never point at the sources.
+  const bundledResources = path.join(directory, 'bundled', 'dovod');
+  const bundledTools = path.join(directory, 'bundled', 'dovod-tools');
+  fs.mkdirSync(bundledResources, { recursive: true });
+  fs.mkdirSync(bundledTools, { recursive: true });
+  assert.equal(
+    resolveDovodTools(toolsHome, {}, bundledResources),
+    bundledTools,
+    'the bundled pipeline package is used without any user variable',
+  );
+  assert.equal(
+    resolveDovodTools(
+      toolsHome,
+      { DOVOD_TOOLS: '/opt/dovod-tools' },
+      bundledResources,
+    ),
+    '/opt/dovod-tools',
+    'DOVOD_TOOLS in the environment stays a development override',
+  );
   // Existing rules are kept, ours appended once, second seed is a no-op.
   fs.writeFileSync(
     path.join(toolsHome, 'settings.json'),

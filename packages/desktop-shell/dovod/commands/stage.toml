@@ -1,2 +1,2 @@
 description = "DOVOD запрос 3 без документа: определить стадию дела и предложить нужный документ, ничего не готовя; дальше вызови /dovod:draft <описание документа>"
-prompt = '!{python "__DOVOD_TOOLS__\dovod_prompts.py" stage}'
+prompt = '!{"__DOVOD_TOOLS__\dovod_prompts.exe" stage}'

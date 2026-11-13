@@ -137,6 +137,7 @@ function verifyRuntimeIntegrity() {
     'dovod/env.template',
     'dovod/mcp-server.template.json',
     'dovod/commands/prepare.toml',
+    'dovod/commands/eyecheck.toml',
   ];
   // DOVOD: the pipeline package is Windows-only, so it is required exactly
   // when the runtime was prepared for a Windows target.

@@ -14,11 +14,12 @@
 //                                              modelProviders, mcpServers.dovod;
 //                                              permissions.allow rules are appended
 // The token __DOVOD_TOOLS__ inside the command files and the MCP template is
-// replaced with DOVOD_TOOLS (environment or <QWEN_HOME>/.env), the path to
-// garant-bot/dovod-tools on this machine. While DOVOD_TOOLS is unset the
-// commands are still seeded verbatim (the user can fill the path later) and
-// the MCP server is NOT registered, so a bare install never spawns a broken
-// server. A template whose `command` is "PLACEHOLDER" is skipped too.
+// replaced with the path to the case pipeline package (dovod-tools). Since
+// 0.1.6 the pipeline ships inside the installer, so the path is resolved from
+// the install location and the user has no variable to fill in. While the path
+// cannot be resolved at all the commands are still seeded verbatim and the MCP
+// server is NOT registered, so a bare install never spawns a broken server.
+// A template whose `command` is "PLACEHOLDER" is skipped too.
 //
 // Set DOVOD_SKIP_SEED=1 to skip seeding (used by the packaged smoke test).
 
@@ -64,12 +65,24 @@ function isPlainObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-// Reads DOVOD_TOOLS (the path to garant-bot/dovod-tools on this machine)
-// from the environment or from <QWEN_HOME>/.env. Returns '' when unset.
-export function resolveDovodTools(qwenHome, env = process.env) {
+// Resolves the path to the case pipeline package (dovod-tools), in this order:
+//   1. DOVOD_TOOLS in the environment - the development override;
+//   2. the package shipped with the installer, next to this resource folder
+//      (<runtime root>/dovod-tools), which is what an installed Довод uses;
+//   3. DOVOD_TOOLS in <QWEN_HOME>/.env - the 0.1.5 field, no longer offered in
+//      env.template: a leftover value points at the Python sources, which the
+//      packaged commands (dovod_prompts.exe) cannot use.
+// Returns '' when nothing resolves.
+export function resolveDovodTools(
+  qwenHome,
+  env = process.env,
+  resourceDir = path.join(__dirname, '..', 'dovod'),
+) {
   const fromEnv =
     typeof env['DOVOD_TOOLS'] === 'string' ? env['DOVOD_TOOLS'].trim() : '';
   if (fromEnv) return fromEnv;
+  const bundled = path.resolve(resourceDir, '..', 'dovod-tools');
+  if (fs.existsSync(bundled)) return bundled;
   const envFile = path.join(qwenHome, '.env');
   if (!fs.existsSync(envFile)) return '';
   for (const line of fs.readFileSync(envFile, 'utf8').split(/\r?\n/)) {
@@ -172,12 +185,17 @@ export function mergeDovodSettings(
     settings.modelProviders = template.modelProviders;
     changed = true;
   }
-  // permissions.allow: the /dovod:* commands run the dovod_prompts.py entry
-  // script through a shell injection; the daemon cannot ask for confirmation,
-  // so a literal rule for that script (no wildcards: AUTO approval mode strips
-  // wildcard interpreter rules as dangerous) is appended to whatever the user
-  // already allows (never replaced, never duplicated). Rules still carrying
-  // the __DOVOD_TOOLS__ token (DOVOD_TOOLS unset) are not written.
+  // permissions.allow: the /dovod:* commands run the dovod_prompts.exe entry
+  // of the bundled pipeline through a shell injection; the daemon cannot ask
+  // for confirmation, so a literal rule for that executable (no wildcards:
+  // AUTO approval mode strips wildcard interpreter rules as dangerous) is
+  // appended to whatever the user already allows (never replaced, never
+  // duplicated). The rule must repeat the command exactly as the command files
+  // write it, quotes included: a rule without `*` matches by literal prefix
+  // (matchesCommandPattern in core/permissions/rule-parser.ts), so
+  // `Bash(C:\...\dovod_prompts.exe)` would NOT cover
+  // `"C:\...\dovod_prompts.exe" inventory`. Rules still carrying the
+  // __DOVOD_TOOLS__ token (nothing resolved) are not written.
   const templateAllow = Array.isArray(template?.permissions?.allow)
     ? template.permissions.allow
         .filter((rule) => typeof rule === 'string')
@@ -218,7 +236,7 @@ export function seedDovod({
     return summary;
   }
   summary.env = seedEnvFile(resourceDir, qwenHome);
-  const toolsPath = resolveDovodTools(qwenHome);
+  const toolsPath = resolveDovodTools(qwenHome, process.env, resourceDir);
   summary.commands = seedCommands(resourceDir, qwenHome, toolsPath);
 
   const templateFile = path.join(resourceDir, 'settings.template.json');

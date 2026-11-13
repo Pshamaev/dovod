@@ -1,6 +1,4 @@
 {
-  "command": "node",
-  "args": ["__DOVOD_TOOLS__\\..\\dist\\mcp\\citationServer.js"],
-  "cwd": "__DOVOD_TOOLS__\\..",
-  "description": "Проверка ссылок на нормы через ГАРАНТ (garant-bot/dist/mcp/citationServer.js). Путь подставляется из DOVOD_TOOLS при первом запуске."
+  "command": "PLACEHOLDER",
+  "description": "Проверка ссылок на нормы недоступна в этой версии Довода. Сервер не регистрируется (явный PLACEHOLDER), поэтому отсутствие проверки ссылок не роняет шаги команд /dovod:*."
 }

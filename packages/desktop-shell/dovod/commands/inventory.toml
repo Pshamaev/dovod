@@ -1,2 +1,2 @@
 description = "DOVOD запрос 1: опись материалов дела, противоречия и отсутствующие документы (запускать из папки для_модели)"
-prompt = '!{python "__DOVOD_TOOLS__\dovod_prompts.py" inventory}'
+prompt = '!{"__DOVOD_TOOLS__\dovod_prompts.exe" inventory}'
