@@ -461,11 +461,13 @@ async fn run_case_step(
     // Состояние читается до ожидания, чтобы ссылка на него не жила через await.
     let workspace = {
         let state = app.state::<ApplicationState>();
-        bootstrap_workspace(
-            lock(&state.last_workspace).clone(),
-            state.settings.workspace(),
-        )
-        .ok_or_else(|| "Дело ещё не открыто.".to_string())?
+        // Значения выносятся в локальные переменные: временный MutexGuard
+        // в последнем выражении блока живёт дольше самого блока, а state
+        // к этому моменту уже уничтожен (E0597).
+        let last_workspace = lock(&state.last_workspace).clone();
+        let persisted_workspace = state.settings.workspace();
+        bootstrap_workspace(last_workspace, persisted_workspace)
+            .ok_or_else(|| "Дело ещё не открыто.".to_string())?
     };
     tauri::async_runtime::spawn_blocking(move || run_pipeline(&entry, &workspace, arguments))
         .await
