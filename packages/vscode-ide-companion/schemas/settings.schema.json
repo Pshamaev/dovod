@@ -102,7 +102,7 @@
               "default": ""
             },
             "keytermsFile": {
-              "description": "Path to a custom keyterms file (one term per line, \"#\" for comments) that biases voice transcription toward domain-specific terms. Relative paths resolve from the workspace root; defaults to \".qwen/voice-keyterms.txt\" when present. The file contents are sent to the ASR provider and it is read only in trusted workspaces. Only applies to Qwen ASR models (qwen3-asr-*).",
+              "description": "Path to a custom keyterms file (one term per line, \"#\" for comments) that biases voice transcription toward domain-specific terms. Relative paths resolve from the workspace root; defaults to \".qwen/voice-keyterms.txt\" when present. The file contents are sent to the ASR provider and it is read only in trusted workspaces. Only applies to qwen3-asr-* ASR models.",
               "type": "string",
               "default": ""
             },
@@ -136,7 +136,7 @@
           "minimum": 0
         },
         "gitCoAuthor": {
-          "description": "Attribution added to git commits and pull requests created through Qwen Code.",
+          "description": "Attribution added to git commits and pull requests created through Довод.",
           "default": {
             "commit": true,
             "pr": true
@@ -149,12 +149,12 @@
               "type": "object",
               "properties": {
                 "commit": {
-                  "description": "Add a Co-authored-by trailer to git commit messages AND attach a per-file AI-attribution git note (`refs/notes/ai-attribution`) for commits made through Qwen Code. Disabling skips both.",
+                  "description": "Add a Co-authored-by trailer to git commit messages AND attach a per-file AI-attribution git note (`refs/notes/ai-attribution`) for commits made through Довод. Disabling skips both.",
                   "type": "boolean",
                   "default": true
                 },
                 "pr": {
-                  "description": "Append a Qwen Code attribution line to PR descriptions when running `gh pr create`.",
+                  "description": "Append a Довод attribution line to PR descriptions when running `gh pr create`.",
                   "type": "boolean",
                   "default": true
                 }
@@ -202,7 +202,7 @@
           "default": "all"
         },
         "preventSystemSleep": {
-          "description": "Prevent the system from sleeping while Qwen Code is streaming a model response or executing tools. Idle prompt time and permission prompts do not inhibit sleep.",
+          "description": "Prevent the system from sleeping while Довод is streaming a model response or executing tools. Idle prompt time and permission prompts do not inhibit sleep.",
           "type": "boolean",
           "default": true
         },
@@ -349,7 +349,7 @@
           "default": false
         },
         "showStatusInTitle": {
-          "description": "Show Qwen Code session name and status in the terminal window title",
+          "description": "Show Довод session name and status in the terminal window title",
           "type": "boolean",
           "default": true
         },
@@ -410,7 +410,7 @@
           "default": true
         },
         "enableUserFeedback": {
-          "description": "Show optional feedback dialog after conversations to help improve Qwen performance.",
+          "description": "Show optional feedback dialog after conversations to help improve model performance.",
           "type": "boolean",
           "default": true
         },
@@ -465,7 +465,7 @@
           "default": true
         },
         "mouseTracking": {
-          "description": "Enable in-app SGR mouse tracking. While enabled, Qwen Code captures mouse events for text selection, click-to-position in text inputs, row hover, history-item toggling, and viewport scrolling. Because the terminal forwards all mouse events to the app, Qwen Code supplies its own equivalents for what the terminal can no longer do natively: a single click opens an http(s) hyperlink under the pointer (other link schemes are copied to the clipboard), and right-click over a link or a text selection opens an in-app context menu with Open Link / Copy Link Address / Copy Selection. Disable to hand the mouse fully back to the terminal (native right-click menu and link clicks); this turns off all in-app mouse interaction, and in Virtualized History the wheel no longer scrolls the transcript — use Shift+↑/↓, PgUp/PgDn, or Ctrl+Home/End instead (pair with ui.useTerminalBuffer: false to restore native terminal scrollback).",
+          "description": "Enable in-app SGR mouse tracking. While enabled, Довод captures mouse events for text selection, click-to-position in text inputs, row hover, history-item toggling, and viewport scrolling. Because the terminal forwards all mouse events to the app, Довод supplies its own equivalents for what the terminal can no longer do natively: a single click opens an http(s) hyperlink under the pointer (other link schemes are copied to the clipboard), and right-click over a link or a text selection opens an in-app context menu with Open Link / Copy Link Address / Copy Selection. Disable to hand the mouse fully back to the terminal (native right-click menu and link clicks); this turns off all in-app mouse interaction, and in Virtualized History the wheel no longer scrolls the transcript — use Shift+↑/↓, PgUp/PgDn, or Ctrl+Home/End instead (pair with ui.useTerminalBuffer: false to restore native terminal scrollback).",
           "type": "boolean",
           "default": true
         },
@@ -485,7 +485,7 @@
           "default": false
         },
         "customBannerTitle": {
-          "description": "Replace the default \">_ Qwen Code\" title shown in the banner info panel. The version suffix is always appended.",
+          "description": "Replace the default \">_ Довод\" title shown in the banner info panel. The version suffix is always appended.",
           "type": "string",
           "default": ""
         },
@@ -854,12 +854,12 @@
               "description": "Optional per-anchor override for Anthropic cache retention. Keys (system, tool, user.last) override generationConfig.cacheRetention when present. Resolution is normalized so retention is monotonically non-increasing in wire order (tool -> system -> user.last, per Anthropic's 'longer TTL must precede shorter TTL' rule): setting one anchor to '1h' promotes every anchor before it on the wire to '1h' as well, so any combination here is valid."
             },
             "splitToolMedia": {
-              "description": "When true, media (images / audio / video / files) returned by tool calls — including the built-in read_file and MCP tools — is split into a follow-up user message instead of being embedded in the `role: \"tool\"` message. The OpenAI Chat Completions spec only permits text on tool messages, so strict OpenAI-compatible servers (e.g., doubao / new-api / LM Studio) silently drop or reject embedded media and the model never sees an image read via read_file (QwenLM/qwen-code#4876, #3616). Default true is spec-compliant and safe for permissive providers; set false only to restore the legacy embed-in-tool-message behavior.",
+              "description": "When true, media (images / audio / video / files) returned by tool calls — including the built-in read_file and MCP tools — is split into a follow-up user message instead of being embedded in the `role: \"tool\"` message. The OpenAI Chat Completions spec only permits text on tool messages, so strict OpenAI-compatible servers (e.g., doubao / new-api / LM Studio) silently drop or reject embedded media and the model never sees an image read via read_file (upstream issue #4876, #3616). Default true is spec-compliant and safe for permissive providers; set false only to restore the legacy embed-in-tool-message behavior.",
               "type": "boolean",
               "default": true
             },
             "toolResultContentFormat": {
-              "description": "Controls how text-only tool results are serialized in OpenAI-compatible requests. Use \"parts\" for the default content-part array shape. Use \"string\" only for legacy OpenAI-compatible runtimes whose tool templates ignore text content parts (for example older GLM-5.1 vLLM/SGLang templates; QwenLM/qwen-code#3361). Tool-returned media is still handled by splitToolMedia. Options: parts, string",
+              "description": "Controls how text-only tool results are serialized in OpenAI-compatible requests. Use \"parts\" for the default content-part array shape. Use \"string\" only for legacy OpenAI-compatible runtimes whose tool templates ignore text content parts (for example older GLM-5.1 vLLM/SGLang templates; upstream issue #3361). Tool-returned media is still handled by splitToolMedia. Options: parts, string",
               "enum": [
                 "parts",
                 "string"
@@ -875,7 +875,7 @@
               "default": "auto"
             },
             "contextWindowSize": {
-              "description": "Overrides the default context window size for the selected model. Use this setting when a provider's effective context limit differs from Qwen Code's default. This value defines the model's assumed maximum context capacity, not a per-request token limit.",
+              "description": "Overrides the default context window size for the selected model. Use this setting when a provider's effective context limit differs from Довод's default. This value defines the model's assumed maximum context capacity, not a per-request token limit.",
               "type": "number"
             }
           }
@@ -1599,7 +1599,7 @@
           }
         },
         "crossSessionMessaging": {
-          "description": "Experimental. Let Qwen Code sessions on this machine send each other messages over a per-session local socket. Off by default; turning it on opens this session to peer messages, makes it discoverable to others, and lets its model address them from send_message.",
+          "description": "Experimental. Let Довод sessions on this machine send each other messages over a per-session local socket. Off by default; turning it on opens this session to peer messages, makes it discoverable to others, and lets its model address them from send_message.",
           "type": "boolean",
           "default": false
         },
@@ -1698,7 +1698,7 @@
       "type": "integer",
       "minimum": 1,
       "default": 8,
-      "description": "Maximum consecutive blocking Stop/SubagentStop hook decisions before Qwen Code overrides the hook loop and ends the turn. Can be overridden by QWEN_CODE_STOP_HOOK_BLOCK_CAP."
+      "description": "Maximum consecutive blocking Stop/SubagentStop hook decisions before Довод overrides the hook loop and ends the turn. Can be overridden by QWEN_CODE_STOP_HOOK_BLOCK_CAP."
     },
     "hooks": {
       "description": "Hook event configurations for extending CLI behavior at various lifecycle points.",
@@ -3615,7 +3615,7 @@
       "type": "object",
       "properties": {
         "liveVoice": {
-          "description": "Experimental realtime voice conversations through Qwen Live Host on macOS WebShell.",
+          "description": "Experimental realtime voice conversations through Довод Live Host on macOS WebShell.",
           "type": "object",
           "properties": {
             "enabled": {
@@ -3644,7 +3644,7 @@
               "default": "Tina"
             },
             "shortcut": {
-              "description": "Electron accelerator registered globally by Qwen Live Host.",
+              "description": "Electron accelerator registered globally by Довод Live Host.",
               "type": "string",
               "default": "Command+E"
             }
