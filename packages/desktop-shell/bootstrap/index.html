@@ -282,6 +282,84 @@
           monospace;
         white-space: pre-wrap;
       }
+      .card {
+        margin-top: 28px;
+        padding: 26px 26px 22px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        background: rgba(4, 8, 14, 0.42);
+      }
+      .card h2 {
+        margin: 0 0 10px;
+        font-size: 21px;
+        letter-spacing: -0.02em;
+      }
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+      }
+      .card p {
+        margin: 0;
+        color: #b9c2d0;
+        line-height: 1.55;
+      }
+      .hint {
+        margin-top: 14px;
+        color: #8d98aa;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .steps {
+        margin: 22px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      .steps li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .steps li:first-child {
+        border-top: 0;
+      }
+      .steps button {
+        min-width: 232px;
+        text-align: left;
+      }
+      .state {
+        color: #9ba6b7;
+        font-size: 13px;
+      }
+      .sign,
+      .result {
+        margin-top: 22px;
+        padding: 18px 20px;
+        border: 1px solid rgba(232, 176, 75, 0.35);
+        border-radius: 16px;
+        background: rgba(232, 176, 75, 0.08);
+      }
+      .result {
+        border-color: rgba(84, 213, 188, 0.35);
+        background: rgba(84, 213, 188, 0.08);
+      }
+      #report {
+        max-height: 260px;
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        color: #c6cedb;
+        background: rgba(255, 255, 255, 0.045);
+        font:
+          12px/1.6 ui-monospace,
+          'SFMono-Regular',
+          Consolas,
+          monospace;
+        overflow: auto;
+        white-space: pre-wrap;
+      }
       @media (max-width: 640px) {
         main {
           padding: 22px;
@@ -291,6 +369,10 @@
         }
         footer {
           flex-direction: column;
+        }
+        .steps button {
+          min-width: 0;
+          width: 100%;
         }
       }
     </style>
@@ -305,26 +387,111 @@
             <p class="eyebrow">Рабочее место юриста</p>
           </div>
         </div>
-        <div class="status">
+        <div class="status" id="status">
           <div id="pulse" class="pulse"></div>
           <div>
-            <h2 id="title">Запуск Довода</h2>
-            <p id="detail">Подготовка рабочей папки и встроенной среды…</p>
+            <h2 id="title">Довод запускается</h2>
+            <p id="detail">Это занимает несколько секунд.</p>
             <div id="workspace" class="workspace" hidden></div>
             <pre id="error"></pre>
           </div>
         </div>
-        <div class="actions">
-          <button id="choose" class="primary" hidden>
-            Выбрать другую папку
-          </button>
+        <section class="card" id="welcome" hidden>
+          <h2>Здравствуйте. Это Довод</h2>
+          <p>
+            Довод проходит дело по шагам и останавливается только там, где нужна
+            ваша подпись.
+          </p>
+          <div class="actions">
+            <button id="welcome-open" class="primary">Открыть дело</button>
+            <button id="welcome-demo">Попробовать на учебном деле</button>
+          </div>
+          <p class="hint" id="welcome-note">
+            Учебное дело выдумано целиком. На нём можно нажимать всё без риска:
+            ваши настоящие дела оно не затрагивает.
+          </p>
+        </section>
+        <section class="card" id="open" hidden>
+          <h2>Открыть дело</h2>
+          <p>Укажите папку, в которой лежат материалы дела.</p>
+          <div class="actions">
+            <button id="open-choose" class="primary">Выбрать папку дела</button>
+          </div>
+          <p class="hint" id="open-privacy">
+            Имена и данные клиента остаются на вашем компьютере, наружу уходит
+            только текст без них.
+          </p>
+        </section>
+        <section class="card" id="case" hidden>
+          <h2 id="case-name">Дело</h2>
+          <div class="actions">
+            <button id="autopilot" class="primary">Пройти дело</button>
+            <button id="chat">Открыть переписку с Доводом</button>
+            <button id="another">Открыть другое дело</button>
+          </div>
+          <p class="hint" id="autopilot-state">
+            Нажмите «Пройти дело»: Довод пройдёт шаги сам и остановится там, где
+            нужна ваша подпись. Можно и нажимать шаги по одному.
+          </p>
+          <ol class="steps">
+            <li>
+              <button id="step-prepare">Подготовить материалы</button>
+              <span class="state" id="state-prepare">ещё не начато</span>
+            </li>
+            <li>
+              <button id="step-inventory">Опись</button>
+              <span class="state" id="state-inventory">ещё не начато</span>
+            </li>
+            <li>
+              <button id="step-position">Позиция</button>
+              <span class="state" id="state-position">ещё не начато</span>
+            </li>
+            <li>
+              <button id="step-draft">Проект документа</button>
+              <span class="state" id="state-draft">ещё не начато</span>
+            </li>
+            <li>
+              <button id="step-reconcile">Сверка</button>
+              <span class="state" id="state-reconcile">ещё не начато</span>
+            </li>
+            <li>
+              <button id="step-restore">Собрать результат</button>
+              <span class="state" id="state-restore">ещё не начато</span>
+            </li>
+          </ol>
+          <section class="sign" id="sign" hidden>
+            <h3 id="sign-title">Нужна ваша подпись</h3>
+            <p id="sign-detail"></p>
+            <div class="actions">
+              <button id="sign-show">Показать, что уходит из дела</button>
+              <button id="sign-confirm" class="primary">
+                Подтверждаю, продолжить
+              </button>
+            </div>
+          </section>
+          <pre id="report" hidden></pre>
+          <section class="result" id="result" hidden>
+            <h3>Документы готовы</h3>
+            <div class="actions">
+              <button id="open-folder" class="primary">
+                Открыть папку с документами
+              </button>
+            </div>
+            <p class="hint" id="result-check">
+              Что проверить глазами: имена и адреса, номер дела и дату, ссылки
+              на нормы и доказательства, итоговые требования.
+            </p>
+          </section>
+        </section>
+        <div class="actions" id="recovery">
+          <button id="choose" class="primary" hidden>Открыть другое дело</button>
           <button id="retry" hidden>Повторить</button>
-          <button id="logs">Открыть журнал</button>
+          <button id="logs">Сведения для поддержки</button>
           <button id="update" hidden>Установить обновление</button>
         </div>
         <footer>
           <span id="version">Довод</span
-          ><span>Локальная служба · защищённое соединение</span>
+          ><span>Данные дела остаются на этом компьютере</span>
         </footer>
       </section>
     </main>

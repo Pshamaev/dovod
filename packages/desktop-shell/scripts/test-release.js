@@ -49,6 +49,7 @@ const root = fs.mkdtempSync(
 try {
   testBootstrapBridgeConfiguration();
   await testBootstrapWorkspaceVisibility();
+  testCaseScreensSpeakHumanRussian();
   testDovodApplicationIdentity();
   testElectronBridgeWorkflow();
   testDesktopReleaseSigningWorkflow();
@@ -113,7 +114,7 @@ async function testBootstrapWorkspaceVisibility() {
   const { body, commands, element, listeners, resolveBootstrapState } = primary;
 
   listeners['runtime-starting']({
-    payload: '/Users/example/Projects/qwen-code',
+    payload: '/Users/example/Документы/Довод/ДТП_демо/для_модели',
   });
   assert.equal(body.dataset.state, 'starting');
   assert.equal(element('#workspace').hidden, true);
@@ -123,7 +124,13 @@ async function testBootstrapWorkspaceVisibility() {
   assert.equal(element('#workspace').hidden, false);
   assert.equal(
     element('#workspace').textContent,
-    '/Users/example/Projects/qwen-code',
+    'Дело: ДТП_демо',
+    'The case screens must name the case, never show its path.',
+  );
+  assert.equal(
+    element('#error').textContent,
+    '',
+    'A runtime failure must not put technical details on the screen.',
   );
   await element('#logs').listeners.click();
   assert.equal(element('#workspace').hidden, false);
@@ -136,10 +143,11 @@ async function testBootstrapWorkspaceVisibility() {
   resolveBootstrapState({
     desktopVersion: '0.2.0',
     status: 'starting',
-    workspace: '/Users/example/Documents',
+    caseName: 'ДТП_демо',
+    firstRun: false,
   });
   await new Promise((resolve) => setImmediate(resolve));
-  assert.equal(element('#title').textContent, 'Перезапуск Довода');
+  assert.equal(element('#title').textContent, 'Пробуем снова');
   assert.equal(
     element('#workspace').hidden,
     true,
@@ -151,28 +159,151 @@ async function testBootstrapWorkspaceVisibility() {
   failed.resolveBootstrapState({
     desktopVersion: '0.2.0',
     status: 'idle',
-    workspace: '/Users/example/Documents/Qwen',
+    caseName: 'Иванов',
+    firstRun: false,
     error: 'runtime failed',
   });
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(failed.element('#workspace').hidden, false);
-  assert.equal(
-    failed.element('#workspace').textContent,
-    '/Users/example/Documents/Qwen',
-  );
+  assert.equal(failed.element('#workspace').textContent, 'Дело: Иванов');
 
   const cancelled = await createBootstrapHarness();
   cancelled.listeners['runtime-starting']({
-    payload: '/Users/example/Documents/Qwen',
+    payload: '/Users/example/Документы/Довод/Иванов/для_модели',
   });
   cancelled.listeners['runtime-failed']({ payload: 'runtime failed' });
   await cancelled.element('#choose').listeners.click();
   assert.equal(cancelled.body.dataset.state, 'idle');
-  assert.equal(cancelled.element('#workspace').hidden, false);
   assert.equal(
-    cancelled.element('#workspace').textContent,
-    '/Users/example/Documents/Qwen',
+    cancelled.body.dataset.screen,
+    'case',
+    'Cancelling the case picker must return to the case the lawyer already had.',
   );
+  assert.equal(cancelled.element('#workspace').hidden, false);
+  assert.equal(cancelled.element('#workspace').textContent, 'Дело: Иванов');
+
+  const welcome = await createBootstrapHarness();
+  welcome.resolveBootstrapState({
+    desktopVersion: '0.2.0',
+    status: 'idle',
+    firstRun: true,
+    demoAvailable: true,
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(
+    welcome.body.dataset.screen,
+    'welcome',
+    'The first launch must open the welcome screen, not a waiting screen.',
+  );
+  assert.equal(welcome.element('#welcome-demo').hidden, false);
+  await welcome.element('#welcome-demo').listeners.click();
+  assert.ok(
+    welcome.commands.includes('open_demo_case'),
+    'The welcome screen must be able to open the demo case.',
+  );
+  assert.equal(welcome.body.dataset.screen, 'case');
+  assert.equal(welcome.element('#state-prepare').textContent, 'ещё не начато, примерно 10 минут');
+
+  const autopilot = await createBootstrapHarness();
+  autopilot.listeners['runtime-ready']({
+    payload: '/Users/example/Документы/Довод/Иванов/для_модели',
+  });
+  assert.equal(autopilot.body.dataset.screen, 'case');
+  await autopilot.element('#autopilot').listeners.click();
+  assert.equal(
+    autopilot.commands.at(-1),
+    'run_case_step',
+    'Autopilot must start with the step the shell runs itself.',
+  );
+  assert.equal(autopilot.element('#state-prepare').textContent, 'готово');
+  assert.equal(
+    autopilot.element('#sign').hidden,
+    false,
+    'Autopilot must stop for the lawyer before anything leaves the case.',
+  );
+  assert.equal(autopilot.element('#state-inventory').textContent, 'нужна ваша подпись');
+  await autopilot.element('#sign-show').listeners.click();
+  assert.equal(autopilot.commands.at(-1), 'run_case_step');
+  await autopilot.element('#sign-confirm').listeners.click();
+  assert.equal(
+    autopilot.element('#sign').hidden,
+    true,
+    'A signed stop must not stay on the screen.',
+  );
+  assert.equal(
+    autopilot.commands.at(-1),
+    'open_chat',
+    'After the signature autopilot must continue on its own.',
+  );
+}
+
+// Экраны Довода читает юрист, а не инженер: ни команд, ни путей, ни
+// внутренних терминов в строках интерфейса.
+function testCaseScreensSpeakHumanRussian() {
+  const forbidden = [
+    /модел/i,
+    /токен/i,
+    /OCR/i,
+    /терминал/i,
+    /консол/i,
+    /\bлог/i,
+    /workspace/i,
+    /\/dovod:/,
+    /dovod_prompts/,
+    /C:\\/,
+    /%USERPROFILE%/,
+    /%APPDATA%/,
+  ];
+  // index.html - разметка и текст, построчно: в нём нет кода с именами
+  // переменных, строку достаточно проверять целиком.
+  const html = fs.readFileSync(
+    path.join(packageDir, 'bootstrap', 'index.html'),
+    'utf8',
+  );
+  const visibleHtml = html
+    .split('\n')
+    .filter((line) => /[А-Яа-яЁё]/.test(line))
+    .join('\n');
+  checkForbidden(visibleHtml, forbidden, 'bootstrap/index.html');
+
+  // bootstrap.js - код вперемешку с текстом: проверяются только содержимые
+  // строковых и шаблонных литералов, а не имена переменных и команд рядом с
+  // ними на той же строке (например `workspace.textContent = ...`).
+  const script = fs.readFileSync(
+    path.join(packageDir, 'bootstrap', 'bootstrap.js'),
+    'utf8',
+  );
+  // Имя папки `для_модели` - внутреннее имя в поставке, на экраны оно не
+  // выводится (оно нужно сценарию, чтобы получить из пути имя дела).
+  const visibleStrings = extractStringLiterals(script)
+    .filter((text) => /[А-Яа-яЁё]/.test(text))
+    .join('\n')
+    .replaceAll('для_модели', '');
+  checkForbidden(visibleStrings, forbidden, 'bootstrap/bootstrap.js');
+}
+
+function checkForbidden(text, forbidden, label) {
+  for (const pattern of forbidden) {
+    assert.doesNotMatch(
+      text,
+      pattern,
+      `Строка интерфейса ${label} содержит техническое слово: ${pattern}`,
+    );
+  }
+}
+
+// Содержимое строковых ('...', "...") и шаблонных (`...`) литералов JS-файла,
+// без кавычек и без интерполяций ${...} внутри шаблонов (их значения не
+// являются буквальным текстом на экране).
+function extractStringLiterals(source) {
+  const literals = [];
+  const pattern = /'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`/g;
+  for (const match of source.matchAll(pattern)) {
+    const raw = match[0];
+    const inner = raw.slice(1, -1).replace(/\$\{[^}]*\}/g, '');
+    literals.push(inner);
+  }
+  return literals;
 }
 
 async function createBootstrapHarness() {
@@ -203,6 +334,10 @@ async function createBootstrapHarness() {
         if (command === 'open_logs') throw new Error('no file handler');
         if (command === 'choose_workspace') return null;
         if (command === 'restart_runtime') return new Promise(() => {});
+        if (command === 'open_demo_case') return 'ДТП_демо';
+        if (command === 'run_case_step') return 'отчёт шага';
+        if (command === 'open_chat') return undefined;
+        if (command === 'open_case_folder') return undefined;
         throw new Error(`Unexpected desktop command: ${command}`);
       },
     },

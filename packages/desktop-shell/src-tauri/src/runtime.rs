@@ -161,22 +161,29 @@ struct RuntimeLayout {
     entry: PathBuf,
 }
 
+// Modified for DOVOD: the case screens need the same runtime root to find the
+// bundled pipeline package (dovod-tools), so root resolution is shared.
+pub(crate) fn runtime_root(app: &AppHandle) -> Result<PathBuf, String> {
+    if let Some(path) = std::env::var_os("QWEN_DESKTOP_RUNTIME_DIR") {
+        return Ok(PathBuf::from(path));
+    }
+    if cfg!(debug_assertions) {
+        return Ok(PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("runtime")
+            .join("qwen-code"));
+    }
+    Ok(app
+        .path()
+        .resource_dir()
+        .map_err(|error| format!("Failed to resolve desktop resources: {error}"))?
+        .join("runtime")
+        .join("qwen-code"))
+}
+
 impl RuntimeLayout {
     fn resolve(app: &AppHandle) -> Result<Self, String> {
-        let root = if let Some(path) = std::env::var_os("QWEN_DESKTOP_RUNTIME_DIR") {
-            PathBuf::from(path)
-        } else if cfg!(debug_assertions) {
-            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-                .join("..")
-                .join("runtime")
-                .join("qwen-code")
-        } else {
-            app.path()
-                .resource_dir()
-                .map_err(|error| format!("Failed to resolve desktop resources: {error}"))?
-                .join("runtime")
-                .join("qwen-code")
-        };
+        let root = runtime_root(app)?;
         let (node, entry) = layout_from_root(root);
         require_file(&node, "Node.js runtime")?;
         require_file(&entry, "Dovod runtime entry")?;

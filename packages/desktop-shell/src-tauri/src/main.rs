@@ -8,9 +8,9 @@ mod runtime;
 
 use command_group::GroupChild;
 use desktop_state::{default_window_size, restore_window, SettingsStore};
-use runtime::{resolve_workspace, stop_runtime_handle, DesktopRuntime};
+use runtime::{resolve_workspace, runtime_root, stop_runtime_handle, DesktopRuntime};
 use serde::{Deserialize, Serialize};
-use std::ffi::OsString;
+use std::ffi::{OsStr, OsString};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -39,6 +39,16 @@ static FULLSCREEN_HIDE_GENERATION: AtomicU64 = AtomicU64::new(0);
 // relocatable through QWEN_DEFAULT_WORKSPACE_DIR (see default_workspace).
 const DEFAULT_WORKSPACE_DIRECTORY: &str = "Довод";
 const UPDATE_CHECK_TIMEOUT: Duration = Duration::from_secs(3);
+// Modified for DOVOD: the shell opens only the folder the pipeline is allowed
+// to read (CLAUDE.md: агенту открывается только для_модели), never the case
+// root with the client's originals.
+const MODEL_FOLDER: &str = "для_модели";
+// The demo case ships inside the pipeline package, so the welcome screen can
+// offer a case where every button is safe to press.
+const DEMO_CASE_SOURCE: [&str; 2] = ["_demo", "ДТП_демо"];
+const DEMO_CASE_DIRECTORY: &str = "ДТП_демо (демо)";
+const PIPELINE_ENTRY: &str = "dovod_prompts.exe";
+const PIPELINE_OUTPUT_LIMIT: usize = 24 * 1024;
 
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -47,6 +57,11 @@ struct BootstrapState {
     status: &'static str,
     workspace: Option<String>,
     error: Option<String>,
+    // Нет сохранённого дела: показать приветствие, а не экран ожидания.
+    first_run: bool,
+    // Имя дела для экранов; путь на экраны не выводится.
+    case_name: Option<String>,
+    demo_available: bool,
 }
 
 #[derive(Deserialize)]
@@ -84,6 +99,9 @@ struct ApplicationState {
     window_dirty: AtomicBool,
     start_generation: AtomicU64,
     starting: AtomicU64,
+    // Modified for DOVOD: the case screens stay on screen after the runtime is
+    // up; the chat is opened only when the lawyer asks for it.
+    open_chat_when_ready: AtomicBool,
 }
 
 fn main() {
@@ -100,6 +118,10 @@ fn main() {
             open_logs,
             restart_runtime,
             install_update,
+            open_demo_case,
+            open_case_folder,
+            open_chat,
+            run_case_step,
         ])
         .setup(setup_app);
 
@@ -248,16 +270,14 @@ fn setup_app(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         window_dirty: AtomicBool::new(false),
         start_generation: AtomicU64::new(0),
         starting: AtomicU64::new(0),
+        open_chat_when_ready: AtomicBool::new(false),
     });
 
-    match initial_workspace(&handle) {
-        Ok((workspace, create_if_missing)) => {
-            start_runtime_async(handle.clone(), workspace, create_if_missing)
-        }
-        Err(error) => {
-            *lock(&handle.state::<ApplicationState>().last_error) = Some(error.clone());
-            let _ = handle.emit("runtime-failed", error);
-        }
+    // Modified for DOVOD: на первом запуске ничего не запускается и не
+    // создаётся - показывается приветствие, дело выбирает юрист. Повторный
+    // запуск поднимает последнее дело в фоне и остаётся на экране «Ход дела».
+    if let Some(workspace) = saved_workspace(&handle) {
+        start_runtime_async(handle.clone(), workspace, false);
     }
     check_updates_silently(handle.clone());
     spawn_window_state_flusher(handle);
@@ -267,6 +287,7 @@ fn setup_app(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 #[tauri::command]
 fn bootstrap_state(
     webview: WebviewWindow,
+    app: AppHandle,
     state: State<'_, ApplicationState>,
 ) -> Result<BootstrapState, String> {
     require_bootstrap_origin(&webview)?;
@@ -285,9 +306,46 @@ fn bootstrap_state(
         } else {
             "idle"
         },
+        case_name: workspace.as_deref().and_then(case_name_of),
         workspace: workspace.map(|path| path.to_string_lossy().into_owned()),
         error: lock(&state.last_error).clone(),
+        first_run: saved_workspace(&app).is_none(),
+        demo_available: demo_case_source(&app).is_some(),
     })
+}
+
+// Имя дела для экранов: папка дела - родитель папки для_модели.
+fn case_name_of(workspace: &Path) -> Option<String> {
+    let case = if workspace.file_name() == Some(OsStr::new(MODEL_FOLDER)) {
+        workspace.parent()?
+    } else {
+        workspace
+    };
+    case.file_name()
+        .map(|name| name.to_string_lossy().into_owned())
+}
+
+// Папка дела по рабочей папке: на экранах показывается только имя, а
+// «Открыть папку с документами» открывает именно папку дела.
+fn case_root_of(workspace: &Path) -> PathBuf {
+    if workspace.file_name() == Some(OsStr::new(MODEL_FOLDER)) {
+        workspace
+            .parent()
+            .map(Path::to_path_buf)
+            .unwrap_or_else(|| workspace.to_path_buf())
+    } else {
+        workspace.to_path_buf()
+    }
+}
+
+// Выбранная папка сужается до `<дело>\для_модели`: оболочка не открывает
+// агенту корень дела с подлинниками.
+fn case_model_dir(selected: &Path) -> PathBuf {
+    if selected.file_name() == Some(OsStr::new(MODEL_FOLDER)) {
+        selected.to_path_buf()
+    } else {
+        selected.join(MODEL_FOLDER)
+    }
 }
 
 fn bootstrap_workspace(
@@ -310,20 +368,183 @@ async fn choose_workspace(
         move || {
             app.dialog()
                 .file()
-                .set_title("Выберите рабочую папку Довода")
+                .set_title("Выберите папку дела")
                 .blocking_pick_folder()
         }
     })
     .await
-    .map_err(|error| format!("Failed to show workspace picker: {error}"))?;
+    .map_err(|error| format!("Не удалось открыть выбор папки: {error}"))?;
     let Some(folder) = folder else {
         return Ok(None);
     };
-    let workspace = folder
+    let selected = folder
         .into_path()
-        .map_err(|error| format!("Failed to read selected workspace: {error}"))?;
-    start_runtime_async(app, workspace.clone(), false);
-    Ok(Some(workspace.to_string_lossy().into_owned()))
+        .map_err(|error| format!("Не удалось прочитать выбранную папку: {error}"))?;
+    // Агенту открывается только `<дело>\для_модели`, а не корень дела.
+    let workspace = case_model_dir(&selected);
+    let case_name = case_name_of(&workspace);
+    start_runtime_async(app, workspace, true);
+    Ok(case_name)
+}
+
+// Демо-дело: копия выдуманного дела из поставки в Документы, на ней можно
+// нажимать всё без риска для настоящих дел.
+#[tauri::command]
+async fn open_demo_case(webview: WebviewWindow, app: AppHandle) -> Result<String, String> {
+    require_bootstrap_origin(&webview)?;
+    let source = demo_case_source(&app)
+        .ok_or_else(|| "Демо-дело не входит в эту сборку Довода.".to_string())?;
+    let (documents, _) = default_workspace(&app)?;
+    let case = documents.join(DEMO_CASE_DIRECTORY);
+    let workspace = case_model_dir(&case);
+    tauri::async_runtime::spawn_blocking({
+        let source = source.clone();
+        let case = case.clone();
+        move || copy_directory(&source, &case)
+    })
+    .await
+    .map_err(|error| format!("Не удалось подготовить демо-дело: {error}"))??;
+    let case_name = case_name_of(&workspace)
+        .unwrap_or_else(|| DEMO_CASE_DIRECTORY.to_string());
+    start_runtime_async(app, workspace, true);
+    Ok(case_name)
+}
+
+#[tauri::command]
+fn open_case_folder(
+    webview: WebviewWindow,
+    state: State<'_, ApplicationState>,
+) -> Result<(), String> {
+    require_bootstrap_origin(&webview)?;
+    let workspace = bootstrap_workspace(
+        lock(&state.last_workspace).clone(),
+        state.settings.workspace(),
+    )
+    .ok_or_else(|| "Дело ещё не открыто.".to_string())?;
+    open::that_detached(case_root_of(&workspace))
+        .map_err(|error| format!("Не удалось открыть папку дела: {error}"))
+}
+
+// Переписка с Доводом открывается только по просьбе юриста: пока он на экране
+// «Ход дела», окно остаётся на этом экране.
+#[tauri::command]
+fn open_chat(webview: WebviewWindow, app: AppHandle) -> Result<(), String> {
+    require_bootstrap_origin(&webview)?;
+    let state = app.state::<ApplicationState>();
+    state.open_chat_when_ready.store(true, Ordering::SeqCst);
+    let url = lock(&state.runtime)
+        .as_ref()
+        .map(DesktopRuntime::authenticated_web_url);
+    let Some(url) = url else {
+        // Дело ещё поднимается: переход сделает start_runtime_async.
+        return Ok(());
+    };
+    app.get_webview_window("main")
+        .ok_or_else(|| "Окно Довода недоступно.".to_string())?
+        .navigate(url)
+        .map_err(|error| format!("Не удалось открыть переписку с Доводом: {error}"))
+}
+
+// Шаги, которые оболочка проходит сама: подготовка материалов, проверка
+// глазами и сборка результата. Логика конвейера не дублируется - вызывается
+// тот же dovod_prompts.exe, что и в командах /dovod:*.
+#[tauri::command]
+async fn run_case_step(
+    webview: WebviewWindow,
+    app: AppHandle,
+    step: String,
+) -> Result<String, String> {
+    require_bootstrap_origin(&webview)?;
+    let arguments = pipeline_arguments(&step)
+        .ok_or_else(|| "Этот шаг Довод проходит в переписке.".to_string())?;
+    let entry = pipeline_entry(&app)?;
+    // Состояние читается до ожидания, чтобы ссылка на него не жила через await.
+    let workspace = {
+        let state = app.state::<ApplicationState>();
+        bootstrap_workspace(
+            lock(&state.last_workspace).clone(),
+            state.settings.workspace(),
+        )
+        .ok_or_else(|| "Дело ещё не открыто.".to_string())?
+    };
+    tauri::async_runtime::spawn_blocking(move || run_pipeline(&entry, &workspace, arguments))
+        .await
+        .map_err(|error| format!("Шаг не удалось запустить: {error}"))?
+}
+
+// Один шаг экрана - одна или несколько подкоманд конвейера, те же, что в
+// dovod/commands/*.toml.
+fn pipeline_arguments(step: &str) -> Option<Vec<&'static str>> {
+    match step {
+        "prepare" => Some(vec!["prepare-run"]),
+        "eyecheck" => Some(vec!["eyecheck"]),
+        "restore" => Some(vec!["restore-run"]),
+        _ => None,
+    }
+}
+
+fn pipeline_entry(app: &AppHandle) -> Result<PathBuf, String> {
+    let entry = runtime_root(app)?.join("dovod-tools").join(PIPELINE_ENTRY);
+    if entry.is_file() {
+        return Ok(dunce::simplified(&entry).to_path_buf());
+    }
+    Err("Рабочая часть Довода не найдена. Переустановите Довод.".to_string())
+}
+
+fn run_pipeline(entry: &Path, workspace: &Path, arguments: Vec<&str>) -> Result<String, String> {
+    let mut report = String::new();
+    for argument in arguments {
+        let output = std::process::Command::new(entry)
+            .arg(argument)
+            .current_dir(workspace)
+            .output()
+            .map_err(|error| format!("Шаг не запустился: {error}"))?;
+        let text = String::from_utf8_lossy(&output.stdout);
+        if !output.status.success() {
+            let failure = String::from_utf8_lossy(&output.stderr);
+            return Err(limit_output(&format!("{text}\n{failure}")));
+        }
+        report.push_str(text.trim_end());
+        report.push('\n');
+    }
+    Ok(limit_output(&report))
+}
+
+fn limit_output(text: &str) -> String {
+    let trimmed = text.trim();
+    if trimmed.chars().count() <= PIPELINE_OUTPUT_LIMIT {
+        return trimmed.to_string();
+    }
+    trimmed.chars().take(PIPELINE_OUTPUT_LIMIT).collect()
+}
+
+fn demo_case_source(app: &AppHandle) -> Option<PathBuf> {
+    let mut source = runtime_root(app).ok()?.join("dovod-tools");
+    for part in DEMO_CASE_SOURCE {
+        source = source.join(part);
+    }
+    source.is_dir().then_some(source)
+}
+
+// Копирует демо-дело целиком. Существующие файлы не перезаписываются: если
+// юрист что-то поменял в демо-деле, его правки остаются.
+fn copy_directory(source: &Path, target: &Path) -> Result<(), String> {
+    fs::create_dir_all(target)
+        .map_err(|error| format!("Не удалось создать папку демо-дела: {error}"))?;
+    let entries = fs::read_dir(source)
+        .map_err(|error| format!("Не удалось прочитать демо-дело: {error}"))?;
+    for entry in entries {
+        let entry = entry.map_err(|error| format!("Не удалось прочитать демо-дело: {error}"))?;
+        let from = entry.path();
+        let to = target.join(entry.file_name());
+        if from.is_dir() {
+            copy_directory(&from, &to)?;
+        } else if !to.exists() {
+            fs::copy(&from, &to)
+                .map_err(|error| format!("Не удалось скопировать демо-дело: {error}"))?;
+        }
+    }
+    Ok(())
 }
 
 #[tauri::command]
@@ -332,7 +553,10 @@ fn restart_runtime(webview: WebviewWindow, app: AppHandle) -> Result<(), String>
     let last_workspace = lock(&app.state::<ApplicationState>().last_workspace).clone();
     let (workspace, create_if_missing) = match last_workspace {
         Some(workspace) => workspace,
-        None => initial_workspace(&app)?,
+        None => match saved_workspace(&app) {
+            Some(workspace) => (workspace, false),
+            None => return Err("Дело ещё не открыто.".to_string()),
+        },
     };
     start_runtime_async(app, workspace, create_if_missing);
     Ok(())
@@ -467,15 +691,19 @@ fn start_runtime_async(app: AppHandle, workspace: PathBuf, create_if_missing: bo
                     );
                     return;
                 };
-                if let Err(error) = window.navigate(runtime.authenticated_web_url()) {
-                    runtime.stop();
-                    clear_pending_runtime(&state, generation);
-                    emit_runtime_failure(
-                        &app,
-                        generation,
-                        format!("Failed to authenticate and load Web Shell: {error}"),
-                    );
-                    return;
+                // Modified for DOVOD: переписка открывается только если юрист её
+                // попросил. Иначе окно остаётся на экране «Ход дела».
+                if state.open_chat_when_ready.swap(false, Ordering::SeqCst) {
+                    if let Err(error) = window.navigate(runtime.authenticated_web_url()) {
+                        runtime.stop();
+                        clear_pending_runtime(&state, generation);
+                        emit_runtime_failure(
+                            &app,
+                            generation,
+                            format!("Не удалось открыть переписку с Доводом: {error}"),
+                        );
+                        return;
+                    }
                 }
                 let mut runtime_slot = lock(&state.runtime);
                 if state.start_generation.load(Ordering::SeqCst) != generation {
@@ -542,18 +770,14 @@ fn clear_pending_runtime(state: &ApplicationState, generation: u64) {
     }
 }
 
-// Resolves the initial workspace and whether it is the derived first-launch
-// default that must be created before starting the runtime. Path resolution
-// only: directory creation happens off the main thread in start_runtime_async
-// because the first touch of ~/Documents can trigger the macOS TCC prompt.
-fn initial_workspace(app: &AppHandle) -> Result<(PathBuf, bool), String> {
+// Modified for DOVOD: дело, с которым работали в прошлый раз. None означает
+// первый запуск: ничего не поднимается и ничего не создаётся, пока юрист не
+// выберет дело или не откроет демо-дело.
+fn saved_workspace(app: &AppHandle) -> Option<PathBuf> {
     if let Some(workspace) = std::env::var_os("QWEN_DESKTOP_WORKSPACE") {
-        return Ok((PathBuf::from(workspace), false));
+        return Some(PathBuf::from(workspace));
     }
-    if let Some(workspace) = app.state::<ApplicationState>().settings.workspace() {
-        return Ok((workspace, false));
-    }
-    default_workspace(app)
+    app.state::<ApplicationState>().settings.workspace()
 }
 
 fn default_workspace(app: &AppHandle) -> Result<(PathBuf, bool), String> {
