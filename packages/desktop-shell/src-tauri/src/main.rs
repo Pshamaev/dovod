@@ -62,7 +62,37 @@ struct BootstrapState {
     // Имя дела для экранов; путь на экраны не выводится.
     case_name: Option<String>,
     demo_available: bool,
+    // DESKTOP_018: нет ни кода доступа на этот запуск, ни ранее заполненного
+    // ~/.qwen/.env - шаги в переписке (кнопка «Продолжить переписку» и шаги
+    // автопилота после «Подготовить материалы») не откроются, пока юрист не
+    // введёт код.
+    access_code_needed: bool,
 }
+
+// DESKTOP_018: выданные сервером доступа значения живут только в памяти этого
+// запуска приложения - на диск (в ~/.qwen/.env) они не пишутся, поэтому при
+// следующем запуске код нужно ввести снова.
+#[derive(Clone)]
+struct AccessCredentials {
+    api_base: String,
+    api_key: String,
+    model: String,
+}
+
+impl AccessCredentials {
+    fn as_env(&self) -> Vec<(String, String)> {
+        vec![
+            ("DOVOD_API_BASE".to_string(), self.api_base.clone()),
+            ("DOVOD_API_KEY".to_string(), self.api_key.clone()),
+            ("DOVOD_MODEL".to_string(), self.model.clone()),
+        ]
+    }
+}
+
+// Отправляется в переписку вместо понятной русской фразы: это не текст для
+// экрана, а признак, по которому bootstrap.js показывает экран «Введите код
+// доступа» вместо обычного сообщения об ошибке.
+const ACCESS_CODE_REQUIRED: &str = "access-code-required";
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -102,6 +132,9 @@ struct ApplicationState {
     // Modified for DOVOD: the case screens stay on screen after the runtime is
     // up; the chat is opened only when the lawyer asks for it.
     open_chat_when_ready: AtomicBool,
+    // DESKTOP_018: заполняется submit_access_code, читается start_runtime_async
+    // при следующем (пере)запуске демона.
+    access_credentials: Mutex<Option<AccessCredentials>>,
 }
 
 fn main() {
@@ -122,6 +155,7 @@ fn main() {
             open_case_folder,
             open_chat,
             run_case_step,
+            submit_access_code,
         ])
         .setup(setup_app);
 
@@ -271,6 +305,7 @@ fn setup_app(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         start_generation: AtomicU64::new(0),
         starting: AtomicU64::new(0),
         open_chat_when_ready: AtomicBool::new(false),
+        access_credentials: Mutex::new(None),
     });
 
     // Modified for DOVOD: на первом запуске ничего не запускается и не
@@ -311,7 +346,76 @@ fn bootstrap_state(
         error: lock(&state.last_error).clone(),
         first_run: saved_workspace(&app).is_none(),
         demo_available: demo_case_source(&app).is_some(),
+        access_code_needed: !config_ready(&app),
     })
+}
+
+// DESKTOP_018: готовы ли настройки для переписки с Доводом - код доступа уже
+// введён на этот запуск, или ~/.qwen/.env заполнен вручную (путь из README
+// dovod/, который остаётся рабочим). Пока ни то, ни другое не выполнено,
+// шаги в переписке не открываются - см. ACCESS_CODE_REQUIRED в open_chat.
+fn config_ready(app: &AppHandle) -> bool {
+    if lock(&app.state::<ApplicationState>().access_credentials).is_some() {
+        return true;
+    }
+    env_file_configures_model(app)
+}
+
+fn env_file_configures_model(app: &AppHandle) -> bool {
+    let Ok(home) = app.path().home_dir() else {
+        return false;
+    };
+    let env_path = resolve_qwen_home(home).join(".env");
+    let Ok(contents) = fs::read_to_string(&env_path) else {
+        return false;
+    };
+    let values = parse_env_file(&contents);
+    let filled = |keys: &[&str]| {
+        keys.iter()
+            .all(|key| values.get(*key).is_some_and(|value| !value.trim().is_empty()))
+    };
+    filled(&["DOVOD_API_BASE", "DOVOD_API_KEY", "DOVOD_MODEL"])
+        || filled(&["OPENAI_BASE_URL", "OPENAI_API_KEY", "OPENAI_MODEL"])
+}
+
+// Та же логика, что resolveQwenHome в dovod/dovod-entry.js (там для Node,
+// здесь для Rust - совпадать должны обе, .env читает именно эта папка).
+fn resolve_qwen_home(home: PathBuf) -> PathBuf {
+    let Some(configured) = std::env::var_os("QWEN_HOME").filter(|value| !value.is_empty()) else {
+        return home.join(".qwen");
+    };
+    let configured = configured.to_string_lossy().into_owned();
+    if configured == "~" {
+        return home;
+    }
+    if let Some(rest) = configured.strip_prefix("~/").or_else(|| configured.strip_prefix("~\\")) {
+        return home.join(rest);
+    }
+    PathBuf::from(configured)
+}
+
+// Построчный .env: KEY=value, необязательный "export ", необязательные
+// одинарные/двойные кавычки вокруг значения, строки # и пустые пропускаются.
+fn parse_env_file(contents: &str) -> std::collections::HashMap<String, String> {
+    let mut values = std::collections::HashMap::new();
+    for line in contents.lines() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let line = line.strip_prefix("export ").unwrap_or(line);
+        let Some((key, value)) = line.split_once('=') else {
+            continue;
+        };
+        let value = value.trim();
+        let unquoted = value
+            .strip_prefix('"')
+            .and_then(|rest| rest.strip_suffix('"'))
+            .or_else(|| value.strip_prefix('\'').and_then(|rest| rest.strip_suffix('\'')))
+            .unwrap_or(value);
+        values.insert(key.trim().to_string(), unquoted.to_string());
+    }
+    values
 }
 
 // Имя дела для экранов: папка дела - родитель папки для_модели.
@@ -430,6 +534,13 @@ fn open_case_folder(
 #[tauri::command]
 fn open_chat(webview: WebviewWindow, app: AppHandle) -> Result<(), String> {
     require_bootstrap_origin(&webview)?;
+    // DESKTOP_018: без кода доступа (и без вручную заполненного .env) сессия
+    // переписки не стартует вовсе - раньше в этом месте падала с нечитаемой
+    // "agent channel closed during initialize". bootstrap.js ловит именно
+    // эту строку и показывает экран «Введите код доступа», а не ошибку.
+    if !config_ready(&app) {
+        return Err(ACCESS_CODE_REQUIRED.to_string());
+    }
     let state = app.state::<ApplicationState>();
     state.open_chat_when_ready.store(true, Ordering::SeqCst);
     let url = lock(&state.runtime)
@@ -443,6 +554,103 @@ fn open_chat(webview: WebviewWindow, app: AppHandle) -> Result<(), String> {
         .ok_or_else(|| "Окно Довода недоступно.".to_string())?
         .navigate(url)
         .map_err(|error| format!("Не удалось открыть переписку с Доводом: {error}"))
+}
+
+// DESKTOP_018: экран «Введите код доступа» вызывает эту команду. Код
+// проверяется на настроенном владельцем сервере (адрес - переменная
+// DOVOD_ACCESS_SERVER, никакого адреса в коде не зашито), который в ответ
+// присылает адрес, ключ и имя модели. Эти три значения остаются только в
+// памяти этого запуска (ApplicationState.access_credentials) и едут в
+// окружение демона при следующем (пере)запуске - start_runtime_async читает
+// их оттуда. На диск, в частности в ~/.qwen/.env, они не пишутся.
+#[tauri::command]
+async fn submit_access_code(
+    webview: WebviewWindow,
+    app: AppHandle,
+    code: String,
+) -> Result<(), String> {
+    require_bootstrap_origin(&webview)?;
+    let code = code.trim().to_string();
+    if code.is_empty() {
+        return Err("Введите код доступа.".to_string());
+    }
+    let endpoint = std::env::var("DOVOD_ACCESS_SERVER")
+        .ok()
+        .map(|value| value.trim().to_string())
+        .filter(|value| !value.is_empty())
+        .ok_or_else(|| {
+            "Сервер доступа не настроен. Обратитесь к тому, кто выдал код.".to_string()
+        })?;
+    let credentials = tauri::async_runtime::spawn_blocking(move || {
+        redeem_access_code(&endpoint, &code)
+    })
+    .await
+    .map_err(|error| format!("Код не удалось проверить: {error}"))??;
+    *lock(&app.state::<ApplicationState>().access_credentials) = Some(credentials);
+    // Тот же путь, что restart_runtime, плюс открыть переписку, когда демон
+    // поднимется на новых значениях - этим уже умеет start_runtime_async
+    // через open_chat_when_ready (см. open_chat выше).
+    let last_workspace = lock(&app.state::<ApplicationState>().last_workspace).clone();
+    let (workspace, create_if_missing) = match last_workspace {
+        Some(workspace) => workspace,
+        None => match saved_workspace(&app) {
+            Some(workspace) => (workspace, false),
+            None => return Err("Дело ещё не открыто.".to_string()),
+        },
+    };
+    app.state::<ApplicationState>()
+        .open_chat_when_ready
+        .store(true, Ordering::SeqCst);
+    start_runtime_async(app, workspace, create_if_missing);
+    Ok(())
+}
+
+// Код уходит как query-параметр GET-запроса, а не как тело POST: ureq в этом
+// крейте собран без фич "json"/TLS-бэкенда (Cargo.toml, default-features =
+// false) - этот же приём (agent.get(url).call(), response.into_body().
+// read_to_string()) уже используется в runtime.rs::wait_for_health и, в
+// отличие от .send()/.send_json(), точно компилируется в этой сборке.
+// DOVOD_ACCESS_SERVER должен быть полным адресом ручки, например
+// https://api.dovod.law/v1/access - что эта ручка должна вернуть, описано в
+// отчёте сессии DESKTOP_018.
+fn redeem_access_code(endpoint: &str, code: &str) -> Result<AccessCredentials, String> {
+    let mut url = Url::parse(endpoint)
+        .map_err(|error| format!("Адрес сервера доступа настроен неверно: {error}"))?;
+    url.query_pairs_mut().append_pair("code", code);
+    let agent: ureq::Agent = ureq::Agent::config_builder()
+        .timeout_global(Some(Duration::from_secs(10)))
+        .build()
+        .into();
+    let response = agent
+        .get(url.as_str())
+        .call()
+        .map_err(|error| format!("Не удалось связаться с сервером доступа: {error}"))?;
+    let body = response
+        .into_body()
+        .read_to_string()
+        .map_err(|error| format!("Сервер доступа ответил непонятно: {error}"))?;
+    let parsed: serde_json::Value = serde_json::from_str(&body)
+        .map_err(|_| "Сервер доступа ответил непонятно.".to_string())?;
+    let field = |key: &str| {
+        parsed
+            .get(key)
+            .and_then(|value| value.as_str())
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+            .map(str::to_string)
+    };
+    match (field("api_base"), field("api_key"), field("model")) {
+        (Some(api_base), Some(api_key), Some(model)) => Ok(AccessCredentials {
+            api_base,
+            api_key,
+            model,
+        }),
+        _ => Err(parsed
+            .get("error")
+            .and_then(|value| value.as_str())
+            .map(|text| format!("Код не принят: {text}"))
+            .unwrap_or_else(|| "Код не принят.".to_string())),
+    }
 }
 
 // Шаги, которые оболочка проходит сама: подготовка материалов, проверка
@@ -651,8 +859,14 @@ fn start_runtime_async(app: AppHandle, workspace: PathBuf, create_if_missing: bo
             emit_runtime_failure(&app, generation, error);
             return;
         }
+        // DESKTOP_018: код доступа, уже введённый на этот запуск, едет в
+        // окружение демона напрямую - на диск (~/.qwen/.env) он не пишется.
+        let extra_env = lock(&state.access_credentials)
+            .as_ref()
+            .map(AccessCredentials::as_env)
+            .unwrap_or_default();
         let registered = app.clone();
-        match DesktopRuntime::start(&app, &canonical, &state.log_path, move |child, stopping| {
+        match DesktopRuntime::start(&app, &canonical, &state.log_path, &extra_env, move |child, stopping| {
             let state = registered.state::<ApplicationState>();
             let pending = PendingRuntime {
                 generation,

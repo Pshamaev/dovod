@@ -48,6 +48,11 @@ impl DesktopRuntime {
         app: &AppHandle,
         workspace: &Path,
         log_path: &Path,
+        // Modified for DOVOD: credentials redeemed through an access code
+        // (see main.rs::submit_access_code) are passed straight into the
+        // daemon's own process environment instead of being written to
+        // ~/.qwen/.env, so they do not outlive this run on disk.
+        extra_env: &[(String, String)],
         on_spawned: impl FnOnce(Arc<Mutex<Option<GroupChild>>>, Arc<AtomicBool>),
     ) -> Result<Self, String> {
         let id = NEXT_RUNTIME_ID.fetch_add(1, Ordering::Relaxed);
@@ -64,6 +69,9 @@ impl DesktopRuntime {
             .stderr(Stdio::piped())
             .env("QWEN_CODE_DESKTOP", "1")
             .env("QWEN_SERVER_TOKEN", &token);
+        for (key, value) in extra_env {
+            command.env(key, value);
+        }
 
         let mut child = spawn_runtime_group(&mut command)
             .map_err(|error| format!("Failed to start the bundled Dovod runtime: {error}"))?;
