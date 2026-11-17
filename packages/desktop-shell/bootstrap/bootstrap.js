@@ -35,6 +35,16 @@ const signConfirm = document.querySelector('#sign-confirm');
 const report = document.querySelector('#report');
 const result = document.querySelector('#result');
 const openFolder = document.querySelector('#open-folder');
+const accessCard = document.querySelector('#access');
+const accessCode = document.querySelector('#access-code');
+const accessSubmit = document.querySelector('#access-submit');
+const accessError = document.querySelector('#access-error');
+
+// Отправляется командой open_chat вместо падения с нечитаемой ошибкой агента,
+// когда модель не настроена ни кодом доступа, ни вручную в ~/.qwen/.env -
+// не текст экрана, признак для показа showAccessCode(). Должна совпадать с
+// ACCESS_CODE_REQUIRED в src-tauri/src/main.rs.
+const ACCESS_CODE_REQUIRED = 'access-code-required';
 
 // Один шаг экрана - один шаг дела. kind: 'сам' - шаг, который оболочка
 // проходит без переписки; 'переписка' - шаг, который Довод делает в переписке.
@@ -142,6 +152,18 @@ function showScreen(screen) {
   welcome.hidden = screen !== 'welcome';
   openCard.hidden = screen !== 'open';
   caseCard.hidden = screen !== 'case';
+  accessCard.hidden = screen !== 'access';
+}
+
+// Экран «Введите код доступа»: открывается вместо падения переписки, когда
+// модель не настроена. message - уже готовая русская фраза для #access-error
+// (например, после неудачной проверки кода), а не техническая ошибка.
+function showAccessCode(message = '') {
+  accessCode.value = '';
+  accessSubmit.disabled = false;
+  accessError.textContent = message;
+  accessError.style.display = message ? 'block' : 'none';
+  showIdleScreen('access');
 }
 
 // Спокойный экран без ожидания и без ошибки.
@@ -248,7 +270,12 @@ async function runInChat(step) {
   setAutopilotNote('Довод продолжает в переписке. Она сейчас откроется.');
   try {
     await invoke('open_chat');
-  } catch {
+  } catch (failure) {
+    if (String(failure) === ACCESS_CODE_REQUIRED) {
+      setStepState(step, 'нет');
+      showAccessCode();
+      return;
+    }
     setFailure(
       'Не удалось открыть переписку',
       'Нажмите «Повторить». Дело и материалы на месте.',
@@ -344,11 +371,37 @@ async function openChat() {
   if (!invoke) return;
   try {
     await invoke('open_chat');
-  } catch {
+  } catch (failure) {
+    if (String(failure) === ACCESS_CODE_REQUIRED) {
+      showAccessCode();
+      return;
+    }
     setFailure(
       'Не удалось открыть переписку',
       'Нажмите «Повторить». Дело и материалы на месте.',
     );
+  }
+}
+
+async function submitAccessCode() {
+  if (!invoke) return;
+  const code = accessCode.value.trim();
+  if (!code) {
+    accessError.textContent = 'Введите код доступа.';
+    accessError.style.display = 'block';
+    return;
+  }
+  accessSubmit.disabled = true;
+  accessError.style.display = 'none';
+  accessError.textContent = '';
+  try {
+    await invoke('submit_access_code', { code });
+    snapshotOverrideStatus = 'starting';
+    setStatus('starting', 'Проверяем код', 'Это занимает несколько секунд.');
+  } catch (failure) {
+    accessError.textContent = String(failure || 'Код не принят.');
+    accessError.style.display = 'block';
+    accessSubmit.disabled = false;
   }
 }
 
@@ -430,6 +483,10 @@ chat.addEventListener('click', openChat);
 openFolder.addEventListener('click', openCaseFolder);
 signShow.addEventListener('click', showWhatLeaves);
 signConfirm.addEventListener('click', confirmSignature);
+accessSubmit.addEventListener('click', submitAccessCode);
+accessCode.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') submitAccessCode();
+});
 for (const step of STEPS) {
   stepElement(step.id).addEventListener('click', () => {
     hideSignature();

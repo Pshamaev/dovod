@@ -49,6 +49,7 @@ const root = fs.mkdtempSync(
 try {
   testBootstrapBridgeConfiguration();
   await testBootstrapWorkspaceVisibility();
+  await testAccessCodeScreenInsteadOfCrash();
   testCaseScreensSpeakHumanRussian();
   testDovodApplicationIdentity();
   testElectronBridgeWorkflow();
@@ -237,6 +238,83 @@ async function testBootstrapWorkspaceVisibility() {
   );
 }
 
+// DESKTOP_018: без заполненного ~/.qwen/.env (и без кода доступа этого
+// запуска) open_chat в main.rs возвращает Err('access-code-required') вместо
+// падения сессии агента - здесь проверяется только реакция bootstrap.js на
+// этот сигнал (сама проверка .env - в Rust, cargo test в этой оболочке и в
+// CI этого репозитория не запускается, см. test-release.js/README).
+async function testAccessCodeScreenInsteadOfCrash() {
+  const blocked = await createBootstrapHarness({
+    openChatResult: 'access-code-required',
+  });
+  blocked.listeners['runtime-ready']({
+    payload: '/Users/example/Документы/Довод/Иванов/для_модели',
+  });
+  assert.equal(blocked.body.dataset.screen, 'case');
+  await blocked.element('#chat').listeners.click();
+  assert.equal(
+    blocked.body.dataset.screen,
+    'access',
+    'Без настроенной модели переписка должна открыть экран кода доступа, а не падать.',
+  );
+  assert.equal(
+    blocked.element('#access-error').style.display,
+    'none',
+    'Первый показ экрана кода доступа не должен нести техническую ошибку.',
+  );
+
+  blocked.element('#access-code').value = '';
+  await blocked.element('#access-submit').listeners.click();
+  assert.equal(
+    blocked.element('#access-error').textContent,
+    'Введите код доступа.',
+  );
+  assert.equal(
+    blocked.element('#access-error').style.display,
+    'block',
+    'The empty-code message must actually be shown, not just set invisibly.',
+  );
+  assert.equal(
+    blocked.commands.filter((command) => command === 'submit_access_code').length,
+    0,
+    'An empty code must not reach the access server.',
+  );
+
+  const rejected = await createBootstrapHarness({
+    openChatResult: 'access-code-required',
+    submitAccessCodeResult: 'reject',
+  });
+  rejected.listeners['runtime-ready']({
+    payload: '/Users/example/Документы/Довод/Иванов/для_модели',
+  });
+  await rejected.element('#chat').listeners.click();
+  rejected.element('#access-code').value = '1234';
+  await rejected.element('#access-submit').listeners.click();
+  assert.equal(rejected.commands.at(-1), 'submit_access_code');
+  assert.equal(rejected.element('#access-error').textContent, 'Код не принят.');
+  assert.equal(
+    rejected.element('#access-submit').disabled,
+    false,
+    'A rejected code must let the lawyer try again.',
+  );
+
+  const accepted = await createBootstrapHarness({
+    openChatResult: 'access-code-required',
+  });
+  accepted.listeners['runtime-ready']({
+    payload: '/Users/example/Документы/Довод/Иванов/для_модели',
+  });
+  await accepted.element('#chat').listeners.click();
+  accepted.element('#access-code').value = '1234';
+  await accepted.element('#access-submit').listeners.click();
+  assert.equal(accepted.commands.at(-1), 'submit_access_code');
+  assert.equal(
+    accepted.body.dataset.state,
+    'starting',
+    'An accepted code must move on to the usual starting screen, not stay on an error.',
+  );
+}
+
 // Экраны Довода читает юрист, а не инженер: ни команд, ни путей, ни
 // внутренних терминов в строках интерфейса.
 function testCaseScreensSpeakHumanRussian() {
@@ -306,7 +384,10 @@ function extractStringLiterals(source) {
   return literals;
 }
 
-async function createBootstrapHarness() {
+async function createBootstrapHarness({
+  openChatResult = undefined,
+  submitAccessCodeResult = undefined,
+} = {}) {
   const elements = {};
   const element = (selector) => {
     elements[selector] ??= {
@@ -315,6 +396,7 @@ async function createBootstrapHarness() {
         this.listeners[event] = listener;
       },
       style: {},
+      value: '',
     };
     return elements[selector];
   };
@@ -324,7 +406,7 @@ async function createBootstrapHarness() {
   let resolveBootstrapState;
   const tauri = {
     core: {
-      invoke: async (command) => {
+      invoke: async (command, args) => {
         commands.push(command);
         if (command === 'bootstrap_state') {
           return new Promise((resolve) => {
@@ -336,9 +418,24 @@ async function createBootstrapHarness() {
         if (command === 'restart_runtime') return new Promise(() => {});
         if (command === 'open_demo_case') return 'ДТП_демо';
         if (command === 'run_case_step') return 'отчёт шага';
-        if (command === 'open_chat') return undefined;
+        if (command === 'open_chat') {
+          // Повторяет main.rs::open_chat: Err('access-code-required'), пока
+          // ~/.qwen/.env не заполнен и код доступа не введён.
+          if (openChatResult === 'access-code-required') {
+            throw 'access-code-required';
+          }
+          return undefined;
+        }
+        if (command === 'submit_access_code') {
+          if (submitAccessCodeResult === 'reject') {
+            throw 'Код не принят.';
+          }
+          return undefined;
+        }
         if (command === 'open_case_folder') return undefined;
-        throw new Error(`Unexpected desktop command: ${command}`);
+        throw new Error(
+          `Unexpected desktop command: ${command}${args ? ` ${JSON.stringify(args)}` : ''}`,
+        );
       },
     },
     event: {

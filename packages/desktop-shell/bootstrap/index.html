@@ -265,6 +265,27 @@
         opacity: 0.55;
         transform: none;
       }
+      input[type='text'] {
+        appearance: none;
+        min-width: 220px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 11px 14px;
+        color: #e9edf5;
+        background: rgba(255, 255, 255, 0.035);
+        font: inherit;
+        font-size: 13px;
+      }
+      input[type='text']:focus {
+        outline: none;
+        border-color: rgba(232, 176, 75, 0.55);
+      }
+      #access-error {
+        display: none;
+        margin-top: 14px;
+        color: #ff9c91;
+        line-height: 1.5;
+      }
       footer {
         display: flex;
         justify-content: space-between;
@@ -482,6 +503,21 @@
               на нормы и доказательства, итоговые требования.
             </p>
           </section>
+        </section>
+        <section class="card" id="access" hidden>
+          <h2>Нужен код доступа</h2>
+          <p>
+            Чтобы продолжить переписку с Доводом, введите код доступа, который
+            вам выдали, и нажмите «Войти».
+          </p>
+          <div class="actions">
+            <input id="access-code" type="text" placeholder="Код доступа" />
+            <button id="access-submit" class="primary">Войти</button>
+          </div>
+          <p class="hint" id="access-hint">
+            Если кода пока нет, обратитесь к тому, кто выдаёт доступ к Доводу.
+          </p>
+          <p id="access-error"></p>
         </section>
         <div class="actions" id="recovery">
           <button id="choose" class="primary" hidden>Открыть другое дело</button>
