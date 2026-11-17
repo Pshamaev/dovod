@@ -630,7 +630,7 @@ jobs:
           name: 'dovod-desktop-${{ matrix.rust_target }}'
           path: '${{ runner.temp }}/desktop-artifacts/*'
           if-no-files-found: 'error'
-          retention-days: 14
+          retention-days: 1
 
   publish:
     name: 'Publish GitHub release'
