@@ -5,6 +5,10 @@
 # GitHub release is published to this repository.
 #
 # DESKTOP_016: a push to the dovod-016 branch also triggers this workflow.
+# DESKTOP_018 added dovod-018 to the same list, generalizing the DESKTOP_016
+# version-label and "report" job below to the actual pushed branch
+# (github.ref_name) instead of a literal 'dovod-016', so any future
+# dovod-0NN branch can be added here without touching those two spots again.
 # `inputs.*` only exists for a workflow_dispatch run, so a push-triggered run
 # cannot read it at all (it evaluates to an empty string everywhere). The
 # "Resolve inputs" step in the prepare job is the one place that tells the
@@ -20,6 +24,7 @@ on:
   push:
     branches:
       - 'dovod-016'
+      - 'dovod-018'
   workflow_dispatch:
     inputs:
       version:
@@ -126,7 +131,10 @@ jobs:
             clobber="$IN_CLOBBER"
             electron_bridge="$IN_ELECTRON_BRIDGE"
           else
-            version="0.0.0-dovod016.${GITHUB_SHA:0:12}"
+            # DESKTOP_018: branch name instead of a literal "dovod016", so
+            # this stays correct for any push-triggered branch in the list
+            # above, not only dovod-016.
+            version="0.0.0-${GITHUB_REF_NAME//[^a-zA-Z0-9]/}.${GITHUB_SHA:0:12}"
             qwen_code_ref="$GITHUB_SHA"
             dry_run='true'
             windows_only='true'
@@ -788,12 +796,15 @@ jobs:
             echo "Release: $RELEASE_URL"
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # DESKTOP_016: a push-triggered run (dovod-016, always dry_run) commits its
-  # own result back into the branch, so it can be read as a file instead of
-  # only as a workflow run page. `always()` so a build failure still produces
-  # a report instead of silently leaving nothing in the branch.
+  # DESKTOP_016: a push-triggered run (always dry_run) commits its own result
+  # back into the branch that triggered it, so it can be read as a file
+  # instead of only as a workflow run page. `always()` so a build failure
+  # still produces a report instead of silently leaving nothing in the
+  # branch. DESKTOP_018 generalized the branch from a literal 'dovod-016' to
+  # github.ref_name, so this works the same for dovod-018 (or any future
+  # push-triggered branch added to `on.push.branches` above) without edits.
   report:
-    name: 'Commit run summary to dovod-016'
+    name: 'Commit run summary to the push branch'
     if: "${{ always() && github.event_name == 'push' }}"
     needs:
       - 'prepare'
@@ -806,7 +817,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10' # v6.0.3
         with:
-          ref: 'dovod-016'
+          ref: '${{ github.ref_name }}'
 
       - uses: 'actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c' # v8.0.1
         continue-on-error: true
@@ -826,8 +837,11 @@ jobs:
           COMMIT_SHA: '${{ github.sha }}'
         run: |
           set -euo pipefail
-          mkdir -p docs/reports/desktop_016
-          report="docs/reports/desktop_016/${RUN_ID}.md"
+          # DESKTOP_018: GITHUB_REF_NAME is the branch this run was pushed
+          # to (a default Actions env var, not declared in `env:` above) -
+          # 'dovod-016' for the original dovod-016 reports, 'dovod-018' here.
+          mkdir -p "docs/reports/${GITHUB_REF_NAME}"
+          report="docs/reports/${GITHUB_REF_NAME}/${RUN_ID}.md"
           # Пагинация gh api не нужна: один прогон этого workflow даёт не
           # больше нескольких job, в лимит одной страницы укладывается.
           {
@@ -869,4 +883,4 @@ jobs:
             exit 0
           fi
           git commit -m "ci: итог прогона desktop-release #$RUN_ID (prepare $PREPARE_RESULT, build $BUILD_RESULT)"
-          git push origin 'HEAD:dovod-016'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
