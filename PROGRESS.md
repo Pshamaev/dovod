@@ -2,6 +2,35 @@
 
 Формат строки: дата; что сделано; чем проверено; что дальше. Новые записи сверху.
 
+- 2026-11-17; DESKTOP_018: экран «Введите код доступа» вместо падения
+  "agent channel closed during initialize" (0.1.5, снята с сайта; первый
+  тестер - Павел Старовойтов). main.rs: open_chat проверяет config_ready()
+  (код доступа этого запуска или вручную заполненный ~/.qwen/.env) и
+  возвращает ACCESS_CODE_REQUIRED вместо запуска сессии агента; новая команда
+  submit_access_code обменивает код на {api_base,api_key,model} через сервер
+  из DOVOD_ACCESS_SERVER (переменная окружения или строка в том же .env, без
+  хардкода адреса) - значения живут только в памяти запуска и едут в
+  окружение демона (runtime.rs::DesktopRuntime::start, параметр extra_env),
+  на диск не пишутся. bootstrap/index.html и bootstrap.js: новый экран
+  #access. .github/workflows/desktop-release.yml: push-триггер dovod-018
+  добавлен рядом с dovod-016, report-джоба обобщена на github.ref_name (было
+  жёстко на dovod-016 - без этого отчёт push-прогона dovod-018 ушёл бы в
+  чужую ветку). Коммиты: 437d503d49, 20ebe68dee, e71d5a755f, d645fd0003.
+  Готового сервера доступа нет - описано в докладе, что нужно; dovod-tools.json
+  не трогался (сборка Маски 0.3 - в репозитории garant-bot, вне этой папки).
+  Проверено: node packages/desktop-shell/scripts/test-release.js - все
+  проверки до testRuntimePreparation прошли (включая новый
+  testAccessCodeScreenInsteadOfCrash), упал на том же документированном
+  пределе BSD tar этой машины, что в сессиях D2-D4 и 017_A, не связано с
+  правками. Rust (main.rs, runtime.rs) - только построчное чтение, cargo и
+  rustc в этой оболочке нет; реальная проверка компиляции - CI по пушу в
+  dovod-018. Push: origin HEAD:dovod-018 (4 коммита), main и сайт не
+  трогались. Подробности, текст экрана, что нужно на сервере и оценка схемы
+  "сервер-прокси вместо выдачи ключа провайдера" (замечание владельца):
+  docs/reports/2026-11-17_desktop_018.md. Дальше: владелец проверяет прогон
+  CI (ссылка в докладе) и решает по серверу доступа и по сборке dovod-tools
+  с Маской 0.3.
+
 - 2026-11-15; DESKTOP_017_A_FIX: сборка установщика из dovod-017 (коммит
   b75d66a013, прогон 43687099120) упала на шаге tauri build, на компиляции
   Rust, одной ошибкой error[E0597] в packages/desktop-shell/src-tauri/src/
