@@ -378,6 +378,29 @@ fn env_file_configures_model(app: &AppHandle) -> bool {
         || filled(&["OPENAI_BASE_URL", "OPENAI_API_KEY", "OPENAI_MODEL"])
 }
 
+// DESKTOP_018: адрес сервера доступа - не секрет и не имя модели, его можно
+// зашить в поставку владельцу, но не в код (пункт 2 задания). Процесс
+// Tauri не наследует ~/.qwen/.env автоматически (это файл для демона на
+// Node, dovod-entry.js), поэтому сначала проверяется переменная окружения
+// самого процесса Довода (удобно для разработки), а если её нет - тот же
+// .env, что и DOVOD_API_BASE/KEY/MODEL: владелец может заранее прописать туда
+// DOVOD_ACCESS_SERVER через свой env.template или установщик, без сборки.
+fn resolve_access_server(app: &AppHandle) -> Option<String> {
+    if let Ok(value) = std::env::var("DOVOD_ACCESS_SERVER") {
+        let value = value.trim();
+        if !value.is_empty() {
+            return Some(value.to_string());
+        }
+    }
+    let home = app.path().home_dir().ok()?;
+    let env_path = resolve_qwen_home(home).join(".env");
+    let contents = fs::read_to_string(&env_path).ok()?;
+    parse_env_file(&contents)
+        .get("DOVOD_ACCESS_SERVER")
+        .map(|value| value.trim().to_string())
+        .filter(|value| !value.is_empty())
+}
+
 // Та же логика, что resolveQwenHome в dovod/dovod-entry.js (там для Node,
 // здесь для Rust - совпадать должны обе, .env читает именно эта папка).
 fn resolve_qwen_home(home: PathBuf) -> PathBuf {
@@ -574,13 +597,9 @@ async fn submit_access_code(
     if code.is_empty() {
         return Err("Введите код доступа.".to_string());
     }
-    let endpoint = std::env::var("DOVOD_ACCESS_SERVER")
-        .ok()
-        .map(|value| value.trim().to_string())
-        .filter(|value| !value.is_empty())
-        .ok_or_else(|| {
-            "Сервер доступа не настроен. Обратитесь к тому, кто выдал код.".to_string()
-        })?;
+    let endpoint = resolve_access_server(&app).ok_or_else(|| {
+        "Сервер доступа не настроен. Обратитесь к тому, кто выдал код.".to_string()
+    })?;
     let credentials = tauri::async_runtime::spawn_blocking(move || {
         redeem_access_code(&endpoint, &code)
     })

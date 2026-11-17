@@ -15,7 +15,7 @@ loads the unmodified `cli-entry.js`.
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `commands/*.toml`          | User slash commands `/dovod:<name>`. Copied to `~/.qwen/commands/dovod/` when the file is missing there (user edits are never touched). |
 | `settings.template.json`   | Seed for `~/.qwen/settings.json` (created when absent; otherwise only absent keys are merged).                                          |
-| `env.template`             | Seed for `~/.qwen/.env` (created only when absent): `DOVOD_API_BASE`, `DOVOD_API_KEY`, `DOVOD_MODEL`, `DOVOD_TOOLS`.                    |
+| `env.template`             | Seed for `~/.qwen/.env` (created only when absent): `DOVOD_API_BASE`, `DOVOD_API_KEY`, `DOVOD_MODEL`, `DOVOD_TOOLS`, `DOVOD_ACCESS_SERVER`. |
 | `mcp-server.template.json` | The `mcpServers.dovod` entry. Added only once `__DOVOD_TOOLS__` resolves (and `command`/`url` is not `PLACEHOLDER`).                  |
 | `dovod-entry.js`           | The seeding wrapper. Also exported as functions for `scripts/test-release.js`.                                                          |
 
@@ -52,5 +52,24 @@ DOVOD_MODEL=model-id
 The standard `OPENAI_BASE_URL` / `OPENAI_API_KEY` / `OPENAI_MODEL` variables
 keep working too, and the provider can also be edited from the Web Shell
 settings ("Модель" / `/model`).
+
+### Access-code path (DESKTOP_018)
+
+Until the three `DOVOD_*` lines above are filled (by hand, or by an access
+server), the desktop shell's `open_chat` command refuses to open a chat
+session at all and returns a sentinel the bootstrap screen turns into
+"Введите код доступа" instead of letting the broken session crash (the
+`agent channel closed during initialize` failure DESKTOP_018 fixed). If
+`DOVOD_ACCESS_SERVER` is set — as a process environment variable (dev
+override) or as a line in this same `~/.qwen/.env` — the code the lawyer
+types on that screen is sent as `?code=<code>` to
+`GET <DOVOD_ACCESS_SERVER>` from the Rust side (`submit_access_code` /
+`redeem_access_code` in `src-tauri/src/main.rs`), expecting a JSON body
+`{"api_base": "...", "api_key": "...", "model": "..."}` (or `{"error": "..."}`
+on rejection). The three values returned never touch disk: they live only in
+`ApplicationState.access_credentials` for this run and are passed straight
+into the bundled daemon's process environment when it (re)starts. No server
+implementation ships in this repository; what one would need to provide is
+described in the DESKTOP_018 session report.
 
 Set `DOVOD_SKIP_SEED=1` to disable seeding for a launch.
